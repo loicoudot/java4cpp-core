@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mappings>
+    <classes>
+        <class superclass="true" interfaceAll="true" exportFields="true" exportAll="false" class="java.lang.Float">
+            <cppName>cppName</cppName>
+            <constructors>
+                <noWrappes>
+                	<noWrappe>noWrappe1</noWrappe>
+                	<noWrappe>noWrappe2</noWrappe>
+                </noWrappes>
+                <wrappes>
+                    <wrappe cppName="cppName"></wrappe>
+                    <wrappe>wrappe2</wrappe>
+                </wrappes>
+            </constructors>
+            <innerClasses>
+                <noWrappes>
+                	<noWrappe>noWrappe1</noWrappe>
+                </noWrappes>
+                <wrappes>
+                    <wrappe cppName="cppInner">Inner1</wrappe>
+                </wrappes>
+            </innerClasses>
+            <interfaces>
+                <noWrappes>
+                	<noWrappe>Interface1</noWrappe>
+                	<noWrappe>Interface2</noWrappe>
+                </noWrappes>
+                <wrappes>
+                    <wrappe>com.github.loicoudot.java4cpp.Empty1</wrappe>
+                    <wrappe cppName="cppInterface">Interface2</wrappe>
+                </wrappes>
+            </interfaces>
+            <methods>
+                <noWrappes>
+                    <noWrappe>method2()</noWrappe>
+                </noWrappes>
+                <wrappes>
+                    <wrappe>method1()</wrappe>
+                </wrappes>
+            </methods>
+            <staticFields>
+                <noWrappes>
+                	<noWrappe>field1</noWrappe>
+                </noWrappes>
+                <wrappes>
+                    <wrappe cppName="fieldCpp">staticField1</wrappe>
+                </wrappes>
+            </staticFields>
+        </class>
+    </classes>
+    <keywords>
+        <keyword>true</keyword>
+        <keyword>delete</keyword>
+    </keywords>
+    <namespaces>
+    	<namespace package="com.github.loicoudot">java4cpp</namespace>
+    	<namespace package="java.utils.*">utils</namespace>
+    </namespaces>
+    <replaceDefaultMappings>true</replaceDefaultMappings>
+</mappings>

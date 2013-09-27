@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<templates>
+	<sourceTemplates>
+		<sourceTemplate>tpl1</sourceTemplate>
+		<sourceTemplate>tpl2</sourceTemplate>
+	</sourceTemplates>
+	<globalTemplates>
+		<globalTemplate>gbl1</globalTemplate>
+		<globalTemplate>gbl2</globalTemplate>
+	</globalTemplates>
+	<copyFiles>
+		<copyFile>file1</copyFile>
+		<copyFile>file2</copyFile>
+	</copyFiles>
+	<datatypes>
+		<fallback>
+			<cppType>fallback</cppType>
+		</fallback>
+		<templates>
+			<template class="boolean">
+				<cppType>cppType</cppType>
+				<cppReturnType>cppReturnType</cppReturnType>
+				<java2cpp>java2cpp</java2cpp>
+				<cpp2java>cpp2java</cpp2java>
+				<cpp2javaClean>cpp2javaClean</cpp2javaClean>
+				<dependencies>dependencies</dependencies>
+			</template>
+		</templates>
+	</datatypes>
+</templates>
