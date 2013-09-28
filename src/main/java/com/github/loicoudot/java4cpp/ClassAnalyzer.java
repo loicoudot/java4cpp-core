@@ -155,11 +155,7 @@ public final class ClassAnalyzer {
 
     private Class<?> getSuperClass() {
         if (mappings.exportSuperClass()) {
-            Class<?> parent = clazz.getSuperclass();
-            if (parent == null) {
-                parent = Object.class;
-            }
-            return parent;
+            return clazz.getSuperclass();
         }
         return null;
     }

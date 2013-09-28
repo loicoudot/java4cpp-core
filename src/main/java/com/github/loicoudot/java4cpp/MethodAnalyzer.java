@@ -2,17 +2,15 @@ package com.github.loicoudot.java4cpp;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 import com.github.loicoudot.java4cpp.model.MethodModel;
 
-public final class MethodAnalyzer {
+public final class MethodAnalyzer extends Analyzer {
     private final Method method;
-    private final Context context;
 
     public MethodAnalyzer(Method method, Context context) {
-        this.context = context;
+        super(context);
         this.method = method;
     }
 
@@ -31,17 +29,5 @@ public final class MethodAnalyzer {
             updateGenericDependency(type);
         }
         return methodModel;
-    }
-
-    private void updateGenericDependency(Type type) {
-        if (type instanceof ParameterizedType) {
-            ParameterizedType parametrizedType = (ParameterizedType) type;
-            Type[] typeArguments = parametrizedType.getActualTypeArguments();
-            for (Type typeArgument : typeArguments) {
-                if (typeArgument instanceof Class) {
-                    context.addClassToDo((Class<?>) typeArgument);
-                }
-            }
-        }
     }
 }
