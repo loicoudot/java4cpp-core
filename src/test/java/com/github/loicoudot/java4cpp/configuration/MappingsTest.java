@@ -38,7 +38,6 @@ public class MappingsTest {
     @Test
     public void deserialize() {
         Mappings mappings = JAXB.unmarshal(new File("target/test-classes/mappings.xml"), Mappings.class);
-        assertThat(mappings.isReplaceDefaultMappings()).isEqualTo(true);
         assertThat(mappings.getKeywords()).containsExactly("true", "delete");
         assertThat(mappings.getNamespaces()).containsExactly(new Namespace("com.github.loicoudot", "java4cpp"), new Namespace("java.utils.*", "utils"));
         assertThat(mappings.getClasses()).hasSize(1);

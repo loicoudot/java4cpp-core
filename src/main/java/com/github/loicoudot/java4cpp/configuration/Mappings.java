@@ -11,18 +11,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public final class Mappings {
 
-    private boolean replaceDefaultMappings = false;
     private final List<String> keywords = newArrayList();
     private final List<Clazz> classes = newArrayList();
     private final List<Namespace> namespaces = newArrayList();
-
-    public boolean isReplaceDefaultMappings() {
-        return replaceDefaultMappings;
-    }
-
-    public void setReplaceDefaultMappings(boolean replaceDefaultMappings) {
-        this.replaceDefaultMappings = replaceDefaultMappings;
-    }
 
     @XmlElementWrapper
     @XmlElement(name = "keyword")

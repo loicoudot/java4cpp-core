@@ -8,10 +8,10 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 
 public final class Datatypes {
-    private TypeTemplate fallback = new TypeTemplate();
-    private TypeTemplate array = new TypeTemplate();
-    private TypeTemplate enumeration = new TypeTemplate();
-    private List<TypeTemplate> templates = newArrayList();
+    private TypeTemplate fallback;
+    private TypeTemplate array;
+    private TypeTemplate enumeration;
+    private final List<TypeTemplate> templates = newArrayList();
 
     public TypeTemplate getFallback() {
         return fallback;

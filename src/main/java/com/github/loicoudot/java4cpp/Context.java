@@ -6,7 +6,6 @@ import static com.github.loicoudot.java4cpp.Utils.newHashMap;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Date;
@@ -30,10 +29,9 @@ import com.github.loicoudot.java4cpp.model.ClassModel;
 
 public final class Context {
     private final Logger log = LoggerFactory.getLogger(Context.class);
-    private static final String DEFAULT_MAPPINGS_XML = "DefaultMappings.xml";
 
     private final Settings settings;
-    private Mappings mappings;
+    private final Mappings mappings = new Mappings();
     private final TemplateManager templateManager;
     private final FileManager fileManager;
     private final BlockingQueue<Class<?>> classesToDo = new ArrayBlockingQueue<Class<?>>(1024);
@@ -47,21 +45,16 @@ public final class Context {
         this.settings = settings;
         fileManager = new FileManager(this);
         templateManager = new TemplateManager(this);
-        readDefaultMappings();
     }
 
     public Settings getSettings() {
         return settings;
     }
 
-    private void readDefaultMappings() {
-        try {
-            InputStream input = Thread.currentThread().getContextClassLoader().getResourceAsStream(DEFAULT_MAPPINGS_XML);
-            mappings = JAXB.unmarshal(input, Mappings.class);
-            input.close();
-        } catch (Exception e) {
-            log.error("Error reading default mappings: ", e);
-        }
+    public void addMappings(Mappings other) {
+        mappings.getKeywords().addAll(other.getKeywords());
+        mappings.getClasses().addAll(other.getClasses());
+        mappings.getNamespaces().addAll(other.getNamespaces());
     }
 
     /**
@@ -87,26 +80,17 @@ public final class Context {
 
     private void addMappingsFromSettings() {
         if (!Utils.isNullOrEmpty(settings.getMappingsFile())) {
-            try {
-                FileInputStream inStream = new FileInputStream(settings.getMappingsFile());
-                Mappings mappings = JAXB.unmarshal(inStream, Mappings.class);
-                inStream.close();
-                addMappings(mappings);
-            } catch (IOException e) {
-                log.error("java4cpp mappings file error", e);
+            for (String fileName : settings.getMappingsFile().split(";")) {
+                try {
+                    FileInputStream inStream = new FileInputStream(fileName);
+                    Mappings mappings = JAXB.unmarshal(inStream, Mappings.class);
+                    inStream.close();
+                    addMappings(mappings);
+                } catch (IOException e) {
+                    log.error("java4cpp mappings file error", e);
+                }
             }
         }
-    }
-
-    public void addMappings(Mappings config) {
-        if (config.isReplaceDefaultMappings()) {
-            mappings.getClasses().clear();
-            mappings.getKeywords().clear();
-            mappings.getNamespaces().clear();
-        }
-        mappings.getKeywords().addAll(config.getKeywords());
-        mappings.getClasses().addAll(config.getClasses());
-        mappings.getNamespaces().addAll(config.getNamespaces());
     }
 
     private void addClassToDoFromJars() {

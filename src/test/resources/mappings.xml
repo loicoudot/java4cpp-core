@@ -57,5 +57,4 @@
     	<namespace package="com.github.loicoudot">java4cpp</namespace>
     	<namespace package="java.utils.*">utils</namespace>
     </namespaces>
-    <replaceDefaultMappings>true</replaceDefaultMappings>
 </mappings>

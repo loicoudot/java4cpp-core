@@ -166,7 +166,6 @@ public class MappingsHelperTest {
     @BeforeClass
     public void init() {
         Mappings local = new Mappings();
-        local.setReplaceDefaultMappings(true);
 
         Clazz clazzFalse = new Clazz(MappingsFalse.class);
         clazzFalse.setSuperclass(false);

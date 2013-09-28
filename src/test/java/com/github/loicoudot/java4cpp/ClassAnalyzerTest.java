@@ -93,14 +93,14 @@ class TestClasse extends D implements IB, IA, IC {
 public class ClassAnalyzerTest {
 
     private Context context;
-    private ClassAnalyzer analyzer;
     private ClassAnalyzer primitiveAnalyzer;
 
     @BeforeClass
     public void init() {
         Settings settings = new Settings();
+        settings.setTemplatesFile("target/test-classes/templates.xml");
         context = new Context(settings);
-        analyzer = new ClassAnalyzer(TestClasse.class, context);
+        context.start();
         primitiveAnalyzer = new ClassAnalyzer(Boolean.TYPE, context);
     }
 
@@ -131,30 +131,10 @@ public class ClassAnalyzerTest {
         assertThat(model.getJavaSignature()).isEqualTo("Z");
         assertThat(model.getJniSignature()).isEqualTo("jboolean");
         assertThat(model.getJniMethodName()).isEqualTo("Boolean");
-        assertThat(model.getCppType()).isEqualTo("bool");
-        assertThat(model.getCppReturnType()).isEqualTo("bool");
+        assertThat(model.getCppType()).isEqualTo("cppType");
+        assertThat(model.getCppReturnType()).isEqualTo("cppType");
         assertThat(model.getSuperclass()).isNull();
         assertThat(model.getOutterIncludes()).isEmpty();
         assertThat(model.getOutterDependencies()).isEmpty();
-
-        model = new ClassModel(TestClasse.class);
-        analyzer.fillModel(model);
-        assertThat(model.getJavaName()).isEqualTo("com.github.loicoudot.java4cpp.TestClasse");
-        assertThat(model.isIsEnum()).isFalse();
-        assertThat(model.isIsInterface()).isFalse();
-        assertThat(model.isIsInnerClass()).isFalse();
-        assertThat(model.isIsCheckedException()).isFalse();
-        assertThat(model.isIsCloneable()).isFalse();
-        assertThat(model.getOwner()).isEqualTo(model);
-        assertThat(model.getCppFullName()).isEqualTo("com::github::loicoudot::java4cpp::TestClasse");
-        assertThat(model.getCppShortName()).isEqualTo("TestClasse");
-        assertThat(model.getJavaSignature()).isEqualTo("Lcom/github/loicoudot/java4cpp/TestClasse;");
-        assertThat(model.getJniSignature()).isEqualTo("jobject");
-        assertThat(model.getJniMethodName()).isEqualTo("Object");
-        assertThat(model.getCppType()).isEqualTo("boost::shared_ptr<com::github::loicoudot::java4cpp::TestClasse>");
-        assertThat(model.getCppReturnType()).isEqualTo("boost::shared_ptr<com::github::loicoudot::java4cpp::TestClasse>");
-        assertThat(model.getSuperclass().getClazz()).hasSameClassAs(D.class);
-        assertThat(model.getOutterIncludes()).contains("<boost/shared_ptr.hpp>");
-        // assertThat(model.getDependencies()).isEmpty();
     }
 }

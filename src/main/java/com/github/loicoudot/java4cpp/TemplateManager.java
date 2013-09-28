@@ -3,8 +3,8 @@ package com.github.loicoudot.java4cpp;
 import static com.github.loicoudot.java4cpp.Utils.newArrayList;
 import static com.github.loicoudot.java4cpp.Utils.newHashMap;
 
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
@@ -27,11 +27,9 @@ import freemarker.template.TemplateExceptionHandler;
 import freemarker.template.Version;
 
 public final class TemplateManager {
-    private static final String DEFAULT_TEMPLATES_XML = "DefaultTemplates.xml";
-
     private final Logger log = LoggerFactory.getLogger(TemplateManager.class);
     private final Context context;
-    private Templates templates;
+    private final Templates templates = new Templates();
     private final Configuration configuration = new Configuration();
     private final List<Template> sourceTemplates = newArrayList();
     private final List<Template> globalTemplates = newArrayList();
@@ -45,22 +43,27 @@ public final class TemplateManager {
         configuration.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
         configuration.setIncompatibleImprovements(new Version(2, 3, 20));
         configuration.setLocalizedLookup(false);
-
-        readDefaultTemplates();
     }
 
-    private void readDefaultTemplates() {
-        try {
-            InputStream input = Thread.currentThread().getContextClassLoader().getResourceAsStream(DEFAULT_TEMPLATES_XML);
-            templates = JAXB.unmarshal(input, Templates.class);
-            input.close();
-        } catch (Exception e) {
-            log.error("Error parsing XML file: ", e);
+    public void addTemplates(Templates other) {
+        templates.getSourceTemplates().addAll(other.getSourceTemplates());
+        templates.getGlobalTemplates().addAll(other.getGlobalTemplates());
+        templates.getCopyFiles().addAll(other.getCopyFiles());
+        if (other.getDatatypes().getFallback() != null) {
+            templates.getDatatypes().setFallback(other.getDatatypes().getFallback());
         }
+        if (other.getDatatypes().getArray() != null) {
+            templates.getDatatypes().setArray(other.getDatatypes().getArray());
+        }
+        if (other.getDatatypes().getEnumeration() != null) {
+            templates.getDatatypes().setEnumeration(other.getDatatypes().getEnumeration());
+        }
+        templates.getDatatypes().getTemplates().addAll(other.getDatatypes().getTemplates());
     }
 
     public void start() {
         try {
+            addTemplatesFromSettings();
             for (String templateName : templates.getSourceTemplates()) {
                 sourceTemplates.add(configuration.getTemplate(templateName));
             }
@@ -69,6 +72,21 @@ public final class TemplateManager {
             }
         } catch (IOException e) {
             log.error("Error reading templates: ", e);
+        }
+    }
+
+    private void addTemplatesFromSettings() {
+        if (!Utils.isNullOrEmpty(context.getSettings().getTemplatesFile())) {
+            for (String fileName : context.getSettings().getTemplatesFile().split(";")) {
+                try {
+                    FileInputStream inStream = new FileInputStream(fileName);
+                    Templates templates = JAXB.unmarshal(inStream, Templates.class);
+                    inStream.close();
+                    addTemplates(templates);
+                } catch (IOException e) {
+                    log.error("java4cpp templates file error", e);
+                }
+            }
         }
     }
 
@@ -141,6 +159,9 @@ public final class TemplateManager {
         }
         TypeTemplates result = new TypeTemplates();
         TypeTemplate type = getTypeTemplate(clazz);
+        if (type == null) {
+            throw new RuntimeException("No defined template for type " + clazz.getName());
+        }
         result.setCppType(parseTemplate(type.getCppType()));
         result.setCppReturnType(parseTemplate(type.getCppReturnType()));
         result.setJava2cpp(parseTemplate(type.getJava2cpp()));
