@@ -3,6 +3,7 @@ package com.github.loicoudot.java4cpp;
 import static com.github.loicoudot.java4cpp.Utils.newArrayList;
 import static com.github.loicoudot.java4cpp.Utils.newHashMap;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -31,6 +32,7 @@ public class Main {
      * @param context
      */
     public void execute(Context context) {
+        log.info("java4cpp version {}, starting at {}", Context.class.getPackage().getImplementationVersion(), new Date());
         context.start();
 
         do {

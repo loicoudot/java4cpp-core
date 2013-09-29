@@ -8,7 +8,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
@@ -62,7 +61,6 @@ public final class Context {
      * parts with all the configurations.
      */
     public void start() {
-        log.info("java4cpp version {}, starting at {}", Context.class.getPackage().getImplementationVersion(), new Date());
         getFileManager().start();
         addMappingsFromSettings();
         addClassToDoFromJars();

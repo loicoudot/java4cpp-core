@@ -14,8 +14,9 @@ public final class FieldAnalyzer extends Analyzer {
 
     public FieldModel getModel() {
         FieldModel fieldModel = new FieldModel(field.getName());
-        fieldModel.setType(context.getClassModel(field.getType()));
         fieldModel.setCppName(context.getMappings(field.getDeclaringClass()).getCppName(field));
+
+        fieldModel.setType(context.getClassModel(field.getType()));
         updateGenericDependency(field.getGenericType());
         return fieldModel;
     }
