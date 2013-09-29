@@ -1,16 +1,19 @@
 package com.github.loicoudot.java4cpp.configuration;
 
+import static com.github.loicoudot.java4cpp.Utils.newArrayList;
+
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 public final class TypeTemplate {
     private Class<?> clazz;
     private String cppType;
     private String cppReturnType;
-    private String java2cpp;
-    private String cpp2java;
-    private String cpp2javaClean;
-    private String dependencies;
+    private final List<Function> functions = newArrayList();
 
     @XmlAttribute(name = "class")
     @XmlJavaTypeAdapter(ClassAdapter.class)
@@ -38,36 +41,10 @@ public final class TypeTemplate {
         this.cppReturnType = cppReturnType;
     }
 
-    public String getJava2cpp() {
-        return java2cpp;
-    }
-
-    public void setJava2cpp(String java2cpp) {
-        this.java2cpp = java2cpp;
-    }
-
-    public String getCpp2java() {
-        return cpp2java;
-    }
-
-    public void setCpp2java(String cpp2java) {
-        this.cpp2java = cpp2java;
-    }
-
-    public String getCpp2javaClean() {
-        return cpp2javaClean;
-    }
-
-    public void setCpp2javaClean(String cpp2javaClean) {
-        this.cpp2javaClean = cpp2javaClean;
-    }
-
-    public String getDependencies() {
-        return dependencies;
-    }
-
-    public void setDependencies(String dependencies) {
-        this.dependencies = dependencies;
+    @XmlElementWrapper
+    @XmlElement(name = "function")
+    public List<Function> getFunctions() {
+        return functions;
     }
 
     @Override

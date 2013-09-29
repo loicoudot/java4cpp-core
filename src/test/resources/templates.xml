@@ -20,10 +20,10 @@
 			<template class="boolean">
 				<cppType>cppType</cppType>
 				<cppReturnType>cppReturnType</cppReturnType>
-				<java2cpp>java2cpp</java2cpp>
-				<cpp2java>cpp2java</cpp2java>
-				<cpp2javaClean>cpp2javaClean</cpp2javaClean>
-				<dependencies>dependencies</dependencies>
+				<functions>
+					<function name="java2cpp">freemarker code</function>
+					<function name="dependencies">dependencies template</function>
+				</functions>
 			</template>
 		</templates>
 	</datatypes>

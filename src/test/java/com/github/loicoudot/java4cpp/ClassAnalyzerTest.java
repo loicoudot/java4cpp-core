@@ -132,7 +132,7 @@ public class ClassAnalyzerTest {
         assertThat(model.getJniSignature()).isEqualTo("jboolean");
         assertThat(model.getJniMethodName()).isEqualTo("Boolean");
         assertThat(model.getCppType()).isEqualTo("cppType");
-        assertThat(model.getCppReturnType()).isEqualTo("cppType");
+        assertThat(model.getCppReturnType()).isEqualTo("cppReturnType");
         assertThat(model.getSuperclass()).isNull();
         assertThat(model.getOutterIncludes()).isEmpty();
         assertThat(model.getOutterDependencies()).isEmpty();

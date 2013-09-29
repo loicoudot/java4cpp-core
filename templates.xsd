@@ -47,14 +47,25 @@
 
   <xs:complexType name="typeTemplate" final="extension restriction">
     <xs:sequence>
-      <xs:element name="cpp2java" type="xs:string" minOccurs="0"/>
-      <xs:element name="cpp2javaClean" type="xs:string" minOccurs="0"/>
       <xs:element name="cppReturnType" type="xs:string" minOccurs="0"/>
       <xs:element name="cppType" type="xs:string" minOccurs="0"/>
-      <xs:element name="dependencies" type="xs:string" minOccurs="0"/>
-      <xs:element name="java2cpp" type="xs:string" minOccurs="0"/>
+      <xs:element name="functions" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="function" type="function" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
     </xs:sequence>
     <xs:attribute name="class" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="function" final="extension restriction">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="name" type="xs:string"/>
+      </xs:extension>
+    </xs:simpleContent>
   </xs:complexType>
 </xs:schema>
 

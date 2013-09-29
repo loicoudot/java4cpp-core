@@ -6,6 +6,7 @@ import static com.github.loicoudot.java4cpp.Utils.newHashMap;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +15,7 @@ import javax.xml.bind.JAXB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.loicoudot.java4cpp.configuration.Function;
 import com.github.loicoudot.java4cpp.configuration.Templates;
 import com.github.loicoudot.java4cpp.configuration.TypeTemplate;
 
@@ -142,7 +144,7 @@ public final class TemplateManager {
         return templates.getDatatypes().getFallback();
     }
 
-    private Template parseTemplate(String template) {
+    public Template createTemplate(String template) {
         try {
             if (!Utils.isNullOrEmpty(template)) {
                 return new Template("", template, configuration);
@@ -162,13 +164,17 @@ public final class TemplateManager {
         if (type == null) {
             throw new RuntimeException("No defined template for type " + clazz.getName());
         }
-        result.setCppType(parseTemplate(type.getCppType()));
-        result.setCppReturnType(parseTemplate(type.getCppReturnType()));
-        result.setJava2cpp(parseTemplate(type.getJava2cpp()));
-        result.setCpp2java(parseTemplate(type.getCpp2java()));
-        result.setCpp2javaClean(parseTemplate(type.getCpp2javaClean()));
-        result.setDependencies(parseTemplate(type.getDependencies()));
+        result.setCppType(createTemplate(type.getCppType()));
+        result.setCppReturnType(createTemplate(type.getCppReturnType()));
+
+        HashMap<String, Template> functions = newHashMap();
+        for (Function function : type.getFunctions()) {
+            functions.put(function.getName(), createTemplate(function.getTemplate()));
+        }
+        result.setFunctions(functions);
+
         typeCache.put(clazz, result);
         return result;
     }
+
 }

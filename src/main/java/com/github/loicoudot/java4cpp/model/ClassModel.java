@@ -1,8 +1,10 @@
 package com.github.loicoudot.java4cpp.model;
 
 import static com.github.loicoudot.java4cpp.Utils.newArrayList;
+import static com.github.loicoudot.java4cpp.Utils.newHashMap;
 import static com.github.loicoudot.java4cpp.Utils.newHashSet;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -34,11 +36,7 @@ public final class ClassModel {
     private String jniMethodName;
     private String cppType;
     private String cppReturnType;
-    private String javaVar;
-    private String cppVar;
-    private TemplateMethodModelEx java2cpp;
-    private TemplateMethodModelEx cpp2java;
-    private TemplateMethodModelEx cpp2javaClean;
+    private HashMap<String, Object> functions = newHashMap();
     private TemplateMethodModelEx addInclude;
     private TemplateMethodModelEx addDependency;
     private final Set<String> outterIncludes = newHashSet();
@@ -227,44 +225,12 @@ public final class ClassModel {
         this.cppReturnType = cppReturnType;
     }
 
-    public String getJavaVar() {
-        return javaVar;
+    public HashMap<String, Object> getFunctions() {
+        return functions;
     }
 
-    public void setJavaVar(String javaVar) {
-        this.javaVar = javaVar;
-    }
-
-    public String getCppVar() {
-        return cppVar;
-    }
-
-    public void setCppVar(String cppVar) {
-        this.cppVar = cppVar;
-    }
-
-    public TemplateMethodModelEx getJava2cpp() {
-        return java2cpp;
-    }
-
-    public void setJava2cpp(TemplateMethodModelEx java2cpp) {
-        this.java2cpp = java2cpp;
-    }
-
-    public TemplateMethodModelEx getCpp2java() {
-        return cpp2java;
-    }
-
-    public void setCpp2java(TemplateMethodModelEx cpp2java) {
-        this.cpp2java = cpp2java;
-    }
-
-    public TemplateMethodModelEx getCpp2javaClean() {
-        return cpp2javaClean;
-    }
-
-    public void setCpp2javaClean(TemplateMethodModelEx cpp2javaClean) {
-        this.cpp2javaClean = cpp2javaClean;
+    public void setFunctions(HashMap<String, Object> functions) {
+        this.functions = functions;
     }
 
     public TemplateMethodModelEx getAddInclude() {

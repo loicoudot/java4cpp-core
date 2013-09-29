@@ -14,10 +14,6 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.testng.annotations.Test;
 
-import com.github.loicoudot.java4cpp.configuration.Datatypes;
-import com.github.loicoudot.java4cpp.configuration.Templates;
-import com.github.loicoudot.java4cpp.configuration.TypeTemplate;
-
 class TemplatesOutputResolver extends SchemaOutputResolver {
 
     @Override
@@ -50,9 +46,10 @@ public class TemplatesTest {
         assertThat(template.getClazz()).hasSameClassAs(Boolean.TYPE);
         assertThat(template.getCppType()).isEqualTo("cppType");
         assertThat(template.getCppReturnType()).isEqualTo("cppReturnType");
-        assertThat(template.getJava2cpp()).isEqualTo("java2cpp");
-        assertThat(template.getCpp2java()).isEqualTo("cpp2java");
-        assertThat(template.getCpp2javaClean()).isEqualTo("cpp2javaClean");
-        assertThat(template.getDependencies()).isEqualTo("dependencies");
+        assertThat(template.getFunctions()).hasSize(2);
+        assertThat(template.getFunctions().get(0).getName()).isEqualTo("java2cpp");
+        assertThat(template.getFunctions().get(0).getTemplate()).isEqualTo("freemarker code");
+        assertThat(template.getFunctions().get(1).getName()).isEqualTo("dependencies");
+        assertThat(template.getFunctions().get(1).getTemplate()).isEqualTo("dependencies template");
     }
 }

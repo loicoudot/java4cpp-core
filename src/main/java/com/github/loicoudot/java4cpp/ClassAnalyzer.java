@@ -94,14 +94,11 @@ public final class ClassAnalyzer {
         classModel.setJniSignature(Datatype.getJNISignature(clazz));
         classModel.setJniMethodName(Datatype.getJNIMethodName(clazz));
         TypeTemplates typeTemplates = context.getTemplateManager().getTypeTemplates(clazz);
-        classModel.setAddInclude(new AddOutterInclude(classModel));
-        classModel.setAddDependency(new AddOutterDependency(classModel));
         classModel.setCppType(typeTemplates.getCppType(classModel));
         classModel.setCppReturnType(typeTemplates.getCppReturnType(classModel));
-        classModel.setJava2cpp(typeTemplates.getJava2cpp(classModel));
-        classModel.setCpp2java(typeTemplates.getCpp2Java(classModel));
-        classModel.setCpp2javaClean(typeTemplates.getCpp2JavaClean(classModel));
-        typeTemplates.processDependencies(classModel);
+        classModel.setFunctions(typeTemplates.getFunctions(classModel));
+        classModel.setAddInclude(new AddOutterInclude(classModel));
+        classModel.setAddDependency(new AddOutterDependency(classModel));
 
         if (getSuperClass() != null) {
             classModel.setSuperclass(context.getClassModel(getSuperClass()));
