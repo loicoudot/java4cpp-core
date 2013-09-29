@@ -101,16 +101,16 @@ public final class ClassModel {
         return isCheckedException;
     }
 
-    public void setCheckedException(boolean isCheckedException) {
-        this.isCheckedException = isCheckedException;
+    public void setCheckedException(boolean checkedException) {
+        this.isCheckedException = checkedException;
     }
 
     public boolean isIsCloneable() {
         return isCloneable;
     }
 
-    public void setCloneable(boolean isCloneable) {
-        this.isCloneable = isCloneable;
+    public void setCloneable(boolean cloneable) {
+        this.isCloneable = cloneable;
     }
 
     public ClassModel getSuperclass() {

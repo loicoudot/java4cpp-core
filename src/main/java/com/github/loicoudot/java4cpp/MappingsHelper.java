@@ -47,20 +47,18 @@ public final class MappingsHelper {
         return false;
     }
 
-    public boolean isInnerClassWrapped(Class<?> clazz) {
+    public boolean isInnerClassWrapped(Class<?> innerClass) {
         if (settings != null) {
-            // TODO: what about inner inner class ?
-            // TODO: Java4Cpp aussi pour les inners
-            String name = clazz.getName().substring(clazz.getName().indexOf('$') + 1);
+            String name = innerClass.getName().substring(innerClass.getName().indexOf('$') + 1);
             if (settings.isExportAll()) {
                 return !settings.getInnerClasses().getNoWrappes().contains(name);
             }
             return settings.getInnerClasses().findWrappe(name) != null;
         }
         if (annotation == null || annotation.all()) {
-            return !clazz.isAnnotationPresent(Java4CppNoWrappe.class);
+            return !innerClass.isAnnotationPresent(Java4CppNoWrappe.class);
         }
-        return clazz.isAnnotationPresent(Java4CppWrappe.class);
+        return innerClass.isAnnotationPresent(Java4CppWrappe.class);
     }
 
     public boolean isFieldWrapped(Field field) {

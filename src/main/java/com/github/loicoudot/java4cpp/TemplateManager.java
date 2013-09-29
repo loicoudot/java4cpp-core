@@ -82,9 +82,9 @@ public final class TemplateManager {
             for (String fileName : context.getSettings().getTemplatesFile().split(";")) {
                 try {
                     FileInputStream inStream = new FileInputStream(fileName);
-                    Templates templates = JAXB.unmarshal(inStream, Templates.class);
+                    Templates inTemplates = JAXB.unmarshal(inStream, Templates.class);
                     inStream.close();
-                    addTemplates(templates);
+                    addTemplates(inTemplates);
                 } catch (IOException e) {
                     log.error("java4cpp templates file error", e);
                 }
@@ -110,8 +110,8 @@ public final class TemplateManager {
         processTemplates(dataModel, globalTemplates);
     }
 
-    private void processTemplates(Map<String, Object> dataModel, List<Template> templates) {
-        for (Template template : templates) {
+    private void processTemplates(Map<String, Object> dataModel, List<Template> templateList) {
+        for (Template template : templateList) {
             try {
                 StringWriter sw = new StringWriter();
                 Environment env = template.createProcessingEnvironment(dataModel, sw);

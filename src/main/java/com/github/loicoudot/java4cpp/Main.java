@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import com.github.loicoudot.java4cpp.model.ClassModel;
 
 public class Main {
+    private static final int TIMEOUT = 20;
     private final Logger log = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) {
@@ -45,7 +46,7 @@ public class Main {
             pool.shutdown();
             while (!pool.isTerminated()) {
                 try {
-                    pool.awaitTermination(20, TimeUnit.MILLISECONDS);
+                    pool.awaitTermination(TIMEOUT, TimeUnit.MILLISECONDS);
                 } catch (InterruptedException e) {
                     log.error("execute: ", e);
                 }

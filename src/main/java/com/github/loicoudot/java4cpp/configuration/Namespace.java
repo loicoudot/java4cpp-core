@@ -50,23 +50,30 @@ public final class Namespace {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         Namespace other = (Namespace) obj;
         if (javaPackage == null) {
-            if (other.javaPackage != null)
+            if (other.javaPackage != null) {
                 return false;
-        } else if (!javaPackage.equals(other.javaPackage))
+            }
+        } else if (!javaPackage.equals(other.javaPackage)) {
             return false;
+        }
         if (namespace == null) {
-            if (other.namespace != null)
+            if (other.namespace != null) {
                 return false;
-        } else if (!namespace.equals(other.namespace))
+            }
+        } else if (!namespace.equals(other.namespace)) {
             return false;
+        }
         return true;
     }
 }

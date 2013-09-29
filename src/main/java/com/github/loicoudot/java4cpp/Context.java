@@ -81,9 +81,9 @@ public final class Context {
             for (String fileName : settings.getMappingsFile().split(";")) {
                 try {
                     FileInputStream inStream = new FileInputStream(fileName);
-                    Mappings mappings = JAXB.unmarshal(inStream, Mappings.class);
+                    Mappings inMappings = JAXB.unmarshal(inStream, Mappings.class);
                     inStream.close();
-                    addMappings(mappings);
+                    addMappings(inMappings);
                 } catch (IOException e) {
                     log.error("java4cpp mappings file error", e);
                 }

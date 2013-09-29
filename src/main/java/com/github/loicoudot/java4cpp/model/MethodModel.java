@@ -5,11 +5,11 @@ import static com.github.loicoudot.java4cpp.Utils.newArrayList;
 import java.util.List;
 
 public final class MethodModel {
-    private String javaName;
+    private final String javaName;
     private String cppName;
     private boolean isStatic;
     private ClassModel returnType;
-    private List<ClassModel> parameters = newArrayList();
+    private final List<ClassModel> parameters = newArrayList();
 
     public MethodModel(String javaName) {
         this.javaName = javaName;
@@ -31,8 +31,8 @@ public final class MethodModel {
         return isStatic;
     }
 
-    public void setStatic(boolean isStatic) {
-        this.isStatic = isStatic;
+    public void setStatic(boolean statik) {
+        this.isStatic = statik;
     }
 
     public ClassModel getReturnType() {
