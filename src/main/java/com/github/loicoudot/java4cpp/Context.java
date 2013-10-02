@@ -4,7 +4,6 @@ import static com.github.loicoudot.java4cpp.Utils.newArrayList;
 import static com.github.loicoudot.java4cpp.Utils.newHashMap;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -87,17 +86,9 @@ public final class Context {
 
     private void addMappingsFromSettings() {
         if (!Utils.isNullOrEmpty(settings.getMappingsFile())) {
-            for (String fileName : settings.getMappingsFile().split(";")) {
+            for (String name : settings.getMappingsFile().split(";")) {
                 try {
-                    InputStream is = null;
-                    if (new File(fileName).isFile()) {
-                        is = new FileInputStream(fileName);
-                    } else {
-                        is = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName);
-                    }
-                    if (is == null) {
-                        throw new RuntimeException("Failed to read mappings from settings " + fileName + " (file not found)");
-                    }
+                    InputStream is = Utils.getFileOrResource(name);
                     Mappings mapping = JAXB.unmarshal(is, Mappings.class);
                     is.close();
                     addMappings(mapping);

@@ -1,5 +1,9 @@
 package com.github.loicoudot.java4cpp;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,5 +46,28 @@ public final class Utils {
      */
     public static boolean isNullOrEmpty(String string) {
         return string == null || string.length() == 0;
+    }
+
+    /**
+     * Looks for a file in the file system path named {@code name}, if none
+     * exist looks for a resource named {@code name} inside the current class
+     * path.
+     * 
+     * @param name
+     *            a file or a resource name to find
+     * @return the corresponding {@code InputStream}
+     * @throws IOException
+     */
+    public static InputStream getFileOrResource(String name) throws IOException {
+        InputStream is = null;
+        if (new File(name).isFile()) {
+            is = new FileInputStream(name);
+        } else {
+            is = Thread.currentThread().getContextClassLoader().getResourceAsStream(name);
+        }
+        if (is == null) {
+            throw new IOException("Failed to locate " + name);
+        }
+        return is;
     }
 }

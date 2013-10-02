@@ -3,8 +3,8 @@ package com.github.loicoudot.java4cpp;
 import static com.github.loicoudot.java4cpp.Utils.newArrayList;
 import static com.github.loicoudot.java4cpp.Utils.newHashMap;
 
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
@@ -16,7 +16,9 @@ import com.github.loicoudot.java4cpp.configuration.Function;
 import com.github.loicoudot.java4cpp.configuration.Templates;
 import com.github.loicoudot.java4cpp.configuration.TypeTemplate;
 
-import freemarker.cache.ClassTemplateLoader;
+import freemarker.cache.FileTemplateLoader;
+import freemarker.cache.MultiTemplateLoader;
+import freemarker.cache.TemplateLoader;
 import freemarker.core.Environment;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
@@ -34,12 +36,17 @@ public final class TemplateManager {
 
     public TemplateManager(Context context) {
         this.context = context;
-        configuration.setTemplateLoader(new ClassTemplateLoader(TemplateManager.class, ""));
-        configuration.setObjectWrapper(new DefaultObjectWrapper());
-        configuration.setDefaultEncoding("ISO-8859-1");
-        configuration.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
-        configuration.setIncompatibleImprovements(new Version(2, 3, 20));
-        configuration.setLocalizedLookup(false);
+        try {
+            TemplateLoader[] loaders = { new FileTemplateLoader(), new ThreadTemplateLoader() };
+            configuration.setTemplateLoader(new MultiTemplateLoader(loaders));
+            configuration.setObjectWrapper(new DefaultObjectWrapper());
+            configuration.setDefaultEncoding("ISO-8859-1");
+            configuration.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+            configuration.setIncompatibleImprovements(new Version(2, 3, 20));
+            configuration.setLocalizedLookup(false);
+        } catch (IOException e) {
+            throw new RuntimeException("FreeMarker initialisation error " + e.getMessage());
+        }
     }
 
     public void addTemplates(Templates other) {
@@ -74,14 +81,14 @@ public final class TemplateManager {
 
     private void addTemplatesFromSettings() {
         if (!Utils.isNullOrEmpty(context.getSettings().getTemplatesFile())) {
-            for (String fileName : context.getSettings().getTemplatesFile().split(";")) {
+            for (String name : context.getSettings().getTemplatesFile().split(";")) {
                 try {
-                    FileInputStream inStream = new FileInputStream(fileName);
-                    Templates inTemplates = JAXB.unmarshal(inStream, Templates.class);
-                    inStream.close();
-                    addTemplates(inTemplates);
+                    InputStream is = Utils.getFileOrResource(name);
+                    Templates template = JAXB.unmarshal(is, Templates.class);
+                    is.close();
+                    addTemplates(template);
                 } catch (IOException e) {
-                    throw new RuntimeException("Failed to read templates " + e.getMessage());
+                    throw new RuntimeException("Failed to read templates: " + e.getMessage());
                 }
             }
         }
