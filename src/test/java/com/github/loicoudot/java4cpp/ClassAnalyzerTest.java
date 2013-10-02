@@ -8,6 +8,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import com.github.loicoudot.java4cpp.configuration.Templates;
+import com.github.loicoudot.java4cpp.configuration.TypeTemplate;
 import com.github.loicoudot.java4cpp.model.ClassModel;
 
 interface IA {
@@ -98,8 +100,14 @@ public class ClassAnalyzerTest {
     @BeforeClass
     public void init() {
         Settings settings = new Settings();
-        settings.setTemplatesFile("target/test-classes/templates.xml");
         context = new Context(settings);
+        Templates other = new Templates();
+        TypeTemplate classTemplate = new TypeTemplate();
+        classTemplate.setClazz(Boolean.TYPE);
+        classTemplate.setCppType("cppType");
+        classTemplate.setCppReturnType("cppReturnType");
+        other.getDatatypes().getTemplates().add(classTemplate);
+        context.getTemplateManager().addTemplates(other);
         context.start();
         primitiveAnalyzer = new ClassAnalyzer(Boolean.TYPE, context);
     }

@@ -4,9 +4,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * Class for managing the settings of java4cpp. The settings are fetched in this
  * order :
@@ -20,7 +17,6 @@ import org.slf4j.LoggerFactory;
  * 
  */
 public final class Settings {
-    private final Logger log = LoggerFactory.getLogger(Settings.class);
 
     /**
      * Define the path where the resulting proxies files are generated.
@@ -111,7 +107,7 @@ public final class Settings {
             properties.load(inStream);
             inStream.close();
         } catch (IOException e) {
-            log.error("java4cpp error: properties file error.");
+            throw new RuntimeException("Failed to read properties " + e.getMessage());
         }
 
         initFromProperties(properties);

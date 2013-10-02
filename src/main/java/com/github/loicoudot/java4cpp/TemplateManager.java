@@ -12,9 +12,6 @@ import java.util.Map;
 
 import javax.xml.bind.JAXB;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.github.loicoudot.java4cpp.configuration.Function;
 import com.github.loicoudot.java4cpp.configuration.Templates;
 import com.github.loicoudot.java4cpp.configuration.TypeTemplate;
@@ -24,12 +21,10 @@ import freemarker.core.Environment;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
-import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 import freemarker.template.Version;
 
 public final class TemplateManager {
-    private final Logger log = LoggerFactory.getLogger(TemplateManager.class);
     private final Context context;
     private final Templates templates = new Templates();
     private final Configuration configuration = new Configuration();
@@ -73,7 +68,7 @@ public final class TemplateManager {
                 globalTemplates.add(configuration.getTemplate(templateName));
             }
         } catch (IOException e) {
-            log.error("Error reading templates: ", e);
+            throw new RuntimeException("Failed to read templates " + e.getMessage());
         }
     }
 
@@ -86,7 +81,7 @@ public final class TemplateManager {
                     inStream.close();
                     addTemplates(inTemplates);
                 } catch (IOException e) {
-                    log.error("java4cpp templates file error", e);
+                    throw new RuntimeException("Failed to read templates " + e.getMessage());
                 }
             }
         }
@@ -98,7 +93,7 @@ public final class TemplateManager {
                 context.getFileManager().copyFile(file);
             }
         } catch (IOException e) {
-            log.error("Error copying files: ", e);
+            throw new RuntimeException("Failed to copy file " + e.getMessage());
         }
     }
 
@@ -121,10 +116,8 @@ public final class TemplateManager {
                     context.getFileManager().writeSourceFile(fileName, sw);
                 }
                 sw.close();
-            } catch (TemplateException e) {
-                log.error("Error processing template: ", e);
-            } catch (IOException e) {
-                log.error("Error processing template: ", e);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to process template " + e.getMessage());
             }
         }
     }
@@ -150,7 +143,7 @@ public final class TemplateManager {
                 return new Template("", template, configuration);
             }
         } catch (IOException e) {
-            log.error("Error processing template: ", e);
+            throw new RuntimeException("Failed to process template " + e.getMessage());
         }
         return null;
     }

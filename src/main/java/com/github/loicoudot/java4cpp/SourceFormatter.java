@@ -25,7 +25,7 @@ public final class SourceFormatter implements TemplateDirectiveModel {
         if (body != null) {
             body.render(new CppSourceFormatterWriter(env.getOut()));
         } else {
-            throw new RuntimeException("missing body");
+            throw new RuntimeException("SourceFormatter missing body");
         }
     }
 

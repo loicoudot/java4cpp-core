@@ -10,17 +10,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.github.loicoudot.java4cpp.model.ClassModel;
 
-public class Main {
+public class Core {
     private static final int TIMEOUT = 20;
-    private final Logger log = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) {
-        new Main().start(args);
+        new Core().start(args);
     }
 
     private void start(String[] args) {
@@ -33,8 +29,10 @@ public class Main {
      * @param context
      */
     public void execute(Context context) {
-        log.info("java4cpp version {}, starting at {}", Context.class.getPackage().getImplementationVersion(), new Date());
+
         context.start();
+        context.getFileManager().logInfo(
+                String.format("java4cpp version %s, starting at %s", Context.class.getPackage().getImplementationVersion(), new Date()));
 
         do {
             ExecutorService pool = Executors.newFixedThreadPool(context.getSettings().getNbThread());
@@ -48,7 +46,7 @@ public class Main {
                 try {
                     pool.awaitTermination(TIMEOUT, TimeUnit.MILLISECONDS);
                 } catch (InterruptedException e) {
-                    log.error("execute: ", e);
+                    throw new RuntimeException("Interrupted " + e.getMessage());
                 }
             }
 

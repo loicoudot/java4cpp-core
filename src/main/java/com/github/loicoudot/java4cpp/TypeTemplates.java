@@ -7,9 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.github.loicoudot.java4cpp.model.ClassModel;
 
 import freemarker.template.Template;
@@ -17,7 +14,6 @@ import freemarker.template.TemplateMethodModelEx;
 import freemarker.template.TemplateModelException;
 
 public final class TypeTemplates {
-    private final Logger log = LoggerFactory.getLogger(TypeTemplates.class);
     private Template cppType;
     private Template cppReturnType;
     private Map<String, Template> functions = newHashMap();
@@ -55,7 +51,7 @@ public final class TypeTemplates {
             try {
                 template.process(classModel, sw);
             } catch (Exception e) {
-                log.error("error processing template:", e);
+                throw new RuntimeException("Failed to process template " + e.getMessage());
             }
             return sw.toString();
         }

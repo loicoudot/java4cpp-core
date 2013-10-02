@@ -4,11 +4,7 @@ import static com.github.loicoudot.java4cpp.Utils.newHashMap;
 
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 final class Java4CppExecutor implements Runnable {
-    private final Logger log = LoggerFactory.getLogger(Java4CppExecutor.class);
     private final Context context;
     private Class<?> clazz;
 
@@ -17,12 +13,13 @@ final class Java4CppExecutor implements Runnable {
         try {
             clazz = context.getClassesToDo().take();
         } catch (InterruptedException e) {
-            log.error("java4cpp executor:", e);
+            context.getLog().error("java4cpp executor:", e);
         }
     }
 
+    @Override
     public void run() {
-        log.info("generating c++ wrapper for {}", clazz.getName());
+        context.getFileManager().logInfo("generating c++ wrapper for " + clazz.getName());
 
         final Map<String, Object> dataModel = newHashMap();
         dataModel.put("cppFormatter", new SourceFormatter());

@@ -6,6 +6,7 @@ import static com.github.loicoudot.java4cpp.Utils.newHashMap;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Enumeration;
@@ -18,8 +19,8 @@ import java.util.jar.JarFile;
 
 import javax.xml.bind.JAXB;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.plugin.logging.SystemStreamLog;
 
 import com.github.loicoudot.java4cpp.configuration.Clazz;
 import com.github.loicoudot.java4cpp.configuration.Mappings;
@@ -27,9 +28,9 @@ import com.github.loicoudot.java4cpp.configuration.Namespace;
 import com.github.loicoudot.java4cpp.model.ClassModel;
 
 public final class Context {
-    private final Logger log = LoggerFactory.getLogger(Context.class);
 
     private final Settings settings;
+    private Log log = new SystemStreamLog();
     private final Mappings mappings = new Mappings();
     private final TemplateManager templateManager;
     private final FileManager fileManager;
@@ -48,6 +49,14 @@ public final class Context {
 
     public Settings getSettings() {
         return settings;
+    }
+
+    public Log getLog() {
+        return log;
+    }
+
+    public void setLog(Log log) {
+        this.log = log;
     }
 
     public void addMappings(Mappings other) {
@@ -80,12 +89,20 @@ public final class Context {
         if (!Utils.isNullOrEmpty(settings.getMappingsFile())) {
             for (String fileName : settings.getMappingsFile().split(";")) {
                 try {
-                    FileInputStream inStream = new FileInputStream(fileName);
-                    Mappings inMappings = JAXB.unmarshal(inStream, Mappings.class);
-                    inStream.close();
-                    addMappings(inMappings);
+                    InputStream is = null;
+                    if (new File(fileName).isFile()) {
+                        is = new FileInputStream(fileName);
+                    } else {
+                        is = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName);
+                    }
+                    if (is == null) {
+                        throw new RuntimeException("Failed to read mappings from settings " + fileName + " (file not found)");
+                    }
+                    Mappings mapping = JAXB.unmarshal(is, Mappings.class);
+                    is.close();
+                    addMappings(mapping);
                 } catch (IOException e) {
-                    log.error("java4cpp mappings file error", e);
+                    throw new RuntimeException("Failed to read mappings from settings " + e.getMessage());
                 }
             }
         }
@@ -96,7 +113,7 @@ public final class Context {
             try {
                 String[] files = settings.getJarFiles().split(";");
                 for (String file : files) {
-                    log.info("searching classes to wrappe in {}", file);
+                    getFileManager().logInfo("searching classes to wrappe in " + file);
                     URLClassLoader classLoader = new URLClassLoader(new URL[] { new File(file).toURI().toURL() }, Thread.currentThread()
                             .getContextClassLoader());
                     JarFile jf = new JarFile(file);
@@ -111,19 +128,14 @@ public final class Context {
                         }
                     }
                 }
-            } catch (ClassNotFoundException e) {
-                System.out.println("java4cpp error: class not found '" + e.getMessage() + "'.\n");
-            } catch (IOException e) {
-                System.out.println("java4cpp error: unable to load file '" + settings.getJarFiles() + "'.");
             } catch (Exception e) {
-                System.out.println("java4cpp error: exception : " + e.getMessage());
-                e.printStackTrace();
+                throw new RuntimeException("Failed to load jar " + e.getMessage());
             }
         }
     }
 
     private void addClassToDoFromMappings() {
-        log.info("adding classes to wrappe from mappings files");
+        getFileManager().logInfo("adding classes to wrappe from mappings files");
         for (Clazz clazz : getMappings().getClasses()) {
             addClassToDo(clazz.getClazz());
             classesCache.put(clazz.getClazz(), clazz);
@@ -135,7 +147,7 @@ public final class Context {
             if (clazz.getEnclosingClass() == null && !classesAlreadyDone.contains(clazz) && !classesToDo.contains(clazz)) {
                 classesToDo.add(clazz);
                 classesAlreadyDone.add(clazz);
-                log.info("   add dependency {}", clazz.getName());
+                getFileManager().logInfo("   add dependency " + clazz.getName());
             }
         }
     }

@@ -10,9 +10,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.github.loicoudot.java4cpp.model.ClassModel;
 
 import freemarker.template.TemplateMethodModelEx;
@@ -21,7 +18,6 @@ import freemarker.template.TemplateModelException;
 import freemarker.template.utility.DeepUnwrap;
 
 public final class ClassAnalyzer {
-    private final Logger log = LoggerFactory.getLogger(ClassAnalyzer.class);
     private final Class<?> clazz;
     private final Context context;
     private final MappingsHelper mappings;
@@ -53,7 +49,7 @@ public final class ClassAnalyzer {
                     try {
                         model.getOutterDependencies().add(context.getClassModel(Class.forName((String) dependency)));
                     } catch (ClassNotFoundException e) {
-                        log.error("Class not found: ", e);
+                        throw new RuntimeException("Failed to load class " + e.getMessage());
                     }
                 } else if (dependency instanceof ClassModel) {
                     model.getOutterDependencies().add((ClassModel) dependency);
