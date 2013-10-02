@@ -7,8 +7,10 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 @XmlRootElement
+@XmlType(propOrder = { "sourceTemplates", "globalTemplates", "datatypes", "copyFiles" })
 public final class Templates {
     private final List<String> sourceTemplates = newArrayList();
     private final List<String> globalTemplates = newArrayList();

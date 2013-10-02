@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<templates>
+<templates xmlns="http://java4cpp.loicoudot.github.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java4cpp.loicoudot.github.com file:///Users/maison/Documents/workspace/java4cpp-core/templates.xsd">
 	<sourceTemplates>
 		<sourceTemplate>tpl1</sourceTemplate>
 		<sourceTemplate>tpl2</sourceTemplate>
@@ -8,10 +10,6 @@
 		<globalTemplate>gbl1</globalTemplate>
 		<globalTemplate>gbl2</globalTemplate>
 	</globalTemplates>
-	<copyFiles>
-		<copyFile>file1</copyFile>
-		<copyFile>file2</copyFile>
-	</copyFiles>
 	<datatypes>
 		<fallback>
 			<cppType>fallback</cppType>
@@ -27,4 +25,8 @@
 			</template>
 		</templates>
 	</datatypes>
+	<copyFiles>
+		<copyFile>file1</copyFile>
+		<copyFile>file2</copyFile>
+	</copyFiles>
 </templates>

@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema elementFormDefault="qualified" version="1.0" targetNamespace="http://java4cpp.loicoudot.github.com" xmlns:tns="http://java4cpp.loicoudot.github.com" xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-  <xs:element name="templates" type="templates"/>
+  <xs:element name="templates" type="tns:templates"/>
 
   <xs:complexType name="templates" final="extension restriction">
     <xs:sequence>
-      <xs:element name="copyFiles" minOccurs="0">
+      <xs:element name="sourceTemplates" minOccurs="0">
         <xs:complexType>
           <xs:sequence>
-            <xs:element name="copyFile" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="sourceTemplate" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
           </xs:sequence>
         </xs:complexType>
       </xs:element>
-      <xs:element name="datatypes" type="datatypes" minOccurs="0"/>
       <xs:element name="globalTemplates" minOccurs="0">
         <xs:complexType>
           <xs:sequence>
@@ -20,10 +19,11 @@
           </xs:sequence>
         </xs:complexType>
       </xs:element>
-      <xs:element name="sourceTemplates" minOccurs="0">
+      <xs:element name="datatypes" type="tns:datatypes" minOccurs="0"/>
+      <xs:element name="copyFiles" minOccurs="0">
         <xs:complexType>
           <xs:sequence>
-            <xs:element name="sourceTemplate" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="copyFile" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
           </xs:sequence>
         </xs:complexType>
       </xs:element>
@@ -32,13 +32,13 @@
 
   <xs:complexType name="datatypes" final="extension restriction">
     <xs:sequence>
-      <xs:element name="array" type="typeTemplate" minOccurs="0"/>
-      <xs:element name="enum" type="typeTemplate" minOccurs="0"/>
-      <xs:element name="fallback" type="typeTemplate" minOccurs="0"/>
+      <xs:element name="fallback" type="tns:typeTemplate" minOccurs="0"/>
+      <xs:element name="array" type="tns:typeTemplate" minOccurs="0"/>
+      <xs:element name="enum" type="tns:typeTemplate" minOccurs="0"/>
       <xs:element name="templates" minOccurs="0">
         <xs:complexType>
           <xs:sequence>
-            <xs:element name="template" type="typeTemplate" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="template" type="tns:typeTemplate" minOccurs="0" maxOccurs="unbounded"/>
           </xs:sequence>
         </xs:complexType>
       </xs:element>
@@ -47,12 +47,12 @@
 
   <xs:complexType name="typeTemplate" final="extension restriction">
     <xs:sequence>
-      <xs:element name="cppReturnType" type="xs:string" minOccurs="0"/>
       <xs:element name="cppType" type="xs:string" minOccurs="0"/>
+      <xs:element name="cppReturnType" type="xs:string" minOccurs="0"/>
       <xs:element name="functions" minOccurs="0">
         <xs:complexType>
           <xs:sequence>
-            <xs:element name="function" type="function" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="function" type="tns:function" minOccurs="0" maxOccurs="unbounded"/>
           </xs:sequence>
         </xs:complexType>
       </xs:element>

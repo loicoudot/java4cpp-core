@@ -7,8 +7,10 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+@XmlType(propOrder = { "cppType", "cppReturnType", "functions" })
 public final class TypeTemplate {
     private Class<?> clazz;
     private String cppType;

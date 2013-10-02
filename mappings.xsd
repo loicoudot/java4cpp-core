@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema elementFormDefault="qualified" version="1.0" targetNamespace="http://java4cpp.loicoudot.github.com" xmlns:tns="http://java4cpp.loicoudot.github.com" xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-  <xs:element name="mappings" type="mappings"/>
+  <xs:element name="mappings" type="tns:mappings"/>
 
   <xs:complexType name="mappings" final="extension restriction">
     <xs:sequence>
+      <xs:element name="namespaces" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="namespace" type="tns:namespace" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
       <xs:element name="classes" minOccurs="0">
         <xs:complexType>
           <xs:sequence>
-            <xs:element name="class" type="clazz" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="class" type="tns:clazz" minOccurs="0" maxOccurs="unbounded"/>
           </xs:sequence>
         </xs:complexType>
       </xs:element>
@@ -19,30 +26,31 @@
           </xs:sequence>
         </xs:complexType>
       </xs:element>
-      <xs:element name="namespaces" minOccurs="0">
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name="namespace" type="namespace" minOccurs="0" maxOccurs="unbounded"/>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:element>
     </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="namespace" final="extension restriction">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="package" type="xs:string"/>
+      </xs:extension>
+    </xs:simpleContent>
   </xs:complexType>
 
   <xs:complexType name="clazz" final="extension restriction">
     <xs:sequence>
-      <xs:element name="constructors" type="wrappes" minOccurs="0"/>
       <xs:element name="cppName" type="xs:string" minOccurs="0"/>
-      <xs:element name="innerClasses" type="wrappes" minOccurs="0"/>
-      <xs:element name="interfaces" type="wrappes" minOccurs="0"/>
-      <xs:element name="methods" type="wrappes" minOccurs="0"/>
-      <xs:element name="staticFields" type="wrappes" minOccurs="0"/>
+      <xs:element name="interfaces" type="tns:wrappes" minOccurs="0"/>
+      <xs:element name="innerClasses" type="tns:wrappes" minOccurs="0"/>
+      <xs:element name="staticFields" type="tns:wrappes" minOccurs="0"/>
+      <xs:element name="constructors" type="tns:wrappes" minOccurs="0"/>
+      <xs:element name="methods" type="tns:wrappes" minOccurs="0"/>
     </xs:sequence>
     <xs:attribute name="class" type="xs:string"/>
-    <xs:attribute name="exportAll" type="xs:boolean" use="required"/>
-    <xs:attribute name="exportFields" type="xs:boolean" use="required"/>
-    <xs:attribute name="interfaceAll" type="xs:boolean" use="required"/>
-    <xs:attribute name="superclass" type="xs:boolean" use="required"/>
+    <xs:attribute name="exportAll" type="xs:boolean"/>
+    <xs:attribute name="exportFields" type="xs:boolean"/>
+    <xs:attribute name="interfaceAll" type="xs:boolean"/>
+    <xs:attribute name="superclass" type="xs:boolean"/>
   </xs:complexType>
 
   <xs:complexType name="wrappes" final="extension restriction">
@@ -57,7 +65,7 @@
       <xs:element name="wrappes" minOccurs="0">
         <xs:complexType>
           <xs:sequence>
-            <xs:element name="wrappe" type="wrappe" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="wrappe" type="tns:wrappe" minOccurs="0" maxOccurs="unbounded"/>
           </xs:sequence>
         </xs:complexType>
       </xs:element>
@@ -68,14 +76,6 @@
     <xs:simpleContent>
       <xs:extension base="xs:string">
         <xs:attribute name="cppName" type="xs:string"/>
-      </xs:extension>
-    </xs:simpleContent>
-  </xs:complexType>
-
-  <xs:complexType name="namespace" final="extension restriction">
-    <xs:simpleContent>
-      <xs:extension base="xs:string">
-        <xs:attribute name="package" type="xs:string"/>
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>

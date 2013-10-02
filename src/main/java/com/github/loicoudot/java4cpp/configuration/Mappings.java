@@ -7,8 +7,10 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 @XmlRootElement
+@XmlType(propOrder = { "namespaces", "classes", "keywords" })
 public final class Mappings {
 
     private final List<String> keywords = newArrayList();

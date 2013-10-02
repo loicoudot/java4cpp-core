@@ -2,14 +2,16 @@ package com.github.loicoudot.java4cpp.configuration;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 
+@XmlType(propOrder = { "cppName", "interfaces", "innerClasses", "staticFields", "constructors", "methods" })
 public final class Clazz {
 
     private Class<?> clazz;
-    private boolean superclass = false;
-    private boolean interfaceAll = false;
-    private boolean exportFields = false;
-    private boolean exportAll = true;
+    private Boolean superclass = false;
+    private Boolean interfaceAll = false;
+    private Boolean exportFields = false;
+    private Boolean exportAll = true;
     private String cppName;
 
     private Wrappes interfaces = new Wrappes();
@@ -35,38 +37,38 @@ public final class Clazz {
     }
 
     @XmlAttribute
-    public boolean isSuperclass() {
+    public Boolean isSuperclass() {
         return superclass;
     }
 
-    public void setSuperclass(boolean superclass) {
+    public void setSuperclass(Boolean superclass) {
         this.superclass = superclass;
     }
 
     @XmlAttribute
-    public boolean isInterfaceAll() {
+    public Boolean isInterfaceAll() {
         return interfaceAll;
     }
 
-    public void setInterfaceAll(boolean interfaceAll) {
+    public void setInterfaceAll(Boolean interfaceAll) {
         this.interfaceAll = interfaceAll;
     }
 
     @XmlAttribute
-    public boolean isExportFields() {
+    public Boolean isExportFields() {
         return exportFields;
     }
 
-    public void setExportFields(boolean exportFields) {
+    public void setExportFields(Boolean exportFields) {
         this.exportFields = exportFields;
     }
 
     @XmlAttribute
-    public boolean isExportAll() {
+    public Boolean isExportAll() {
         return exportAll;
     }
 
-    public void setExportAll(boolean exportAll) {
+    public void setExportAll(Boolean exportAll) {
         this.exportAll = exportAll;
     }
 
