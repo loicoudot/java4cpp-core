@@ -99,7 +99,7 @@ public final class TemplateManager {
             for (String file : templates.getCopyFiles()) {
                 context.getFileManager().copyFile(file);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException("Failed to copy file " + e.getMessage());
         }
     }

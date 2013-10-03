@@ -102,7 +102,7 @@ public final class FileManager {
     }
 
     public void copyFile(String fileName) throws IOException {
-        String content = readFile(Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName));
+        String content = readFile(Utils.getFileOrResource(fileName));
         saveFile(content, new File(getPath(fileName)));
     }
 
