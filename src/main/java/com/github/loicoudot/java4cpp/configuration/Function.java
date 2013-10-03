@@ -21,7 +21,7 @@ public final class Function {
         this.template = template;
     }
 
-    @XmlAttribute
+    @XmlAttribute(required = true)
     public String getName() {
         return name;
     }
