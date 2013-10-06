@@ -166,6 +166,7 @@ public final class TemplateManager {
         }
         result.setCppType(createTemplate(type.getCppType()));
         result.setCppReturnType(createTemplate(type.getCppReturnType()));
+        result.setDependencies(createTemplate(type.getDependencies()));
 
         HashMap<String, Template> functions = newHashMap();
         for (Function function : type.getFunctions()) {

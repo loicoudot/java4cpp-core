@@ -33,6 +33,7 @@ public final class Context {
     private final Mappings mappings = new Mappings();
     private final TemplateManager templateManager;
     private final FileManager fileManager;
+    private ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
     private final BlockingQueue<Class<?>> classesToDo = new ArrayBlockingQueue<Class<?>>(1024);
     private final List<Class<?>> classesAlreadyDone = newArrayList();
     private final Map<Class<?>, Clazz> classesCache = newHashMap();
@@ -105,8 +106,7 @@ public final class Context {
                 String[] files = settings.getJarFiles().split(";");
                 for (String file : files) {
                     getFileManager().logInfo("searching classes to wrappe in " + file);
-                    URLClassLoader classLoader = new URLClassLoader(new URL[] { new File(file).toURI().toURL() }, Thread.currentThread()
-                            .getContextClassLoader());
+                    classLoader = new URLClassLoader(new URL[] { new File(file).toURI().toURL() }, classLoader);
                     JarFile jf = new JarFile(file);
                     Enumeration<JarEntry> entries = jf.entries();
                     while (entries.hasMoreElements()) {
@@ -192,6 +192,14 @@ public final class Context {
                 new ClassAnalyzer(clazz, this).fillModel(classModelCache.get(clazz));
             }
             return classModelCache.get(clazz);
+        }
+    }
+
+    public ClassModel getClassModel(String name) {
+        try {
+            return getClassModel(classLoader.loadClass(name));
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("Failed to load class " + e.getMessage());
         }
     }
 

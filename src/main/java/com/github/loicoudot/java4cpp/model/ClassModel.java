@@ -4,6 +4,7 @@ import static com.github.loicoudot.java4cpp.Utils.newArrayList;
 import static com.github.loicoudot.java4cpp.Utils.newHashMap;
 import static com.github.loicoudot.java4cpp.Utils.newHashSet;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -21,8 +22,9 @@ public final class ClassModel {
     private final boolean isEnum;
     private final boolean isInterface;
     private final boolean isInnerClass;
-    private boolean isCheckedException;
-    private boolean isCloneable;
+    private final boolean isThrowable;
+    private final boolean isCheckedException;
+    private final boolean isCloneable;
     private ClassModel superclass;
     private final List<ClassModel> interfaces = newArrayList();
     private final List<ClassModel> nestedClass = newArrayList();
@@ -51,6 +53,9 @@ public final class ClassModel {
         isEnum = clazz.isEnum();
         isInterface = clazz.isInterface();
         isInnerClass = clazz.getEnclosingClass() != null;
+        isThrowable = isThrowable();
+        isCheckedException = isCheckedException();
+        isCloneable = Arrays.asList(clazz.getInterfaces()).contains(java.lang.Cloneable.class);
     }
 
     public Class<?> getClazz() {
@@ -97,20 +102,16 @@ public final class ClassModel {
         return isInnerClass;
     }
 
+    public boolean isIsThrowable() {
+        return isThrowable;
+    }
+
     public boolean isIsCheckedException() {
         return isCheckedException;
     }
 
-    public void setCheckedException(boolean checkedException) {
-        this.isCheckedException = checkedException;
-    }
-
     public boolean isIsCloneable() {
         return isCloneable;
-    }
-
-    public void setCloneable(boolean cloneable) {
-        this.isCloneable = cloneable;
     }
 
     public ClassModel getSuperclass() {
@@ -263,5 +264,31 @@ public final class ClassModel {
 
     public Set<ClassModel> getDependencies() {
         return dependencies;
+    }
+
+    private boolean isThrowable() {
+        Class<?> current = clazz;
+        do {
+            if (current == Throwable.class) {
+                return true;
+            }
+            current = current.getSuperclass();
+        } while (current != null);
+        return false;
+    }
+
+    private boolean isCheckedException() {
+        Class<?> current = clazz;
+        do {
+            if (current == RuntimeException.class || current == Error.class) {
+                return false;
+            }
+            if (current == Throwable.class) {
+                return true;
+            }
+
+            current = current.getSuperclass();
+        } while (current != null);
+        return false;
     }
 }

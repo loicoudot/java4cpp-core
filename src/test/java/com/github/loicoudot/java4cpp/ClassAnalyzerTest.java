@@ -5,7 +5,6 @@ import static org.fest.assertions.api.Assertions.assertThat;
 import java.util.List;
 
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import com.github.loicoudot.java4cpp.configuration.Templates;
@@ -110,17 +109,6 @@ public class ClassAnalyzerTest {
         context.getTemplateManager().addTemplates(other);
         context.start();
         primitiveAnalyzer = new ClassAnalyzer(Boolean.TYPE, context);
-    }
-
-    @DataProvider(name = "class")
-    public Object[][] createData() {
-        return new Object[][] { { Error.class, false }, { RuntimeException.class, false }, { ArrayIndexOutOfBoundsException.class, false },
-                { Exception.class, true }, { ClassNotFoundException.class, true }, { String.class, false } };
-    }
-
-    @Test(dataProvider = "class")
-    public void testIsCheckedException(Class<?> type, boolean isCheckedException) {
-        assertThat(ClassAnalyzer.isCheckedException(type)).isEqualTo(isCheckedException);
     }
 
     @Test

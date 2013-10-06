@@ -7,7 +7,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.github.loicoudot.java4cpp.model.ClassModel;
@@ -46,11 +45,7 @@ public final class ClassAnalyzer {
                 }
                 Object dependency = DeepUnwrap.unwrap((TemplateModel) arguments.get(0));
                 if (dependency instanceof String) {
-                    try {
-                        model.getOutterDependencies().add(context.getClassModel(Class.forName((String) dependency)));
-                    } catch (ClassNotFoundException e) {
-                        throw new RuntimeException("Failed to load class " + e.getMessage());
-                    }
+                    model.getOutterDependencies().add(context.getClassModel((String) dependency));
                 } else if (dependency instanceof ClassModel) {
                     model.getOutterDependencies().add((ClassModel) dependency);
                 }
@@ -80,8 +75,6 @@ public final class ClassAnalyzer {
             }
         }
 
-        classModel.setCheckedException(isCheckedException(clazz));
-        classModel.setCloneable(isCloneable());
         classModel.setCppFullName(Joiner.on("::").join(mappings.getNamespaces()));
         classModel.setCppShortName(mappings.getNamespaces()[mappings.getNamespaces().length - 1]);
         classModel.setOwner(classModel.isIsInnerClass() ? context.getClassModel(clazz.getDeclaringClass()) : classModel);
@@ -89,12 +82,13 @@ public final class ClassAnalyzer {
         classModel.setJavaSignature(Datatype.getJavaSignature(clazz));
         classModel.setJniSignature(Datatype.getJNISignature(clazz));
         classModel.setJniMethodName(Datatype.getJNIMethodName(clazz));
+        classModel.setAddInclude(new AddOutterInclude(classModel));
+        classModel.setAddDependency(new AddOutterDependency(classModel));
         TypeTemplates typeTemplates = context.getTemplateManager().getTypeTemplates(clazz);
         classModel.setCppType(typeTemplates.getCppType(classModel));
         classModel.setCppReturnType(typeTemplates.getCppReturnType(classModel));
+        typeTemplates.executeDependencies(classModel);
         classModel.setFunctions(typeTemplates.getFunctions(classModel));
-        classModel.setAddInclude(new AddOutterInclude(classModel));
-        classModel.setAddDependency(new AddOutterDependency(classModel));
 
         if (getSuperClass() != null) {
             classModel.setSuperclass(context.getClassModel(getSuperClass()));
@@ -128,22 +122,6 @@ public final class ClassAnalyzer {
         }
 
         return classModel;
-    }
-
-    private boolean isCloneable() {
-        return Arrays.asList(clazz.getInterfaces()).contains(java.lang.Cloneable.class);
-    }
-
-    public static boolean isCheckedException(Class<?> type) {
-        if (type == RuntimeException.class || type == Error.class) {
-            return false;
-        }
-        if (type == Throwable.class) {
-            return true;
-        }
-
-        Class<?> parent = type.getSuperclass();
-        return parent != null && isCheckedException(parent);
     }
 
     private Class<?> getSuperClass() {

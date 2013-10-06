@@ -49,6 +49,7 @@
     <xs:sequence>
       <xs:element name="cppType" type="xs:string" minOccurs="0"/>
       <xs:element name="cppReturnType" type="xs:string" minOccurs="0"/>
+      <xs:element name="dependencies" type="xs:string" minOccurs="0"/>
       <xs:element name="functions" minOccurs="0">
         <xs:complexType>
           <xs:sequence>

@@ -16,6 +16,7 @@ import freemarker.template.TemplateModelException;
 public final class TypeTemplates {
     private Template cppType;
     private Template cppReturnType;
+    private Template dependencies;
     private Map<String, Template> functions = newHashMap();
 
     public class TemplateFunction implements TemplateMethodModelEx {
@@ -84,6 +85,16 @@ public final class TypeTemplates {
             result.put(name, new TemplateFunction(functions.get(name), classModel));
         }
         return result;
+    }
+
+    public void setDependencies(Template dependencies) {
+        this.dependencies = dependencies;
+    }
+
+    public void executeDependencies(ClassModel classModel) {
+        if (dependencies != null) {
+            processTemplate(dependencies, classModel);
+        }
     }
 
     public void setFunctions(Map<String, Template> functions) {
