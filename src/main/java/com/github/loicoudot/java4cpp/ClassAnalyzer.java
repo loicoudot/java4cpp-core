@@ -191,4 +191,9 @@ public final class ClassAnalyzer {
         }
         return list;
     }
+
+    @Override
+    public String toString() {
+        return String.format("ClassAnalyzer(%s)", clazz.getName());
+    }
 }

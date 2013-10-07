@@ -291,4 +291,9 @@ public final class ClassModel {
         } while (current != null);
         return false;
     }
+
+    @Override
+    public String toString() {
+        return String.format("ClassModel(%s)", clazz.getName());
+    }
 }
