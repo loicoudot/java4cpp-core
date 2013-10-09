@@ -4,7 +4,7 @@ import static com.github.loicoudot.java4cpp.Utils.newHashMap;
 
 import java.util.Map;
 
-final class Java4CppExecutor implements Runnable {
+class Java4CppExecutor implements Runnable {
     private final Context context;
     private Class<?> clazz;
 

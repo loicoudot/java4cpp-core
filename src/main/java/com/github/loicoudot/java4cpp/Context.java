@@ -26,6 +26,13 @@ import com.github.loicoudot.java4cpp.configuration.Mappings;
 import com.github.loicoudot.java4cpp.configuration.Namespace;
 import com.github.loicoudot.java4cpp.model.ClassModel;
 
+/**
+ * {@code Context} class contains all the environement of an execution of
+ * java4cpp.
+ * 
+ * @author Loic Oudot
+ * 
+ */
 public final class Context {
 
     private final Settings settings;
@@ -55,10 +62,22 @@ public final class Context {
         return log;
     }
 
+    /**
+     * Sets the logger from maven plugins execution.
+     * 
+     * @param log
+     *            a maven plugin logger
+     */
     public void setLog(Log log) {
         this.log = log;
     }
 
+    /**
+     * Add a mappings configuration bean to the actual context.
+     * 
+     * @param other
+     *            the mappings bean to add
+     */
     public void addMappings(Mappings other) {
         mappings.getKeywords().addAll(other.getKeywords());
         mappings.getClasses().addAll(other.getClasses());
@@ -100,6 +119,11 @@ public final class Context {
         }
     }
 
+    /**
+     * Add annotated classes with {@code Java4Cpp} annotation to the current
+     * list of class to be processed by introspecting jar files. The context
+     * {@code ClassLoader} is augmented with each jar {@code ClassLoader}'s.
+     */
     private void addClassToDoFromJars() {
         if (!Utils.isNullOrEmpty(settings.getJarFiles())) {
             try {
@@ -154,6 +178,15 @@ public final class Context {
         return name;
     }
 
+    /**
+     * Transform the full qualified name of {@code clazz} by applying the rules
+     * on namespace/package mappings. The mappings on the class name is not
+     * applied here. Does not work on inner class.
+     * 
+     * @param clazz
+     *            the class to get namespace from.
+     * @return the associate namespace associate to {@code clazz}.
+     */
     public String getNamespaceForClass(Class<?> clazz) {
         synchronized (namespaceCache) {
             if (!namespaceCache.containsKey(clazz)) {
@@ -162,8 +195,7 @@ public final class Context {
                 for (Namespace namespace : getMappings().getNamespaces()) {
                     if (namespace.getJavaPackage().length() > bestScore && clazz.getName().matches(namespace.getJavaPackage())) {
                         bestScore = namespace.getJavaPackage().length();
-                        bestNamespace = Utils.isNullOrEmpty(namespace.getNamespace()) ? clazz.getSimpleName() : String.format("%s::%s",
-                                namespace.getNamespace(), clazz.getSimpleName());
+                        bestNamespace = Utils.isNullOrEmpty(namespace.getNamespace()) ? clazz.getSimpleName() : String.format("%s::%s", namespace.getNamespace(), clazz.getSimpleName());
                     }
                 }
                 namespaceCache.put(clazz, bestNamespace);

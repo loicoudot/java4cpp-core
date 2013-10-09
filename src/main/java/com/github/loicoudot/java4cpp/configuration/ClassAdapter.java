@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
  * @author Loic Oudot
  * 
  */
-public final class ClassAdapter extends XmlAdapter<String, Class<?>> {
+final class ClassAdapter extends XmlAdapter<String, Class<?>> {
 
     private static final Map<String, Class<?>> PRIMITIVE_MAP = new HashMap<String, Class<?>>();
 

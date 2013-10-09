@@ -5,6 +5,12 @@ import java.lang.reflect.Type;
 
 import com.github.loicoudot.java4cpp.model.ConstructorModel;
 
+/**
+ * Data-model builder for a {@code Constructor}
+ * 
+ * @author Loic Oudot
+ * 
+ */
 final class ConstructorAnalyzer extends Analyzer {
     private final Constructor<?> constructor;
 

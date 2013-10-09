@@ -6,7 +6,13 @@ import java.lang.reflect.Type;
 
 import com.github.loicoudot.java4cpp.model.MethodModel;
 
-public final class MethodAnalyzer extends Analyzer {
+/**
+ * Data-model builder for a {@code Method}
+ * 
+ * @author Loic Oudot
+ * 
+ */
+final class MethodAnalyzer extends Analyzer {
     private final Method method;
 
     public MethodAnalyzer(Method method, Context context) {

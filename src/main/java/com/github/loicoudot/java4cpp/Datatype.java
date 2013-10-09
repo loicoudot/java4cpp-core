@@ -3,7 +3,7 @@ package com.github.loicoudot.java4cpp;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class Datatype {
+final class Datatype {
 
     private static final Map<Class<?>, String> JAVA_SIGNATURE = new HashMap<Class<?>, String>();
     private static final Map<Class<?>, String> JNI_SIGNATURE = new HashMap<Class<?>, String>();

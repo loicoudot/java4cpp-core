@@ -1,6 +1,6 @@
 package com.github.loicoudot.java4cpp;
 
-public class Joiner {
+final class Joiner {
     /**
      * Returns a joiner which automatically places {@code separator} between
      * consecutive elements.
@@ -19,7 +19,7 @@ public class Joiner {
      * Returns a string containing the string representation of each of
      * {@code parts}, using the previously configured separator between each.
      */
-    public final String join(Object[] parts) {
+    public String join(Object[] parts) {
         StringBuilder sb = new StringBuilder();
         String sep = "";
         for (Object object : parts) {

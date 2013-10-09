@@ -11,7 +11,7 @@ import freemarker.template.TemplateException;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
 
-public final class SourceFormatter implements TemplateDirectiveModel {
+final class SourceFormatter implements TemplateDirectiveModel {
 
     @Override
     @SuppressWarnings("rawtypes")

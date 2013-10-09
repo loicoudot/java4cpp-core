@@ -13,7 +13,7 @@ import freemarker.template.Template;
 import freemarker.template.TemplateMethodModelEx;
 import freemarker.template.TemplateModelException;
 
-public final class TypeTemplates {
+final class TypeTemplates {
     private Template cppType;
     private Template cppReturnType;
     private Template dependencies;

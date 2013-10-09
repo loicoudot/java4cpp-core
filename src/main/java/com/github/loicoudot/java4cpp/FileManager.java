@@ -19,14 +19,22 @@ import java.util.Formatter;
 import java.util.List;
 import java.util.Properties;
 
-final class SourceFilter implements FilenameFilter {
-    @Override
-    public boolean accept(File dir, String name) {
-        return (name.endsWith(".cpp") || name.endsWith(".h"));
-    }
-}
-
-public final class FileManager {
+/**
+ * Manager for all interractions between java4cpp and the file system.
+ * <p>
+ * There are two log files:
+ * <ul>
+ * <li>{@code java4cpp.log} inside the target directory along the C++ proxies,
+ * which contains the dependency tree of class.</li>
+ * <li>maven plugin log, for logging informations and errors to the console.</li>
+ * </ul>
+ * Other file are the C++ proxies, and {@code java4cpp.hash} also inside the
+ * target directory, which contains the MD5 hash value of the files.
+ * 
+ * @author Loic Oudot
+ * 
+ */
+final class FileManager {
     private static final String JAVA4CPP_HASH = "java4cpp.hash";
     private static final String JAVA4CPP_LOG = "java4cpp.log";
     private static final int BUFFER_SIZE = 1024;
@@ -40,14 +48,34 @@ public final class FileManager {
     private int skipped;
     private int deleted;
 
+    /**
+     * A {@code FilenameFilter} to filter files other than {@code java4cpp.log}
+     * and {@code java4cpp.hash}
+     * 
+     * @author Loic Oudot
+     * 
+     */
+    final class SourceFilter implements FilenameFilter {
+        @Override
+        public boolean accept(File dir, String name) {
+            return !name.equalsIgnoreCase(FileManager.JAVA4CPP_LOG) && name.equalsIgnoreCase(FileManager.JAVA4CPP_HASH);
+        }
+    }
+
     public FileManager(Context context) {
         this.context = context;
     }
 
+    /**
+     * Called before starting generating proxies files. Create the
+     * {@code java4cpp.log} log file, and manage the {@code clean} and
+     * {@code useHash} settings.
+     */
     public void start() {
         try {
             java4cppLog = new FileWriter(new File(getPath(JAVA4CPP_LOG)));
         } catch (IOException e) {
+            System.err.println("Can't create log file: " + e.getMessage());
         }
         try {
             File rep = new File(context.getSettings().getTargetPath());
@@ -59,13 +87,17 @@ public final class FileManager {
             java4cppHash = new File(getPath(JAVA4CPP_HASH));
             BufferedInputStream in = new BufferedInputStream(new FileInputStream(java4cppHash));
             oldHashes.load(in);
-            java4cppHash.delete();
             in.close();
+            java4cppHash.delete();
         } catch (IOException e) {
             logInfo("no java4cpp.hash file, regenerating all files");
         }
     }
 
+    /**
+     * Called after all the proxies are generated. Delete all the remaining
+     * files in the target directory.
+     */
     public void stop() {
         if (context.getSettings().isClean()) {
             for (File file : oldFiles) {
@@ -86,6 +118,12 @@ public final class FileManager {
         logInfo(String.format("generated: %d, skipped: %d, deleted: %d", generated, skipped, deleted));
     }
 
+    /**
+     * Write {@code message} inside the {@code java4cpp.log} file.
+     * 
+     * @param message
+     *            the message to log
+     */
     public void logInfo(String message) {
         synchronized (java4cppLog) {
             try {
@@ -106,6 +144,14 @@ public final class FileManager {
         saveFile(content, new File(getPath(fileName)));
     }
 
+    /**
+     * Write the file {@code fileName} in the target directory with
+     * {@code fileContent}. If {@code useHash} is true, then the file is save if
+     * it's doesn't exist or if the content has changed.
+     * 
+     * @param fileName
+     * @param sw
+     */
     private synchronized void saveFile(String fileContent, File fileName) {
         try {
             MessageDigest algo = MessageDigest.getInstance("MD5");

@@ -16,7 +16,13 @@ import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
 import freemarker.template.utility.DeepUnwrap;
 
-public final class ClassAnalyzer {
+/**
+ * Data-model builder for a {@code Class}
+ * 
+ * @author Loic Oudot
+ * 
+ */
+final class ClassAnalyzer {
     private final Class<?> clazz;
     private final Context context;
     private final MappingsHelper mappings;
@@ -27,8 +33,22 @@ public final class ClassAnalyzer {
         this.mappings = context.getMappings(clazz);
     }
 
-    public ClassModel fillModel(ClassModel classModel) {
+    /**
+     * Fill {@code classModel} data-model bean, with the content of
+     * {@code clazz}.
+     * 
+     * @param classModel
+     *            the data-model to fill
+     */
+    public void fillModel(ClassModel classModel) {
 
+        /**
+         * FreeMarker function availlable inside templates to add a direct
+         * dependency for the class.
+         * 
+         * @author Loic Oudot
+         * 
+         */
         class AddOutterDependency implements TemplateMethodModelEx {
 
             ClassModel model;
@@ -53,6 +73,13 @@ public final class ClassAnalyzer {
             }
         }
 
+        /**
+         * FreeMarker function availlable inside templates to add an incldue
+         * file for the class.
+         * 
+         * @author Loic Oudot
+         * 
+         */
         class AddOutterInclude implements TemplateMethodModelEx {
 
             ClassModel model;
@@ -120,8 +147,6 @@ public final class ClassAnalyzer {
         for (ClassModel dependency : classModel.getDependencies()) {
             context.addClassToDo(dependency.getClazz());
         }
-
-        return classModel;
     }
 
     private Class<?> getSuperClass() {

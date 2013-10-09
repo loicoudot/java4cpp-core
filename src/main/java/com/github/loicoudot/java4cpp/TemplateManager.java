@@ -26,7 +26,7 @@ import freemarker.template.Template;
 import freemarker.template.TemplateExceptionHandler;
 import freemarker.template.Version;
 
-public final class TemplateManager {
+final class TemplateManager {
     private final Context context;
     private final Templates templates = new Templates();
     private final Configuration configuration = new Configuration();

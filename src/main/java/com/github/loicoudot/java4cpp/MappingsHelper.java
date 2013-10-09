@@ -13,30 +13,42 @@ import java.util.List;
 import com.github.loicoudot.java4cpp.configuration.Clazz;
 import com.github.loicoudot.java4cpp.configuration.Wrappe;
 
-public final class MappingsHelper {
+/**
+ * Helper class regrouping informations from the mapping files and annotated
+ * classes. Precedence orders are :
+ * <ol>
+ * <li>mapping file</li>
+ * <li>annotation</li>
+ * <li>default value</li>
+ * </ol>
+ * 
+ * @author Loic Oudot
+ * 
+ */
+final class MappingsHelper {
 
     private final Class<?> clazz;
     private final Context context;
     private final Java4Cpp annotation;
-    private final Clazz settings;
+    private final Clazz mapping;
 
     public MappingsHelper(Class<?> clazz, Context context) {
         this.clazz = clazz;
         this.context = context;
         annotation = clazz.getAnnotation(Java4Cpp.class);
-        settings = context.getClazz(clazz);
+        mapping = context.getClazz(clazz);
     }
 
     public boolean exportSuperClass() {
-        return settings != null ? settings.isSuperclass() : annotation != null && annotation.superclass();
+        return mapping != null ? mapping.isSuperclass() : annotation != null && annotation.superclass();
     }
 
     public boolean isInterfaceWrapped(Class<?> interfac) {
-        if (settings != null) {
-            if (settings.isInterfaceAll()) {
-                return !settings.getInterfaces().getNoWrappes().contains(interfac.getName());
+        if (mapping != null) {
+            if (mapping.isInterfaceAll()) {
+                return !mapping.getInterfaces().getNoWrappes().contains(interfac.getName());
             }
-            return settings.getInterfaces().findWrappe(interfac.getName()) != null;
+            return mapping.getInterfaces().findWrappe(interfac.getName()) != null;
         }
         if (annotation != null) {
             if (annotation.interfaces()) {
@@ -48,12 +60,12 @@ public final class MappingsHelper {
     }
 
     public boolean isInnerClassWrapped(Class<?> innerClass) {
-        if (settings != null) {
+        if (mapping != null) {
             String name = innerClass.getName().substring(innerClass.getName().indexOf('$') + 1);
-            if (settings.isExportAll()) {
-                return !settings.getInnerClasses().getNoWrappes().contains(name);
+            if (mapping.isExportAll()) {
+                return !mapping.getInnerClasses().getNoWrappes().contains(name);
             }
-            return settings.getInnerClasses().findWrappe(name) != null;
+            return mapping.getInnerClasses().findWrappe(name) != null;
         }
         if (annotation == null || annotation.all()) {
             return !innerClass.isAnnotationPresent(Java4CppNoWrappe.class);
@@ -62,11 +74,11 @@ public final class MappingsHelper {
     }
 
     public boolean isFieldWrapped(Field field) {
-        if (settings != null) {
-            if (settings.isExportFields()) {
-                return !settings.getStaticFields().getNoWrappes().contains(field.getName());
+        if (mapping != null) {
+            if (mapping.isExportFields()) {
+                return !mapping.getStaticFields().getNoWrappes().contains(field.getName());
             }
-            return settings.getStaticFields().findWrappe(field.getName()) != null;
+            return mapping.getStaticFields().findWrappe(field.getName()) != null;
         }
         if (annotation != null && annotation.staticFields()) {
             return !field.isAnnotationPresent(Java4CppNoWrappe.class);
@@ -75,12 +87,12 @@ public final class MappingsHelper {
     }
 
     public boolean isConstructorWrapped(Constructor<?> constructor) {
-        if (settings != null) {
+        if (mapping != null) {
             String name = generateJavaSignature(constructor.getParameterTypes());
-            if (settings.isExportAll()) {
-                return !settings.getConstructors().getNoWrappes().contains(name);
+            if (mapping.isExportAll()) {
+                return !mapping.getConstructors().getNoWrappes().contains(name);
             }
-            return settings.getConstructors().findWrappe(name) != null;
+            return mapping.getConstructors().findWrappe(name) != null;
         }
         if (annotation == null || annotation.all()) {
             return !constructor.isAnnotationPresent(Java4CppNoWrappe.class);
@@ -89,12 +101,12 @@ public final class MappingsHelper {
     }
 
     public boolean isMethodWrapped(Method method) {
-        if (settings != null) {
+        if (mapping != null) {
             String name = method.getName() + "(" + generateJavaSignature(method.getParameterTypes()) + ")";
-            if (settings.isExportAll()) {
-                return !settings.getMethods().getNoWrappes().contains(name);
+            if (mapping.isExportAll()) {
+                return !mapping.getMethods().getNoWrappes().contains(name);
             }
-            return settings.getMethods().findWrappe(name) != null;
+            return mapping.getMethods().findWrappe(name) != null;
         }
         if (annotation == null || annotation.all()) {
             return !method.isAnnotationPresent(Java4CppNoWrappe.class);
@@ -102,10 +114,16 @@ public final class MappingsHelper {
         return method.isAnnotationPresent(Java4CppWrappe.class);
     }
 
+    /**
+     * Return a valid C++ name for the class, by escaping reserved words or by
+     * returning the name specified by the mapping or the annotation.
+     * 
+     * @return a valid C++ class name.
+     */
     public String getCppName() {
-        if (settings != null) {
-            if (!Utils.isNullOrEmpty(settings.getCppName())) {
-                return settings.getCppName();
+        if (mapping != null) {
+            if (!Utils.isNullOrEmpty(mapping.getCppName())) {
+                return mapping.getCppName();
             }
         }
         if (annotation != null && !Utils.isNullOrEmpty(annotation.name())) {
@@ -114,9 +132,16 @@ public final class MappingsHelper {
         return context.escapeName(clazz.getSimpleName());
     }
 
+    /**
+     * Return a valid C++ name for the field {@code field}, by escaping reserved
+     * words or by returning the name specified by the mapping or the
+     * annotation.
+     * 
+     * @return a valid C++ field name.
+     */
     public String getCppName(Field field) {
-        if (settings != null) {
-            Wrappe wrappedField = settings.getStaticFields().findWrappe(field.getName());
+        if (mapping != null) {
+            Wrappe wrappedField = mapping.getStaticFields().findWrappe(field.getName());
             if (wrappedField != null && !Utils.isNullOrEmpty(wrappedField.getCppName())) {
                 return wrappedField.getCppName();
             }
@@ -128,10 +153,17 @@ public final class MappingsHelper {
         return context.escapeName(field.getName());
     }
 
+    /**
+     * Return a valid C++ name for the method {@code method}, by escaping
+     * reserved words or by returning the name specified by the mapping or the
+     * annotation.
+     * 
+     * @return a valid C++ method name.
+     */
     public String getCppName(Method method) {
-        if (settings != null) {
+        if (mapping != null) {
             String name = method.getName() + "(" + generateJavaSignature(method.getParameterTypes()) + ")";
-            Wrappe wrappedMethod = settings.getMethods().findWrappe(name);
+            Wrappe wrappedMethod = mapping.getMethods().findWrappe(name);
             if (wrappedMethod != null && !Utils.isNullOrEmpty(wrappedMethod.getCppName())) {
                 return wrappedMethod.getCppName();
             }
@@ -143,19 +175,26 @@ public final class MappingsHelper {
         return context.escapeName(method.getName());
     }
 
+    /**
+     * Return the final full qualified C++ name of the class. Apply the
+     * namespace/package mapping, the class name mapping and escape all part by
+     * the reserved words list. Works also for inner class.
+     * 
+     * @return the final full qualified C++ name.
+     */
     public String[] getNamespaces() {
         String namespace;
         if (clazz.getEnclosingClass() == null) {
             namespace = context.getNamespaceForClass(clazz);
         } else {
             // TODO: simplify
-            Class<?> conteneur = clazz;
+            Class<?> enclosing = clazz;
             Deque<Class<?>> stack = new ArrayDeque<Class<?>>();
-            while (conteneur.getEnclosingClass() != null) {
-                stack.add(conteneur);
-                conteneur = conteneur.getEnclosingClass();
+            while (enclosing.getEnclosingClass() != null) {
+                stack.add(enclosing);
+                enclosing = enclosing.getEnclosingClass();
             }
-            namespace = Joiner.on("::").join(context.getMappings(conteneur).getNamespaces());
+            namespace = Joiner.on("::").join(context.getMappings(enclosing).getNamespaces());
             while (!stack.isEmpty()) {
                 namespace += "::" + context.getMappings(stack.pollLast()).getCppName();
             }
@@ -168,6 +207,13 @@ public final class MappingsHelper {
         return escapedNamespace.toArray(new String[escapedNamespace.size()]);
     }
 
+    /**
+     * Construct a JNI signature string from a series of parameters.
+     * 
+     * @param params
+     *            a list of paramters
+     * @return a {@code String} containing the corresponding JNI signature.
+     */
     private String generateJavaSignature(Class<?>[] params) {
         StringBuilder ret = new StringBuilder();
 
