@@ -103,7 +103,7 @@ final class ClassAnalyzer {
         }
 
         classModel.setCppFullName(Joiner.on("::").join(mappings.getNamespaces()));
-        classModel.setCppShortName(mappings.getNamespaces()[mappings.getNamespaces().length - 1]);
+        classModel.setCppShortName(mappings.getNamespaces().get(mappings.getNamespaces().size() - 1));
         classModel.setOwner(classModel.isIsInnerClass() ? context.getClassModel(clazz.getDeclaringClass()) : classModel);
 
         classModel.setJavaSignature(Datatype.getJavaSignature(clazz));

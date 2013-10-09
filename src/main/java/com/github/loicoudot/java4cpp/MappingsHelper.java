@@ -182,29 +182,28 @@ final class MappingsHelper {
      * 
      * @return the final full qualified C++ name.
      */
-    public String[] getNamespaces() {
-        String namespace;
+    public List<String> getNamespaces() {
+        List<String> namespace;
         if (clazz.getEnclosingClass() == null) {
             namespace = context.getNamespaceForClass(clazz);
         } else {
-            // TODO: simplify
             Class<?> enclosing = clazz;
             Deque<Class<?>> stack = new ArrayDeque<Class<?>>();
             while (enclosing.getEnclosingClass() != null) {
                 stack.add(enclosing);
                 enclosing = enclosing.getEnclosingClass();
             }
-            namespace = Joiner.on("::").join(context.getMappings(enclosing).getNamespaces());
+            namespace = context.getMappings(enclosing).getNamespaces();
             while (!stack.isEmpty()) {
-                namespace += "::" + context.getMappings(stack.pollLast()).getCppName();
+                namespace.add(context.getMappings(stack.pollLast()).getCppName());
             }
         }
         List<String> escapedNamespace = newArrayList();
-        for (String name : namespace.split("::")) {
+        for (String name : namespace) {
             escapedNamespace.add(context.escapeName(name));
         }
         escapedNamespace.set(escapedNamespace.size() - 1, getCppName());
-        return escapedNamespace.toArray(new String[escapedNamespace.size()]);
+        return escapedNamespace;
     }
 
     /**

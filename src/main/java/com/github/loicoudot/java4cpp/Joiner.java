@@ -1,5 +1,7 @@
 package com.github.loicoudot.java4cpp;
 
+import java.util.List;
+
 final class Joiner {
     /**
      * Returns a joiner which automatically places {@code separator} between
@@ -19,11 +21,11 @@ final class Joiner {
      * Returns a string containing the string representation of each of
      * {@code parts}, using the previously configured separator between each.
      */
-    public String join(Object[] parts) {
+    public String join(List<String> parts) {
         StringBuilder sb = new StringBuilder();
         String sep = "";
-        for (Object object : parts) {
-            sb.append(sep).append(object.toString());
+        for (String part : parts) {
+            sb.append(sep).append(part);
             sep = separator;
         }
         return sb.toString();

@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
@@ -187,7 +188,7 @@ public final class Context {
      *            the class to get namespace from.
      * @return the associate namespace associate to {@code clazz}.
      */
-    public String getNamespaceForClass(Class<?> clazz) {
+    public List<String> getNamespaceForClass(Class<?> clazz) {
         synchronized (namespaceCache) {
             if (!namespaceCache.containsKey(clazz)) {
                 int bestScore = 0;
@@ -195,12 +196,13 @@ public final class Context {
                 for (Namespace namespace : getMappings().getNamespaces()) {
                     if (namespace.getJavaPackage().length() > bestScore && clazz.getName().matches(namespace.getJavaPackage())) {
                         bestScore = namespace.getJavaPackage().length();
-                        bestNamespace = Utils.isNullOrEmpty(namespace.getNamespace()) ? clazz.getSimpleName() : String.format("%s::%s", namespace.getNamespace(), clazz.getSimpleName());
+                        bestNamespace = Utils.isNullOrEmpty(namespace.getNamespace()) ? clazz.getSimpleName() : String.format("%s::%s",
+                                namespace.getNamespace(), clazz.getSimpleName());
                     }
                 }
                 namespaceCache.put(clazz, bestNamespace);
             }
-            return namespaceCache.get(clazz);
+            return Arrays.asList(namespaceCache.get(clazz).split("::"));
         }
     }
 
