@@ -22,7 +22,7 @@ final class MethodAnalyzer extends Analyzer {
 
     public MethodModel getModel() {
         MethodModel methodModel = new MethodModel(method.getName());
-        methodModel.setCppName(context.getMappings(method.getDeclaringClass()).getCppName(method));
+        methodModel.setCppName(context.getMappingsManager().getMappings(method.getDeclaringClass()).getCppName(method));
         methodModel.setStatic(Modifier.isStatic(method.getModifiers()));
 
         methodModel.setReturnType(context.getClassModel(method.getReturnType()));

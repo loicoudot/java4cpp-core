@@ -4,11 +4,8 @@ import static com.github.loicoudot.java4cpp.Utils.newArrayList;
 import static com.github.loicoudot.java4cpp.Utils.newHashMap;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
@@ -17,14 +14,9 @@ import java.util.concurrent.BlockingQueue;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import javax.xml.bind.JAXB;
-
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugin.logging.SystemStreamLog;
 
-import com.github.loicoudot.java4cpp.configuration.Clazz;
-import com.github.loicoudot.java4cpp.configuration.Mappings;
-import com.github.loicoudot.java4cpp.configuration.Namespace;
 import com.github.loicoudot.java4cpp.model.ClassModel;
 
 /**
@@ -38,20 +30,18 @@ public final class Context {
 
     private final Settings settings;
     private Log log = new SystemStreamLog();
-    private final Mappings mappings = new Mappings();
-    private final TemplateManager templateManager;
     private final FileManager fileManager;
+    private final MappingsManager mappingsManager;
+    private final TemplateManager templateManager;
     private ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
     private final BlockingQueue<Class<?>> classesToDo = new ArrayBlockingQueue<Class<?>>(1024);
     private final List<Class<?>> classesAlreadyDone = newArrayList();
-    private final Map<Class<?>, Clazz> classesCache = newHashMap();
-    private final Map<Class<?>, String> namespaceCache = newHashMap();
-    private final Map<Class<?>, MappingsHelper> mappingsCache = newHashMap();
     private final Map<Class<?>, ClassModel> classModelCache = newHashMap();
 
     public Context(Settings settings) {
         this.settings = settings;
         fileManager = new FileManager(this);
+        mappingsManager = new MappingsManager(this);
         templateManager = new TemplateManager(this);
     }
 
@@ -74,26 +64,13 @@ public final class Context {
     }
 
     /**
-     * Add a mappings configuration bean to the actual context.
-     * 
-     * @param other
-     *            the mappings bean to add
-     */
-    public void addMappings(Mappings other) {
-        mappings.getKeywords().addAll(other.getKeywords());
-        mappings.getClasses().addAll(other.getClasses());
-        mappings.getNamespaces().addAll(other.getNamespaces());
-    }
-
-    /**
      * Called before begining the processing of classes. Initialize all internal
      * parts with all the configurations.
      */
     public void start() {
         getFileManager().start();
-        addMappingsFromSettings();
+        getMappingsManager().start();
         addClassToDoFromJars();
-        addClassToDoFromMappings();
         getTemplateManager().start();
     }
 
@@ -103,21 +80,6 @@ public final class Context {
      */
     public void stop() {
         getFileManager().stop();
-    }
-
-    private void addMappingsFromSettings() {
-        if (!Utils.isNullOrEmpty(settings.getMappingsFile())) {
-            for (String name : settings.getMappingsFile().split(";")) {
-                try {
-                    InputStream is = Utils.getFileOrResource(name);
-                    Mappings mapping = JAXB.unmarshal(is, Mappings.class);
-                    is.close();
-                    addMappings(mapping);
-                } catch (IOException e) {
-                    throw new RuntimeException("Failed to read mappings from settings " + e.getMessage());
-                }
-            }
-        }
     }
 
     /**
@@ -150,14 +112,6 @@ public final class Context {
         }
     }
 
-    private void addClassToDoFromMappings() {
-        getFileManager().logInfo("adding classes to wrappe from mappings files");
-        for (Clazz clazz : getMappings().getClasses()) {
-            addClassToDo(clazz.getClazz());
-            classesCache.put(clazz.getClazz(), clazz);
-        }
-    }
-
     public void addClassToDo(Class<?> clazz) {
         synchronized (classesToDo) {
             if (clazz.getEnclosingClass() == null && !classesAlreadyDone.contains(clazz) && !classesToDo.contains(clazz)) {
@@ -170,53 +124,6 @@ public final class Context {
 
     public boolean workToDo() {
         return !classesToDo.isEmpty();
-    }
-
-    public String escapeName(String name) {
-        if (getMappings().getKeywords().contains(name)) {
-            return escapeName(name + '_');
-        }
-        return name;
-    }
-
-    /**
-     * Transform the full qualified name of {@code clazz} by applying the rules
-     * on namespace/package mappings. The mappings on the class name is not
-     * applied here. Does not work on inner class.
-     * 
-     * @param clazz
-     *            the class to get namespace from.
-     * @return the associate namespace associate to {@code clazz}.
-     */
-    public List<String> getNamespaceForClass(Class<?> clazz) {
-        synchronized (namespaceCache) {
-            if (!namespaceCache.containsKey(clazz)) {
-                int bestScore = 0;
-                String bestNamespace = clazz.getName().replaceAll("\\.", "::");
-                for (Namespace namespace : getMappings().getNamespaces()) {
-                    if (namespace.getJavaPackage().length() > bestScore && clazz.getName().matches(namespace.getJavaPackage())) {
-                        bestScore = namespace.getJavaPackage().length();
-                        bestNamespace = Utils.isNullOrEmpty(namespace.getNamespace()) ? clazz.getSimpleName() : String.format("%s::%s",
-                                namespace.getNamespace(), clazz.getSimpleName());
-                    }
-                }
-                namespaceCache.put(clazz, bestNamespace);
-            }
-            return Arrays.asList(namespaceCache.get(clazz).split("::"));
-        }
-    }
-
-    public Clazz getClazz(Class<?> cl) {
-        return classesCache.get(cl);
-    }
-
-    public MappingsHelper getMappings(Class<?> clazz) {
-        synchronized (mappingsCache) {
-            if (!mappingsCache.containsKey(clazz)) {
-                mappingsCache.put(clazz, new MappingsHelper(clazz, this));
-            }
-            return mappingsCache.get(clazz);
-        }
     }
 
     public ClassModel getClassModel(Class<?> clazz) {
@@ -237,16 +144,16 @@ public final class Context {
         }
     }
 
-    public TemplateManager getTemplateManager() {
-        return templateManager;
-    }
-
     public FileManager getFileManager() {
         return fileManager;
     }
 
-    public Mappings getMappings() {
-        return mappings;
+    public MappingsManager getMappingsManager() {
+        return mappingsManager;
+    }
+
+    public TemplateManager getTemplateManager() {
+        return templateManager;
     }
 
     public BlockingQueue<Class<?>> getClassesToDo() {

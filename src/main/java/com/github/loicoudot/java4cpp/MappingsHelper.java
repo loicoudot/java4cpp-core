@@ -1,14 +1,9 @@
 package com.github.loicoudot.java4cpp;
 
-import static com.github.loicoudot.java4cpp.Utils.newArrayList;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayDeque;
 import java.util.Arrays;
-import java.util.Deque;
-import java.util.List;
 
 import com.github.loicoudot.java4cpp.configuration.Clazz;
 import com.github.loicoudot.java4cpp.configuration.Wrappe;
@@ -28,15 +23,15 @@ import com.github.loicoudot.java4cpp.configuration.Wrappe;
 final class MappingsHelper {
 
     private final Class<?> clazz;
-    private final Context context;
+    private final MappingsManager mappings;
     private final Java4Cpp annotation;
     private final Clazz mapping;
 
-    public MappingsHelper(Class<?> clazz, Context context) {
+    public MappingsHelper(Class<?> clazz, Clazz mapping, MappingsManager mappings) {
         this.clazz = clazz;
-        this.context = context;
+        this.mappings = mappings;
+        this.mapping = mapping;
         annotation = clazz.getAnnotation(Java4Cpp.class);
-        mapping = context.getClazz(clazz);
     }
 
     public boolean exportSuperClass() {
@@ -129,7 +124,7 @@ final class MappingsHelper {
         if (annotation != null && !Utils.isNullOrEmpty(annotation.name())) {
             return annotation.name();
         }
-        return context.escapeName(clazz.getSimpleName());
+        return mappings.escapeName(clazz.getSimpleName());
     }
 
     /**
@@ -150,7 +145,7 @@ final class MappingsHelper {
         if (annot != null && !Utils.isNullOrEmpty(annot.value())) {
             return annot.value();
         }
-        return context.escapeName(field.getName());
+        return mappings.escapeName(field.getName());
     }
 
     /**
@@ -172,38 +167,7 @@ final class MappingsHelper {
         if (annot != null && !Utils.isNullOrEmpty(annot.value())) {
             return annot.value();
         }
-        return context.escapeName(method.getName());
-    }
-
-    /**
-     * Return the final full qualified C++ name of the class. Apply the
-     * namespace/package mapping, the class name mapping and escape all part by
-     * the reserved words list. Works also for inner class.
-     * 
-     * @return the final full qualified C++ name.
-     */
-    public List<String> getNamespaces() {
-        List<String> namespace;
-        if (clazz.getEnclosingClass() == null) {
-            namespace = context.getNamespaceForClass(clazz);
-        } else {
-            Class<?> enclosing = clazz;
-            Deque<Class<?>> stack = new ArrayDeque<Class<?>>();
-            while (enclosing.getEnclosingClass() != null) {
-                stack.add(enclosing);
-                enclosing = enclosing.getEnclosingClass();
-            }
-            namespace = context.getMappings(enclosing).getNamespaces();
-            while (!stack.isEmpty()) {
-                namespace.add(context.getMappings(stack.pollLast()).getCppName());
-            }
-        }
-        List<String> escapedNamespace = newArrayList();
-        for (String name : namespace) {
-            escapedNamespace.add(context.escapeName(name));
-        }
-        escapedNamespace.set(escapedNamespace.size() - 1, getCppName());
-        return escapedNamespace;
+        return mappings.escapeName(method.getName());
     }
 
     /**

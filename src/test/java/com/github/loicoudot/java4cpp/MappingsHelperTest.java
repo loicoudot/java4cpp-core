@@ -204,13 +204,13 @@ public class MappingsHelperTest {
         local.getNamespaces().add(new Namespace("com.github.loicoudot.java4cpp.MappingsTrue", "cglj::bigjava"));
 
         context = new Context(new Settings());
-        context.addMappings(local);
+        context.getMappingsManager().addMappings(local);
         context.start();
-        noAnnotationNoMappings = context.getMappings(NoAnnotationNoMappings.class);
-        annotFalse = context.getMappings(AnnotFalse.class);
-        annotTrue = context.getMappings(AnnotTrue.class);
-        mappingsFalse = context.getMappings(MappingsFalse.class);
-        mappingsTrue = context.getMappings(MappingsTrue.class);
+        noAnnotationNoMappings = context.getMappingsManager().getMappings(NoAnnotationNoMappings.class);
+        annotFalse = context.getMappingsManager().getMappings(AnnotFalse.class);
+        annotTrue = context.getMappingsManager().getMappings(AnnotTrue.class);
+        mappingsFalse = context.getMappingsManager().getMappings(MappingsFalse.class);
+        mappingsTrue = context.getMappingsManager().getMappings(MappingsTrue.class);
     }
 
     @Test
@@ -327,17 +327,17 @@ public class MappingsHelperTest {
 
     @Test
     public void testGetNamespaces() throws Exception {
-        assertThat(noAnnotationNoMappings.getNamespaces()).containsOnly("com", "github", "loicoudot", "java4cpp", "NoAnnotationNoMappings");
-        assertThat(annotFalse.getNamespaces()).containsOnly("cglj", "AnnotFalse");
-        assertThat(context.getMappings(AnnotFalse.Inner1.class).getNamespaces()).containsOnly("cglj", "AnnotFalse", "Inner1");
-        assertThat(annotTrue.getNamespaces()).containsOnly("cglj", "bigjava", "AnnotTrueCpp");
-        assertThat(context.getMappings(AnnotTrue.Inner2.class).getNamespaces()).containsOnly("cglj", "bigjava", "AnnotTrueCpp", "Inner2");
-        assertThat(context.getMappings(AnnotTrue.Inner2.Inner21.class).getNamespaces()).containsOnly("cglj", "bigjava", "AnnotTrueCpp", "Inner2", "InerIner");
-        assertThat(mappingsFalse.getNamespaces()).containsOnly("cglj", "MappingsFalse");
-        assertThat(context.getMappings(MappingsFalse.Inner1.class).getNamespaces()).containsOnly("cglj", "MappingsFalse", "Inner1");
-        assertThat(mappingsTrue.getNamespaces()).containsOnly("cglj", "bigjava", "MappingsTrueCpp");
-        assertThat(context.getMappings(MappingsTrue.Inner1.class).getNamespaces()).containsOnly("cglj", "bigjava", "MappingsTrueCpp", "InnerInner");
-        assertThat(context.getMappings(MappingsTrue.Inner1.Inner11.class).getNamespaces()).containsOnly("cglj", "bigjava", "MappingsTrueCpp", "InnerInner",
-                "Inner11");
+        MappingsManager mappings = context.getMappingsManager();
+        assertThat(mappings.getNamespace(NoAnnotationNoMappings.class)).containsOnly("com", "github", "loicoudot", "java4cpp", "NoAnnotationNoMappings");
+        assertThat(mappings.getNamespace(AnnotFalse.class)).containsOnly("cglj", "AnnotFalse");
+        assertThat(mappings.getNamespace(AnnotFalse.Inner1.class)).containsOnly("cglj", "AnnotFalse", "Inner1");
+        assertThat(mappings.getNamespace(AnnotTrue.class)).containsOnly("cglj", "bigjava", "AnnotTrueCpp");
+        assertThat(mappings.getNamespace(AnnotTrue.Inner2.class)).containsOnly("cglj", "bigjava", "AnnotTrueCpp", "Inner2");
+        assertThat(mappings.getNamespace(AnnotTrue.Inner2.Inner21.class)).containsOnly("cglj", "bigjava", "AnnotTrueCpp", "Inner2", "InerIner");
+        assertThat(mappings.getNamespace(MappingsFalse.class)).containsOnly("cglj", "MappingsFalse");
+        assertThat(mappings.getNamespace(MappingsFalse.Inner1.class)).containsOnly("cglj", "MappingsFalse", "Inner1");
+        assertThat(mappings.getNamespace(MappingsTrue.class)).containsOnly("cglj", "bigjava", "MappingsTrueCpp");
+        assertThat(mappings.getNamespace(MappingsTrue.Inner1.class)).containsOnly("cglj", "bigjava", "MappingsTrueCpp", "InnerInner");
+        assertThat(mappings.getNamespace(MappingsTrue.Inner1.Inner11.class)).containsOnly("cglj", "bigjava", "MappingsTrueCpp", "InnerInner", "Inner11");
     }
 }

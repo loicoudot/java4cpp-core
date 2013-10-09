@@ -25,12 +25,12 @@ import freemarker.template.utility.DeepUnwrap;
 final class ClassAnalyzer {
     private final Class<?> clazz;
     private final Context context;
-    private final MappingsHelper mappings;
+    private final MappingsHelper mapping;
 
     public ClassAnalyzer(Class<?> clazz, Context context) {
         this.clazz = clazz;
         this.context = context;
-        this.mappings = context.getMappings(clazz);
+        this.mapping = context.getMappingsManager().getMappings(clazz);
     }
 
     /**
@@ -102,8 +102,16 @@ final class ClassAnalyzer {
             }
         }
 
-        classModel.setCppFullName(Joiner.on("::").join(mappings.getNamespaces()));
-        classModel.setCppShortName(mappings.getNamespaces().get(mappings.getNamespaces().size() - 1));
+        StringBuilder fullName = new StringBuilder();
+        String shortName = "";
+        String sep = "";
+        for (String namespace : context.getMappingsManager().getNamespace(clazz)) {
+            fullName.append(sep).append(namespace);
+            sep = "::";
+            shortName = namespace;
+        }
+        classModel.setCppFullName(fullName.toString());
+        classModel.setCppShortName(shortName);
         classModel.setOwner(classModel.isIsInnerClass() ? context.getClassModel(clazz.getDeclaringClass()) : classModel);
 
         classModel.setJavaSignature(Datatype.getJavaSignature(clazz));
@@ -150,7 +158,7 @@ final class ClassAnalyzer {
     }
 
     private Class<?> getSuperClass() {
-        if (mappings.exportSuperClass()) {
+        if (mapping.exportSuperClass()) {
             return clazz.getSuperclass();
         }
         return null;
@@ -159,7 +167,7 @@ final class ClassAnalyzer {
     private List<Class<?>> getInterfaces() {
         List<Class<?>> interfaces = newArrayList();
         for (Class<?> interfac : clazz.getInterfaces()) {
-            if (interfac != Cloneable.class && mappings.isInterfaceWrapped(interfac)) {
+            if (interfac != Cloneable.class && mapping.isInterfaceWrapped(interfac)) {
                 interfaces.add(interfac);
             }
         }
@@ -169,7 +177,7 @@ final class ClassAnalyzer {
     private List<Class<?>> getNestedClasses() {
         List<Class<?>> list = newArrayList();
         for (Class<?> clas : clazz.getDeclaredClasses()) {
-            if (Modifier.isPublic(clas.getModifiers()) && mappings.isInnerClassWrapped(clas)) {
+            if (Modifier.isPublic(clas.getModifiers()) && mapping.isInnerClassWrapped(clas)) {
                 list.add(clas);
             }
         }
@@ -180,7 +188,7 @@ final class ClassAnalyzer {
         ArrayList<Field> list = newArrayList();
         for (Field field : clazz.getDeclaredFields()) {
             int mod = field.getModifiers();
-            if (Modifier.isStatic(mod) && Modifier.isPublic(mod) && mappings.isFieldWrapped(field)) {
+            if (Modifier.isStatic(mod) && Modifier.isPublic(mod) && mapping.isFieldWrapped(field)) {
                 list.add(field);
             }
         }
@@ -191,7 +199,7 @@ final class ClassAnalyzer {
         List<String> enumKeys = new ArrayList<String>();
         for (Field field : clazz.getFields()) {
             if (field.isEnumConstant()) {
-                enumKeys.add(context.escapeName(field.getName()));
+                enumKeys.add(context.getMappingsManager().escapeName(field.getName()));
             }
         }
         return enumKeys;
@@ -200,7 +208,7 @@ final class ClassAnalyzer {
     private List<Constructor<?>> getConstructors() {
         List<Constructor<?>> list = newArrayList();
         for (Constructor<?> constructor : clazz.getConstructors()) {
-            if (mappings.isConstructorWrapped(constructor)) {
+            if (mapping.isConstructorWrapped(constructor)) {
                 list.add(constructor);
             }
         }
@@ -210,7 +218,7 @@ final class ClassAnalyzer {
     private List<Method> getMethods() {
         List<Method> list = newArrayList();
         for (Method method : clazz.getDeclaredMethods()) {
-            if (Modifier.isPublic(method.getModifiers()) && !method.isSynthetic() && !method.getName().equals("clone") && mappings.isMethodWrapped(method)) {
+            if (Modifier.isPublic(method.getModifiers()) && !method.isSynthetic() && !method.getName().equals("clone") && mapping.isMethodWrapped(method)) {
                 list.add(method);
             }
         }
