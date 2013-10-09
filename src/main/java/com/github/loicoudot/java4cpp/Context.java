@@ -28,8 +28,8 @@ import com.github.loicoudot.java4cpp.model.ClassModel;
  */
 public final class Context {
 
-    private final Settings settings;
     private Log log = new SystemStreamLog();
+    private final Settings settings;
     private final FileManager fileManager;
     private final MappingsManager mappingsManager;
     private final TemplateManager templateManager;
@@ -43,10 +43,6 @@ public final class Context {
         fileManager = new FileManager(this);
         mappingsManager = new MappingsManager(this);
         templateManager = new TemplateManager(this);
-    }
-
-    public Settings getSettings() {
-        return settings;
     }
 
     public Log getLog() {
@@ -122,8 +118,32 @@ public final class Context {
         }
     }
 
+    public BlockingQueue<Class<?>> getClassesToDo() {
+        return classesToDo;
+    }
+
     public boolean workToDo() {
         return !classesToDo.isEmpty();
+    }
+
+    public List<Class<?>> getClassesAlreadyDone() {
+        return classesAlreadyDone;
+    }
+
+    public Settings getSettings() {
+        return settings;
+    }
+
+    public FileManager getFileManager() {
+        return fileManager;
+    }
+
+    public MappingsManager getMappingsManager() {
+        return mappingsManager;
+    }
+
+    public TemplateManager getTemplateManager() {
+        return templateManager;
     }
 
     public ClassModel getClassModel(Class<?> clazz) {
@@ -142,25 +162,5 @@ public final class Context {
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("Failed to load class " + e.getMessage());
         }
-    }
-
-    public FileManager getFileManager() {
-        return fileManager;
-    }
-
-    public MappingsManager getMappingsManager() {
-        return mappingsManager;
-    }
-
-    public TemplateManager getTemplateManager() {
-        return templateManager;
-    }
-
-    public BlockingQueue<Class<?>> getClassesToDo() {
-        return classesToDo;
-    }
-
-    public List<Class<?>> getClassesAlreadyDone() {
-        return classesAlreadyDone;
     }
 }

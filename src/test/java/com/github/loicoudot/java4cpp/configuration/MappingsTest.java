@@ -41,7 +41,7 @@ public class MappingsTest {
         assertThat(mappings.getKeywords()).containsExactly("true", "delete");
         assertThat(mappings.getNamespaces()).containsExactly(new Namespace("com.github.loicoudot", "java4cpp"), new Namespace("java.utils.*", "utils"));
         assertThat(mappings.getClasses()).hasSize(1);
-        Clazz actual = mappings.getClasses().get(0);
+        ClassMapping actual = mappings.getClasses().get(0);
         assertThat(actual.getClazz()).hasSameClassAs(Float.class);
         assertThat(actual.isExportAll()).isEqualTo(false);
         assertThat(actual.isExportFields()).isEqualTo(true);

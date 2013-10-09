@@ -5,7 +5,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlType(propOrder = { "cppName", "interfaces", "innerClasses", "staticFields", "constructors", "methods" })
-public final class Clazz {
+public final class ClassMapping {
 
     private Class<?> clazz;
     private Boolean superclass = false;
@@ -20,10 +20,10 @@ public final class Clazz {
     private Wrappes constructors = new Wrappes();
     private Wrappes methods = new Wrappes();
 
-    Clazz() {
+    ClassMapping() {
     }
 
-    public Clazz(Class<?> clazz) {
+    public ClassMapping(Class<?> clazz) {
         this.clazz = clazz;
     }
 

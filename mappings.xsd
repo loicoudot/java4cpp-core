@@ -15,7 +15,7 @@
       <xs:element name="classes" minOccurs="0">
         <xs:complexType>
           <xs:sequence>
-            <xs:element name="class" type="tns:clazz" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="class" type="tns:classMapping" minOccurs="0" maxOccurs="unbounded"/>
           </xs:sequence>
         </xs:complexType>
       </xs:element>
@@ -37,7 +37,7 @@
     </xs:simpleContent>
   </xs:complexType>
 
-  <xs:complexType name="clazz" final="extension restriction">
+  <xs:complexType name="classMapping" final="extension restriction">
     <xs:sequence>
       <xs:element name="cppName" type="xs:string" minOccurs="0"/>
       <xs:element name="interfaces" type="tns:wrappes" minOccurs="0"/>

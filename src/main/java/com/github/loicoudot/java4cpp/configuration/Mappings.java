@@ -14,7 +14,7 @@ import javax.xml.bind.annotation.XmlType;
 public final class Mappings {
 
     private final List<String> keywords = newArrayList();
-    private final List<Clazz> classes = newArrayList();
+    private final List<ClassMapping> classes = newArrayList();
     private final List<Namespace> namespaces = newArrayList();
 
     @XmlElementWrapper
@@ -25,7 +25,7 @@ public final class Mappings {
 
     @XmlElementWrapper
     @XmlElement(name = "class")
-    public List<Clazz> getClasses() {
+    public List<ClassMapping> getClasses() {
         return classes;
     }
 
