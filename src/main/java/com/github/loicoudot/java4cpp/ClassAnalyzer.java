@@ -1,12 +1,5 @@
 package com.github.loicoudot.java4cpp;
 
-import static com.github.loicoudot.java4cpp.Utils.newArrayList;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.github.loicoudot.java4cpp.model.ClassModel;
@@ -22,15 +15,11 @@ import freemarker.template.utility.DeepUnwrap;
  * @author Loic Oudot
  * 
  */
-final class ClassAnalyzer {
-    private final Class<?> clazz;
-    private final Context context;
-    private final MappingsManager mappings;
+final class ClassAnalyzer extends Analyzer {
+    private Class<?> clazz;
 
-    public ClassAnalyzer(Class<?> clazz, Context context) {
-        this.clazz = clazz;
-        this.context = context;
-        this.mappings = context.getMappingsManager();
+    public ClassAnalyzer(Context context) {
+        super(context);
     }
 
     /**
@@ -40,14 +29,14 @@ final class ClassAnalyzer {
      * @param classModel
      *            the data-model to fill
      */
-    public void fillModel(ClassModel classModel) {
+    @Override
+    public void fill(ClassModel classModel) {
+
+        clazz = classModel.getClazz();
 
         /**
          * FreeMarker function availlable inside templates to add a direct
          * dependency for the class.
-         * 
-         * @author Loic Oudot
-         * 
          */
         class AddOutterDependency implements TemplateMethodModelEx {
 
@@ -76,9 +65,6 @@ final class ClassAnalyzer {
         /**
          * FreeMarker function availlable inside templates to add an incldue
          * file for the class.
-         * 
-         * @author Loic Oudot
-         * 
          */
         class AddOutterInclude implements TemplateMethodModelEx {
 
@@ -124,105 +110,6 @@ final class ClassAnalyzer {
         classModel.setCppReturnType(typeTemplates.getCppReturnType(classModel));
         typeTemplates.executeDependencies(classModel);
         classModel.setFunctions(typeTemplates.getFunctions(classModel));
-
-        if (getSuperClass() != null) {
-            classModel.setSuperclass(context.getClassModel(getSuperClass()));
-        }
-        for (Class<?> interfac : getInterfaces()) {
-            classModel.addInterface(context.getClassModel(interfac));
-        }
-
-        for (Class<?> nestedClass : getNestedClasses()) {
-            classModel.addNestedClass(context.getClassModel(nestedClass));
-        }
-
-        for (Field field : getStaticFields()) {
-            classModel.addField(new FieldAnalyzer(field, context).getModel());
-        }
-
-        for (String key : getEnumKeys()) {
-            classModel.addEnumKey(key);
-        }
-
-        for (Constructor<?> constructor : getConstructors()) {
-            classModel.addConstructor(new ConstructorAnalyzer(constructor, context).getModel());
-        }
-
-        for (Method method : getMethods()) {
-            classModel.addMethod(new MethodAnalyzer(method, context).getModel());
-        }
-
-        for (ClassModel dependency : classModel.getDependencies()) {
-            context.addClassToDo(dependency.getClazz());
-        }
-    }
-
-    private Class<?> getSuperClass() {
-        if (mappings.exportSuperClass(clazz)) {
-            return clazz.getSuperclass();
-        }
-        return null;
-    }
-
-    private List<Class<?>> getInterfaces() {
-        List<Class<?>> interfaces = newArrayList();
-        for (Class<?> interfac : clazz.getInterfaces()) {
-            if (interfac != Cloneable.class && mappings.isInterfaceWrapped(clazz, interfac)) {
-                interfaces.add(interfac);
-            }
-        }
-        return interfaces;
-    }
-
-    private List<Class<?>> getNestedClasses() {
-        List<Class<?>> list = newArrayList();
-        for (Class<?> nested : clazz.getDeclaredClasses()) {
-            if (Modifier.isPublic(nested.getModifiers()) && mappings.isInnerClassWrapped(clazz, nested)) {
-                list.add(nested);
-            }
-        }
-        return list;
-    }
-
-    private List<Field> getStaticFields() {
-        ArrayList<Field> list = newArrayList();
-        for (Field field : clazz.getDeclaredFields()) {
-            int mod = field.getModifiers();
-            if (Modifier.isStatic(mod) && Modifier.isPublic(mod) && mappings.isFieldWrapped(field)) {
-                list.add(field);
-            }
-        }
-        return list;
-    }
-
-    private List<String> getEnumKeys() {
-        List<String> enumKeys = new ArrayList<String>();
-        for (Field field : clazz.getFields()) {
-            if (field.isEnumConstant()) {
-                enumKeys.add(context.getMappingsManager().escapeName(field.getName()));
-            }
-        }
-        return enumKeys;
-    }
-
-    private List<Constructor<?>> getConstructors() {
-        List<Constructor<?>> list = newArrayList();
-        for (Constructor<?> constructor : clazz.getConstructors()) {
-            if (mappings.isConstructorWrapped(constructor)) {
-                list.add(constructor);
-            }
-        }
-        return list;
-    }
-
-    private List<Method> getMethods() {
-        List<Method> list = newArrayList();
-        for (Method method : clazz.getDeclaredMethods()) {
-            if (Modifier.isPublic(method.getModifiers()) && !method.isSynthetic() && !method.getName().equals("clone") && mappings.isMethodWrapped(method)) {
-                list.add(method);
-            }
-        }
-        return list;
     }
 
     @Override

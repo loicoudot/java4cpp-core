@@ -37,12 +37,15 @@ public final class Context {
     private final BlockingQueue<Class<?>> classesToDo = new ArrayBlockingQueue<Class<?>>(1024);
     private final List<Class<?>> classesAlreadyDone = newArrayList();
     private final Map<Class<?>, ClassModel> classModelCache = newHashMap();
+    private final Analyzer[] analyzers;
 
     public Context(Settings settings) {
         this.settings = settings;
         fileManager = new FileManager(this);
         mappingsManager = new MappingsManager(this);
         templateManager = new TemplateManager(this);
+        analyzers = new Analyzer[] { new ClassAnalyzer(this), new SuperclassAnalyzer(this), new InterfacesAnalyzer(this), new InnerClassAnalyzer(this),
+                new FieldsAnalyzer(this), new EnumAnalyzer(this), new ConstructorsAnalyzer(this), new MethodsAnalyzer(this) };
     }
 
     public Log getLog() {
@@ -150,7 +153,15 @@ public final class Context {
         synchronized (classModelCache) {
             if (!classModelCache.containsKey(clazz)) {
                 classModelCache.put(clazz, new ClassModel(clazz));
-                new ClassAnalyzer(clazz, this).fillModel(classModelCache.get(clazz));
+
+                ClassModel classModel = classModelCache.get(clazz);
+                for (Analyzer analyzer : analyzers) {
+                    analyzer.fill(classModel);
+                }
+
+                for (ClassModel dependency : classModel.getDependencies()) {
+                    addClassToDo(dependency.getClazz());
+                }
             }
             return classModelCache.get(clazz);
         }

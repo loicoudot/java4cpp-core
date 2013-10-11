@@ -2,7 +2,7 @@ package com.github.loicoudot.java4cpp;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -11,90 +11,12 @@ import com.github.loicoudot.java4cpp.configuration.Templates;
 import com.github.loicoudot.java4cpp.configuration.TypeTemplate;
 import com.github.loicoudot.java4cpp.model.ClassModel;
 
-interface IA {
-}
-
-interface IB {
-}
-
-interface IC {
-}
-
-class D {
-}
-
-@Java4Cpp(superclass = true, interfaces = true, staticFields = true)
-class TestClasse extends D implements IB, IA, IC {
-
-    public TestClasse(int a) {
-    }
-
-    public TestClasse(long a) {
-    }
-
-    public TestClasse() {
-    }
-
-    public TestClasse(String a) {
-    }
-
-    public TestClasse(int a, int b) {
-    }
-
-    TestClasse(double a) {
-    }
-
-    public void add() {
-    }
-
-    public void additive() {
-    }
-
-    public void method(int a) {
-    }
-
-    public int method(long a) {
-        return 0;
-    }
-
-    public long method() {
-        return 0;
-    }
-
-    public String method(List<String> a) {
-        return a.get(0);
-    }
-
-    public void method(int a, int b) {
-    }
-
-    public enum EA {
-        EA1
-    }
-
-    public static String sC;
-
-    public static class InnerB implements Cloneable {
-
-    }
-
-    public static String sA;
-
-    public enum EB {
-        EB1
-    }
-
-    public static String sB;
-
-    public class InnerA {
-
-    }
-}
+import freemarker.template.TemplateModelException;
 
 public class ClassAnalyzerTest {
 
     private Context context;
-    private ClassAnalyzer primitiveAnalyzer;
+    private ClassAnalyzer analyzer;
 
     @BeforeClass
     public void init() {
@@ -108,13 +30,13 @@ public class ClassAnalyzerTest {
         other.getDatatypes().getTemplates().add(classTemplate);
         context.getTemplateManager().addTemplates(other);
         context.start();
-        primitiveAnalyzer = new ClassAnalyzer(Boolean.TYPE, context);
+        analyzer = new ClassAnalyzer(context);
     }
 
     @Test
-    public void testGetModel() throws Exception {
+    public void testFill() throws Exception {
         ClassModel model = new ClassModel(Boolean.TYPE);
-        primitiveAnalyzer.fillModel(model);
+        analyzer.fill(model);
         assertThat(model.getJavaName()).isEqualTo("boolean");
         assertThat(model.isIsEnum()).isFalse();
         assertThat(model.isIsInterface()).isFalse();
@@ -132,5 +54,24 @@ public class ClassAnalyzerTest {
         assertThat(model.getSuperclass()).isNull();
         assertThat(model.getOutterIncludes()).isEmpty();
         assertThat(model.getOutterDependencies()).isEmpty();
+    }
+
+    @Test(expectedExceptions = { TemplateModelException.class })
+    public void testDependencyException() throws Exception {
+        ClassModel model = new ClassModel(Boolean.TYPE);
+        analyzer.fill(model);
+        model.getAddDependency().exec(new ArrayList<String>());
+    }
+
+    @Test(expectedExceptions = { TemplateModelException.class })
+    public void testIncludeException() throws Exception {
+        ClassModel model = new ClassModel(Boolean.TYPE);
+        analyzer.fill(model);
+        model.getAddInclude().exec(new ArrayList<String>());
+    }
+
+    @Test
+    public void testToString() throws Exception {
+        assertThat(analyzer.toString()).isEqualTo("ClassAnalyzer(boolean)");
     }
 }

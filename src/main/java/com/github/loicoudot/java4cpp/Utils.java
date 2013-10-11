@@ -70,21 +70,4 @@ public final class Utils {
         }
         return is;
     }
-
-    /**
-     * Construct a JNI signature string from a series of parameters.
-     * 
-     * @param params
-     *            a list of paramters
-     * @return a {@code String} containing the corresponding JNI signature.
-     */
-    public static String generateJNISignature(Class<?>[] params) {
-        StringBuilder ret = new StringBuilder();
-
-        for (Class<?> param : params) {
-            ret.append(Datatype.getJavaSignature(param));
-        }
-
-        return ret.toString();
-    }
 }
