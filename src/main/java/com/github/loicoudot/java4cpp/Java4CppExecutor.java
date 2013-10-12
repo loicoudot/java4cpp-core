@@ -6,15 +6,11 @@ import java.util.Map;
 
 class Java4CppExecutor implements Runnable {
     private final Context context;
-    private Class<?> clazz;
+    private final Class<?> clazz;
 
-    public Java4CppExecutor(Context context) {
+    public Java4CppExecutor(Context context) throws InterruptedException {
         this.context = context;
-        try {
-            clazz = context.getClassesToDo().take();
-        } catch (InterruptedException e) {
-            context.getLog().error("java4cpp executor:", e);
-        }
+        clazz = context.getClassesToDo().take();
     }
 
     @Override

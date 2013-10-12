@@ -34,24 +34,23 @@ public class Core {
         context.getFileManager().logInfo(
                 String.format("java4cpp version %s, starting at %s", Context.class.getPackage().getImplementationVersion(), new Date()));
 
-        do {
-            ExecutorService pool = Executors.newFixedThreadPool(context.getSettings().getNbThread());
+        try {
+            do {
+                ExecutorService pool = Executors.newFixedThreadPool(context.getSettings().getNbThread());
 
-            while (context.workToDo()) {
-                pool.execute(new Java4CppExecutor(context));
-            }
-
-            pool.shutdown();
-            while (!pool.isTerminated()) {
-                try {
-                    pool.awaitTermination(TIMEOUT, TimeUnit.MILLISECONDS);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException("Interrupted " + e.getMessage());
+                while (context.workToDo()) {
+                    pool.execute(new Java4CppExecutor(context));
                 }
-            }
 
-        } while (context.workToDo());
+                pool.shutdown();
+                while (!pool.isTerminated()) {
+                    pool.awaitTermination(TIMEOUT, TimeUnit.MILLISECONDS);
+                }
 
+            } while (context.workToDo());
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Interrupted " + e.getMessage());
+        }
         finalize(context);
 
         context.stop();

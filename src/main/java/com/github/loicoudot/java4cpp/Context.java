@@ -14,9 +14,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.plugin.logging.SystemStreamLog;
-
 import com.github.loicoudot.java4cpp.model.ClassModel;
 
 /**
@@ -28,7 +25,6 @@ import com.github.loicoudot.java4cpp.model.ClassModel;
  */
 public final class Context {
 
-    private Log log = new SystemStreamLog();
     private final Settings settings;
     private final FileManager fileManager;
     private final MappingsManager mappingsManager;
@@ -46,20 +42,6 @@ public final class Context {
         templateManager = new TemplateManager(this);
         analyzers = new Analyzer[] { new ClassAnalyzer(this), new SuperclassAnalyzer(this), new InterfacesAnalyzer(this), new InnerClassAnalyzer(this),
                 new FieldsAnalyzer(this), new EnumAnalyzer(this), new ConstructorsAnalyzer(this), new MethodsAnalyzer(this) };
-    }
-
-    public Log getLog() {
-        return log;
-    }
-
-    /**
-     * Sets the logger from maven plugins execution.
-     * 
-     * @param log
-     *            a maven plugin logger
-     */
-    public void setLog(Log log) {
-        this.log = log;
     }
 
     /**
