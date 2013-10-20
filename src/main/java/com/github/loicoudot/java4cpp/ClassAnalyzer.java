@@ -100,6 +100,9 @@ final class ClassAnalyzer extends Analyzer {
         classModel.setCppShortName(shortName);
         classModel.setOwner(classModel.isIsInnerClass() ? context.getClassModel(clazz.getDeclaringClass()) : classModel);
 
+        if (clazz.isArray()) {
+            classModel.setInnerType(context.getClassModel(clazz.getComponentType()));
+        }
         classModel.setJavaSignature(Datatype.getJavaSignature(clazz));
         classModel.setJniSignature(Datatype.getJNISignature(clazz));
         classModel.setJniMethodName(Datatype.getJNIMethodName(clazz));

@@ -38,6 +38,7 @@ public final class ClassModel {
     private String jniMethodName;
     private String cppType;
     private String cppReturnType;
+    private ClassModel innerType;
     private HashMap<String, Object> functions = newHashMap();
     private TemplateMethodModelEx addInclude;
     private TemplateMethodModelEx addDependency;
@@ -224,6 +225,14 @@ public final class ClassModel {
 
     public void setCppReturnType(String cppReturnType) {
         this.cppReturnType = cppReturnType;
+    }
+
+    public ClassModel getInnerType() {
+        return innerType;
+    }
+
+    public void setInnerType(ClassModel innerType) {
+        this.innerType = innerType;
     }
 
     public HashMap<String, Object> getFunctions() {

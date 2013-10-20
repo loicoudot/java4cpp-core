@@ -28,6 +28,8 @@ public class ClassAnalyzerTest {
         classTemplate.setCppType("cppType");
         classTemplate.setCppReturnType("cppReturnType");
         other.getDatatypes().getTemplates().add(classTemplate);
+        other.getDatatypes().setArray(classTemplate);
+        other.getDatatypes().setFallback(classTemplate);
         context.getTemplateManager().addTemplates(other);
         context.start();
         analyzer = new ClassAnalyzer(context);
@@ -71,7 +73,18 @@ public class ClassAnalyzerTest {
     }
 
     @Test
+    public void testInnerClass() {
+        boolean[][] array = new boolean[1][1];
+        ClassModel model = new ClassModel(array.getClass());
+        analyzer.fill(model);
+        assertThat(model.getInnerType().getJavaName()).isEqualTo("[Z");
+        assertThat(model.getInnerType().getInnerType().getJavaName()).isEqualTo("boolean");
+    }
+
+    @Test
     public void testToString() throws Exception {
+        ClassModel model = new ClassModel(Boolean.TYPE);
+        analyzer.fill(model);
         assertThat(analyzer.toString()).isEqualTo("ClassAnalyzer(boolean)");
     }
 }
