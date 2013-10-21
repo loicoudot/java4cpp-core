@@ -80,11 +80,4 @@ public class ClassAnalyzerTest {
         assertThat(model.getInnerType().getJavaName()).isEqualTo("[Z");
         assertThat(model.getInnerType().getInnerType().getJavaName()).isEqualTo("boolean");
     }
-
-    @Test
-    public void testToString() throws Exception {
-        ClassModel model = new ClassModel(Boolean.TYPE);
-        analyzer.fill(model);
-        assertThat(analyzer.toString()).isEqualTo("ClassAnalyzer(boolean)");
-    }
 }

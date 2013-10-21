@@ -16,7 +16,6 @@ import freemarker.template.utility.DeepUnwrap;
  * 
  */
 final class ClassAnalyzer extends Analyzer {
-    private Class<?> clazz;
 
     public ClassAnalyzer(Context context) {
         super(context);
@@ -32,7 +31,7 @@ final class ClassAnalyzer extends Analyzer {
     @Override
     public void fill(ClassModel classModel) {
 
-        clazz = classModel.getClazz();
+        Class<?> clazz = classModel.getClazz();
 
         /**
          * FreeMarker function availlable inside templates to add a direct
@@ -56,7 +55,10 @@ final class ClassAnalyzer extends Analyzer {
                 if (dependency instanceof String) {
                     model.getOutterDependencies().add(context.getClassModel((String) dependency));
                 } else if (dependency instanceof ClassModel) {
-                    model.getOutterDependencies().add((ClassModel) dependency);
+                    ClassModel classModel = (ClassModel) dependency;
+                    if (!classModel.getClazz().isPrimitive() && !classModel.getClazz().isArray()) {
+                        model.getOutterDependencies().add((ClassModel) dependency);
+                    }
                 }
                 return "";
             }
@@ -113,10 +115,5 @@ final class ClassAnalyzer extends Analyzer {
         classModel.setCppReturnType(typeTemplates.getCppReturnType(classModel));
         typeTemplates.executeDependencies(classModel);
         classModel.setFunctions(typeTemplates.getFunctions(classModel));
-    }
-
-    @Override
-    public String toString() {
-        return String.format("ClassAnalyzer(%s)", clazz.getName());
     }
 }
