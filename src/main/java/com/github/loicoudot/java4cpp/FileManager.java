@@ -58,7 +58,7 @@ final class FileManager {
     final class SourceFilter implements FilenameFilter {
         @Override
         public boolean accept(File dir, String name) {
-            return !name.equalsIgnoreCase(FileManager.JAVA4CPP_LOG) && name.equalsIgnoreCase(FileManager.JAVA4CPP_HASH);
+            return !(name.equalsIgnoreCase(FileManager.JAVA4CPP_LOG) || name.equalsIgnoreCase(FileManager.JAVA4CPP_HASH));
         }
     }
 
