@@ -19,7 +19,9 @@ public final class ClassModel {
     private String cppFullName;
     private String cppShortName;
     private ClassModel owner;
+    private final boolean isPrimitive;
     private final boolean isEnum;
+    private final boolean isArray;
     private final boolean isInterface;
     private final boolean isInnerClass;
     private final boolean isThrowable;
@@ -51,7 +53,9 @@ public final class ClassModel {
     public ClassModel(Class<?> clazz) {
         this.clazz = clazz;
         javaName = clazz.getName();
+        isPrimitive = clazz.isPrimitive();
         isEnum = clazz.isEnum();
+        isArray = clazz.isArray();
         isInterface = clazz.isInterface();
         isInnerClass = clazz.getEnclosingClass() != null;
         isThrowable = isThrowable();
@@ -91,8 +95,16 @@ public final class ClassModel {
         this.owner = owner;
     }
 
+    public boolean isIsPrimitive() {
+        return isPrimitive;
+    }
+
     public boolean isIsEnum() {
         return isEnum;
+    }
+
+    public boolean isIsArray() {
+        return isArray;
     }
 
     public boolean isIsInterface() {
