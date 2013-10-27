@@ -10,10 +10,10 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-@XmlType(propOrder = { "generate", "cppType", "cppReturnType", "dependencies", "functions" })
+@XmlType(propOrder = { "needAnalyzing", "cppType", "cppReturnType", "dependencies", "functions" })
 public final class TypeTemplate {
     private Class<?> clazz;
-    private Boolean generate = true;
+    private Boolean needAnalyzing = false;
     private String cppType;
     private String cppReturnType;
     private String dependencies;
@@ -29,12 +29,12 @@ public final class TypeTemplate {
         this.clazz = clazz;
     }
 
-    public Boolean getGenerate() {
-        return generate;
+    public Boolean getNeedAnalyzing() {
+        return needAnalyzing;
     }
 
-    public void setGenerate(Boolean generate) {
-        this.generate = generate;
+    public void setNeedAnalyzing(Boolean needAnalyzing) {
+        this.needAnalyzing = needAnalyzing;
     }
 
     public String getCppType() {

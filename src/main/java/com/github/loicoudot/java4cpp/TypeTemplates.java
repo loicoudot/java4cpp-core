@@ -14,7 +14,7 @@ import freemarker.template.TemplateMethodModelEx;
 import freemarker.template.TemplateModelException;
 
 final class TypeTemplates {
-    private boolean generate;
+    private boolean needAnalyzing;
     private Template cppType;
     private Template cppReturnType;
     private Template dependencies;
@@ -60,12 +60,12 @@ final class TypeTemplates {
         return "";
     }
 
-    public boolean getGenerate() {
-        return generate;
+    public boolean isNeedAnalyzing() {
+        return needAnalyzing;
     }
 
-    public void setGenerate(boolean generate) {
-        this.generate = generate;
+    public void setNeedAnalyzing(boolean needAnalyzing) {
+        this.needAnalyzing = needAnalyzing;
     }
 
     public String getCppType(ClassModel classModel) {

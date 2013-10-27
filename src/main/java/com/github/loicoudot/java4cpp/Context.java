@@ -141,7 +141,7 @@ public final class Context {
                     classModelCache.put(clazz, new ClassModel(clazz));
 
                     ClassModel classModel = classModelCache.get(clazz);
-                    if (getTemplateManager().getTypeTemplates(clazz).getGenerate()) {
+                    if (getTemplateManager().getTypeTemplates(clazz).isNeedAnalyzing()) {
                         for (Analyzer analyzer : analyzers) {
                             analyzer.fill(classModel);
                         }

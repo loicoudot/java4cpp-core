@@ -35,7 +35,7 @@ public final class ClassModel {
     private final List<MethodModel> methods = newArrayList();
     private final List<String> enumKeys = newArrayList();
 
-    private boolean generate;
+    private boolean needAnalyzing;
     private String javaSignature;
     private String jniSignature;
     private String jniMethodName;
@@ -200,12 +200,12 @@ public final class ClassModel {
         dependencies.addAll(otherModel.getOutterDependencies());
     }
 
-    public boolean getGenerate() {
-        return generate;
+    public boolean getNeedAnalyzing() {
+        return needAnalyzing;
     }
 
-    public void setGenerate(boolean generate) {
-        this.generate = generate;
+    public void setNeedAnalyzing(boolean needAnalyzing) {
+        this.needAnalyzing = needAnalyzing;
     }
 
     public String getJavaSignature() {

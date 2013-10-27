@@ -62,7 +62,7 @@ final class ClassAnalyzer extends Analyzer {
             }
 
             private void addOutterDependencies(ClassModel classModel) {
-                if (classModel.getGenerate() && !classModel.getClazz().isPrimitive() && !classModel.getClazz().isArray()) {
+                if (classModel.getNeedAnalyzing() && !classModel.getClazz().isPrimitive() && !classModel.getClazz().isArray()) {
                     model.getOutterDependencies().add(classModel);
                 }
             }
@@ -115,7 +115,7 @@ final class ClassAnalyzer extends Analyzer {
         classModel.setAddInclude(new AddOutterInclude(classModel));
         classModel.setAddDependency(new AddOutterDependency(classModel));
         TypeTemplates typeTemplates = context.getTemplateManager().getTypeTemplates(clazz);
-        classModel.setGenerate(typeTemplates.getGenerate());
+        classModel.setNeedAnalyzing(typeTemplates.isNeedAnalyzing());
         classModel.setCppType(typeTemplates.getCppType(classModel));
         classModel.setCppReturnType(typeTemplates.getCppReturnType(classModel));
         typeTemplates.executeDependencies(classModel);
