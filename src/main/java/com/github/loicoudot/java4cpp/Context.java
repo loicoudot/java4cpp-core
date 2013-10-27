@@ -34,13 +34,15 @@ public final class Context {
     private final List<Class<?>> classesAlreadyDone = newArrayList();
     private final Map<Class<?>, ClassModel> classModelCache = newHashMap();
     private final Analyzer[] analyzers;
+    private final Analyzer classAnalyzer;
 
     public Context(Settings settings) {
         this.settings = settings;
         fileManager = new FileManager(this);
         mappingsManager = new MappingsManager(this);
         templateManager = new TemplateManager(this);
-        analyzers = new Analyzer[] { new ClassAnalyzer(this), new SuperclassAnalyzer(this), new InterfacesAnalyzer(this), new InnerClassAnalyzer(this),
+        classAnalyzer = new ClassAnalyzer(this);
+        analyzers = new Analyzer[] { classAnalyzer, new SuperclassAnalyzer(this), new InterfacesAnalyzer(this), new InnerClassAnalyzer(this),
                 new FieldsAnalyzer(this), new EnumAnalyzer(this), new ConstructorsAnalyzer(this), new MethodsAnalyzer(this) };
     }
 
@@ -134,15 +136,24 @@ public final class Context {
     public ClassModel getClassModel(Class<?> clazz) {
         synchronized (classModelCache) {
             if (!classModelCache.containsKey(clazz)) {
-                classModelCache.put(clazz, new ClassModel(clazz));
+                getFileManager().enter("get " + clazz.getName());
+                try {
+                    classModelCache.put(clazz, new ClassModel(clazz));
 
-                ClassModel classModel = classModelCache.get(clazz);
-                for (Analyzer analyzer : analyzers) {
-                    analyzer.fill(classModel);
-                }
+                    ClassModel classModel = classModelCache.get(clazz);
+                    if (getTemplateManager().getTypeTemplates(clazz).getGenerate()) {
+                        for (Analyzer analyzer : analyzers) {
+                            analyzer.fill(classModel);
+                        }
+                    } else {
+                        classAnalyzer.fill(classModel);
+                    }
 
-                for (ClassModel dependency : classModel.getDependencies()) {
-                    addClassToDo(dependency.getClazz());
+                    for (ClassModel dependency : classModel.getDependencies()) {
+                        addClassToDo(dependency.getClazz());
+                    }
+                } finally {
+                    getFileManager().leave();
                 }
             }
             return classModelCache.get(clazz);

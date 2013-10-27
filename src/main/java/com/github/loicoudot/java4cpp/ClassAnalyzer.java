@@ -53,14 +53,18 @@ final class ClassAnalyzer extends Analyzer {
                 }
                 Object dependency = DeepUnwrap.unwrap((TemplateModel) arguments.get(0));
                 if (dependency instanceof String) {
-                    model.getOutterDependencies().add(context.getClassModel((String) dependency));
+                    addOutterDependencies(context.getClassModel((String) dependency));
                 } else if (dependency instanceof ClassModel) {
                     ClassModel classModel = (ClassModel) dependency;
-                    if (!classModel.getClazz().isPrimitive() && !classModel.getClazz().isArray()) {
-                        model.getOutterDependencies().add((ClassModel) dependency);
-                    }
+                    addOutterDependencies(classModel);
                 }
                 return "";
+            }
+
+            private void addOutterDependencies(ClassModel classModel) {
+                if (classModel.getGenerate() && !classModel.getClazz().isPrimitive() && !classModel.getClazz().isArray()) {
+                    model.getOutterDependencies().add(classModel);
+                }
             }
         }
 
@@ -111,6 +115,7 @@ final class ClassAnalyzer extends Analyzer {
         classModel.setAddInclude(new AddOutterInclude(classModel));
         classModel.setAddDependency(new AddOutterDependency(classModel));
         TypeTemplates typeTemplates = context.getTemplateManager().getTypeTemplates(clazz);
+        classModel.setGenerate(typeTemplates.getGenerate());
         classModel.setCppType(typeTemplates.getCppType(classModel));
         classModel.setCppReturnType(typeTemplates.getCppReturnType(classModel));
         typeTemplates.executeDependencies(classModel);

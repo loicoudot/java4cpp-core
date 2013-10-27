@@ -25,6 +25,7 @@ public class ClassAnalyzerTest {
         Templates other = new Templates();
         TypeTemplate classTemplate = new TypeTemplate();
         classTemplate.setClazz(Boolean.TYPE);
+        classTemplate.setGenerate(true);
         classTemplate.setCppType("cppType");
         classTemplate.setCppReturnType("cppReturnType");
         other.getDatatypes().getTemplates().add(classTemplate);

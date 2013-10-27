@@ -164,6 +164,7 @@ final class TemplateManager {
         if (type == null) {
             throw new RuntimeException("No defined template for type " + clazz.getName());
         }
+        result.setGenerate(type.getGenerate());
         result.setCppType(createTemplate(type.getCppType()));
         result.setCppReturnType(createTemplate(type.getCppReturnType()));
         result.setDependencies(createTemplate(type.getDependencies()));

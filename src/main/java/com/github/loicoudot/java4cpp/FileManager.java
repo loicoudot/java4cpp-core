@@ -39,6 +39,7 @@ final class FileManager {
     private static final String JAVA4CPP_LOG = "java4cpp.log";
     private static final int BUFFER_SIZE = 1024;
     private final Context context;
+    private String indent = "";
     private FileWriter java4cppLog;
     private File java4cppHash;
     private List<File> oldFiles = new ArrayList<File>();
@@ -118,6 +119,22 @@ final class FileManager {
         logInfo(String.format("generated: %d, skipped: %d, deleted: %d", generated, skipped, deleted));
     }
 
+    public void enter(String message) {
+        synchronized (java4cppLog) {
+            try {
+                java4cppLog.append('[').append(Thread.currentThread().getName()).append("] ");
+                java4cppLog.append(indent).append(message).append('\n');
+                java4cppLog.flush();
+            } catch (IOException e) {
+            }
+        }
+        indent += "  ";
+    }
+
+    public void leave() {
+        indent = indent.substring(2);
+    }
+
     /**
      * Write {@code message} inside the {@code java4cpp.log} file.
      * 
@@ -128,7 +145,7 @@ final class FileManager {
         synchronized (java4cppLog) {
             try {
                 java4cppLog.append('[').append(Thread.currentThread().getName()).append("] ");
-                java4cppLog.append(message).append('\n');
+                java4cppLog.append(indent).append(message).append('\n');
                 java4cppLog.flush();
             } catch (IOException e) {
             }

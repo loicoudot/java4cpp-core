@@ -35,6 +35,7 @@ public final class ClassModel {
     private final List<MethodModel> methods = newArrayList();
     private final List<String> enumKeys = newArrayList();
 
+    private boolean generate;
     private String javaSignature;
     private String jniSignature;
     private String jniMethodName;
@@ -197,6 +198,14 @@ public final class ClassModel {
     private void updateDependencies(ClassModel otherModel) {
         includes.addAll(otherModel.getOutterIncludes());
         dependencies.addAll(otherModel.getOutterDependencies());
+    }
+
+    public boolean getGenerate() {
+        return generate;
+    }
+
+    public void setGenerate(boolean generate) {
+        this.generate = generate;
     }
 
     public String getJavaSignature() {

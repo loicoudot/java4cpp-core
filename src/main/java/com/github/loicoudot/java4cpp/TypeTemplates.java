@@ -14,6 +14,7 @@ import freemarker.template.TemplateMethodModelEx;
 import freemarker.template.TemplateModelException;
 
 final class TypeTemplates {
+    private boolean generate;
     private Template cppType;
     private Template cppReturnType;
     private Template dependencies;
@@ -57,6 +58,14 @@ final class TypeTemplates {
             return sw.toString();
         }
         return "";
+    }
+
+    public boolean getGenerate() {
+        return generate;
+    }
+
+    public void setGenerate(boolean generate) {
+        this.generate = generate;
     }
 
     public String getCppType(ClassModel classModel) {
