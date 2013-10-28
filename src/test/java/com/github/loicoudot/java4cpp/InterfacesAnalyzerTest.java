@@ -50,7 +50,9 @@ public class InterfacesAnalyzerTest {
         clazzTrue.getInterfaces().getNoWrappes().add("com.github.loicoudot.java4cpp.Interface2");
         local.getClasses().add(clazzTrue);
 
-        context = new Context(new Settings());
+        Settings settings = new Settings();
+        settings.setTargetPath("target");
+        context = new Context(settings);
         context.getMappingsManager().addMappings(local);
         context.start();
     }

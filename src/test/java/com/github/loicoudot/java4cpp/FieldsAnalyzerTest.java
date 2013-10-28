@@ -57,7 +57,9 @@ public class FieldsAnalyzerTest {
         clazzTrue.getStaticFields().getNoWrappes().add("staticField2");
         local.getClasses().add(clazzTrue);
 
-        context = new Context(new Settings());
+        Settings settings = new Settings();
+        settings.setTargetPath("target");
+        context = new Context(settings);
         context.getMappingsManager().addMappings(local);
         context.start();
         analyzer = new FieldsAnalyzer(context);

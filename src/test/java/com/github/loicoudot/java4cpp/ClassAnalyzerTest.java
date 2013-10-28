@@ -21,6 +21,7 @@ public class ClassAnalyzerTest {
     @BeforeClass
     public void init() {
         Settings settings = new Settings();
+        settings.setTargetPath("target");
         context = new Context(settings);
         Templates other = new Templates();
         TypeTemplate classTemplate = new TypeTemplate();

@@ -65,7 +65,9 @@ public class MappingsManagerTest {
         local.getNamespaces().add(new Namespace("com.github.loicoudot.java4cpp.MappingsTrue", ""));
         local.getKeywords().add("delete");
 
-        context = new Context(new Settings());
+        Settings settings = new Settings();
+        settings.setTargetPath("target");
+        context = new Context(settings);
         context.getMappingsManager().addMappings(local);
         context.start();
         mappings = context.getMappingsManager();

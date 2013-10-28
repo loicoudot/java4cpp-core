@@ -73,7 +73,9 @@ public class MethodsAnalyzerTest {
         clazzTrue.getMethods().getNoWrappes().add("method2(Ljava/lang/String;)");
         local.getClasses().add(clazzTrue);
 
-        context = new Context(new Settings());
+        Settings settings = new Settings();
+        settings.setTargetPath("target");
+        context = new Context(settings);
         context.getMappingsManager().addMappings(local);
         context.start();
         analyzer = new MethodsAnalyzer(context);

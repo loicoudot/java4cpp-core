@@ -20,7 +20,9 @@ public class ContextTest {
 
     @Test
     public void functionsTest() throws TemplateException, IOException {
-        Context context = new Context(new Settings());
+        Settings settings = new Settings();
+        settings.setTargetPath("target");
+        Context context = new Context(settings);
 
         Templates other = new Templates();
         Datatypes datatypes = new Datatypes();

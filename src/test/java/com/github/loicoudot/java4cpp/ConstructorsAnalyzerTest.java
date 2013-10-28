@@ -71,7 +71,9 @@ public class ConstructorsAnalyzerTest {
         clazzTrue.getConstructors().getNoWrappes().add("Ljava/lang/String;");
         local.getClasses().add(clazzTrue);
 
-        context = new Context(new Settings());
+        Settings settings = new Settings();
+        settings.setTargetPath("target");
+        context = new Context(settings);
         context.getMappingsManager().addMappings(local);
         context.start();
     }
