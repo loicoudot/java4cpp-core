@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @XmlType(propOrder = { "needAnalyzing", "cppType", "cppReturnType", "dependencies", "functions" })
 public final class TypeTemplate {
     private Class<?> clazz;
-    private Boolean needAnalyzing = false;
+    private Boolean needAnalyzing = true;
     private String cppType;
     private String cppReturnType;
     private String dependencies;
