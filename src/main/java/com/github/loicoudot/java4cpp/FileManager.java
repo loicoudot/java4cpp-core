@@ -73,14 +73,14 @@ final class FileManager {
      * {@code useHash} settings.
      */
     public void start() {
+        File rep = new File(context.getSettings().getTargetPath());
+        rep.mkdirs();
         try {
             java4cppLog = new FileWriter(new File(getPath(JAVA4CPP_LOG)));
         } catch (IOException e) {
             System.err.println("Can't create log file: " + e.getMessage());
         }
         try {
-            File rep = new File(context.getSettings().getTargetPath());
-            rep.mkdirs();
             File[] existings = rep.listFiles(new SourceFilter());
             if (existings != null) {
                 oldFiles = new ArrayList<File>(Arrays.asList(existings));
