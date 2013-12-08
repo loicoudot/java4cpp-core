@@ -4,7 +4,6 @@ import static com.github.loicoudot.java4cpp.Utils.newArrayList;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Type;
 import java.util.List;
 
 import com.github.loicoudot.java4cpp.configuration.ClassMapping;
@@ -63,15 +62,8 @@ final class MethodsAnalyzer extends Analyzer {
         methodModel.setCppName(getCppName(method));
         methodModel.setStatic(Modifier.isStatic(method.getModifiers()));
 
-        methodModel.setReturnType(context.getClassModel(method.getReturnType()));
-        updateGenericDependency(method.getGenericReturnType());
-
-        for (Class<?> param : method.getParameterTypes()) {
-            methodModel.getParameters().add(context.getClassModel(param));
-        }
-        for (Type type : method.getGenericParameterTypes()) {
-            updateGenericDependency(type);
-        }
+        methodModel.setReturnType(getParameterized(method.getGenericReturnType()));
+        methodModel.getParameters().addAll(getParameterized(method.getGenericParameterTypes()));
         return methodModel;
     }
 

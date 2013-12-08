@@ -35,6 +35,8 @@ public final class ClassModel {
     private final List<MethodModel> methods = newArrayList();
     private final List<String> enumKeys = newArrayList();
 
+    private boolean isParameterized;
+    private final List<ClassModel> parameterized = newArrayList();
     private boolean needAnalyzing;
     private String javaSignature;
     private String jniSignature;
@@ -55,6 +57,7 @@ public final class ClassModel {
         this.clazz = clazz;
         javaName = clazz.getName();
         isPrimitive = clazz.isPrimitive();
+        isParameterized = false;
         isEnum = clazz.isEnum();
         isArray = clazz.isArray();
         isInterface = clazz.isInterface();
@@ -126,6 +129,22 @@ public final class ClassModel {
 
     public boolean isIsCloneable() {
         return isCloneable;
+    }
+
+    public boolean isIsParameterized() {
+        return isParameterized;
+    }
+
+    public List<ClassModel> getParameterized() {
+        return parameterized;
+    }
+
+    public void addParameterized(ClassModel parameterized) {
+        this.parameterized.add(parameterized);
+    }
+
+    public void setParameterized(boolean isParameterized) {
+        this.isParameterized = isParameterized;
     }
 
     public ClassModel getSuperclass() {

@@ -3,7 +3,6 @@ package com.github.loicoudot.java4cpp;
 import static com.github.loicoudot.java4cpp.Utils.newArrayList;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Type;
 import java.util.List;
 
 import com.github.loicoudot.java4cpp.configuration.ClassMapping;
@@ -58,12 +57,7 @@ final class ConstructorsAnalyzer extends Analyzer {
 
     public ConstructorModel getModel(Constructor<?> constructor) {
         ConstructorModel constructorModel = new ConstructorModel();
-        for (Class<?> param : constructor.getParameterTypes()) {
-            constructorModel.getParameters().add(context.getClassModel(param));
-        }
-        for (Type type : constructor.getGenericParameterTypes()) {
-            updateGenericDependency(type);
-        }
+        constructorModel.getParameters().addAll(getParameterized(constructor.getGenericParameterTypes()));
         return constructorModel;
     }
 }
