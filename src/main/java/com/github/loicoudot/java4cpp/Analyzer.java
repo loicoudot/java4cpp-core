@@ -25,9 +25,7 @@ abstract class Analyzer {
             return context.getClassModel((ParameterizedType) type);
         } else if (type instanceof Class) {
             Class<?> clazz = (Class<?>) type;
-            if (!clazz.isArray()) {
-                context.addClassToDo(clazz);
-            }
+            context.addClassToDo(clazz);
             return context.getClassModel(clazz);
         }
         return context.getClassModel(Object.class);

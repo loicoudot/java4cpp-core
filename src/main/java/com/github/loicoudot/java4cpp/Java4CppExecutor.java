@@ -15,12 +15,13 @@ class Java4CppExecutor implements Runnable {
 
     @Override
     public void run() {
-        context.getFileManager().logInfo("generating c++ wrapper for " + clazz.getName());
+        context.getFileManager().enter("generating c++ wrapper for " + clazz.getName());
 
         final Map<String, Object> dataModel = newHashMap();
         dataModel.put("cppFormatter", new SourceFormatter());
         dataModel.put("class", context.getClassModel(clazz));
 
         context.getTemplateManager().processSourceTemplates(dataModel);
+        context.getFileManager().leave();
     }
 }

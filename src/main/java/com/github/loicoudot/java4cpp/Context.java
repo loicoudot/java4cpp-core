@@ -99,10 +99,11 @@ public final class Context {
 
     public void addClassToDo(Class<?> clazz) {
         synchronized (classesToDo) {
-            if (clazz.getEnclosingClass() == null && !classesAlreadyDone.contains(clazz) && !classesToDo.contains(clazz)) {
+            if (clazz.getEnclosingClass() == null && !clazz.isPrimitive() && !clazz.isArray() && !classesAlreadyDone.contains(clazz)
+                    && !classesToDo.contains(clazz)) {
                 classesToDo.add(clazz);
                 classesAlreadyDone.add(clazz);
-                getFileManager().logInfo("   add dependency " + clazz.getName());
+                getFileManager().logInfo("add dependency " + clazz.getName());
             }
         }
     }
@@ -138,7 +139,7 @@ public final class Context {
     public ClassModel getClassModel(Class<?> clazz) {
         synchronized (classModelCache) {
             if (!classModelCache.containsKey(clazz)) {
-                getFileManager().enter("get " + clazz.getName());
+                getFileManager().enter("analyzing " + clazz.getName());
                 try {
                     classModelCache.put(clazz, new ClassModel(clazz));
 
