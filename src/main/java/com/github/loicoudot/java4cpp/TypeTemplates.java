@@ -50,6 +50,7 @@ final class TypeTemplates {
 
         @Override
         @SuppressWarnings("rawtypes")
+        // TODO: not thread safe !
         public Object exec(List arguments) throws TemplateModelException {
             if (template != null) {
                 for (int i = 0; i < arguments.size(); ++i) {

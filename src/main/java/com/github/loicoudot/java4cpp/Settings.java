@@ -97,7 +97,7 @@ public final class Settings {
         setTemplatesFile(properties.getProperty(TEMPLATES_FILE, ""));
         setClean(Boolean.valueOf(properties.getProperty(CLEAN, "false")));
         setUseHash(Boolean.valueOf(properties.getProperty(USE_HASH, "true")));
-        setNbThread(Integer.valueOf(properties.getProperty(NB_THREAD, "2")));
+        setNbThread(Integer.valueOf(properties.getProperty(NB_THREAD, "1")));
     }
 
     private void initFromPropertiesFile(String propertiesFile) {
