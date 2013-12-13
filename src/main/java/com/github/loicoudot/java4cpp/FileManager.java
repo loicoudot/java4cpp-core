@@ -39,7 +39,12 @@ final class FileManager {
     private static final String JAVA4CPP_LOG = "java4cpp.log";
     private static final int BUFFER_SIZE = 1024;
     private final Context context;
-    private String indent = "";
+    private final ThreadLocal<String> indent = new ThreadLocal<String>() {
+        @Override
+        protected String initialValue() {
+            return "";
+        };
+    };
     private FileWriter java4cppLog;
     private File java4cppHash;
     private List<File> oldFiles = new ArrayList<File>();
@@ -123,16 +128,16 @@ final class FileManager {
         synchronized (java4cppLog) {
             try {
                 java4cppLog.append('[').append(Thread.currentThread().getName()).append("] ");
-                java4cppLog.append(indent).append(message).append('\n');
+                java4cppLog.append(indent.get()).append(message).append('\n');
                 java4cppLog.flush();
             } catch (IOException e) {
             }
         }
-        indent += "  ";
+        indent.set(indent.get() + "  ");
     }
 
     public void leave() {
-        indent = indent.substring(2);
+        indent.set(indent.get().substring(2));
     }
 
     /**
@@ -145,7 +150,7 @@ final class FileManager {
         synchronized (java4cppLog) {
             try {
                 java4cppLog.append('[').append(Thread.currentThread().getName()).append("] ");
-                java4cppLog.append(indent).append(message).append('\n');
+                java4cppLog.append(indent.get()).append(message).append('\n');
                 java4cppLog.flush();
             } catch (IOException e) {
             }
