@@ -37,11 +37,12 @@ final class TypeTemplates {
     public class TemplateFunction implements TemplateMethodModelEx {
 
         private final Template template;
-        private ClassModel model;
+        private ClassModel classModel;
+        private final ThreadLocal<Map<String, Object>> model = new ThreadLocal<Map<String, Object>>();
 
-        public TemplateFunction(Template template, ClassModel model) {
+        public TemplateFunction(Template template, ClassModel classModel) {
             this.template = template;
-            this.model = model;
+            this.classModel = classModel;
         }
 
         public TemplateFunction(Template template) {
@@ -50,13 +51,14 @@ final class TypeTemplates {
 
         @Override
         @SuppressWarnings("rawtypes")
-        // TODO: not thread safe !
         public Object exec(List arguments) throws TemplateModelException {
             if (template != null) {
+                model.set(new HashMap<String, Object>());
+                model.get().put("class", classModel);
                 for (int i = 0; i < arguments.size(); ++i) {
-                    model.getFunctions().put("arg" + (i + 1), arguments.get(i).toString());
+                    model.get().put("arg" + (i + 1), arguments.get(i).toString());
                 }
-                return processTemplate(template, model);
+                return processTemplate(template, model.get());
             }
             return "";
         }
@@ -78,7 +80,7 @@ final class TypeTemplates {
      *            a semi-filled <code>ClassModel</code>
      * @return the freemarker template processing results
      */
-    private String processTemplate(Template template, ClassModel classModel) {
+    private String processTemplate(Template template, Object classModel) {
         if (template != null) {
             StringWriter sw = new StringWriter();
             try {
