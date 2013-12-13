@@ -22,11 +22,10 @@ final class ClassAnalyzer extends Analyzer {
     }
 
     /**
-     * Fill {@code classModel} data-model bean, with the content of
-     * {@code clazz}.
+     * Fill {@code classModel} data-model bean, with the content of {@code clazz}.
      * 
      * @param classModel
-     *            the data-model to fill
+     *        the data-model to fill
      */
     @Override
     public void fill(ClassModel classModel) {
@@ -119,6 +118,7 @@ final class ClassAnalyzer extends Analyzer {
         classModel.setCppType(typeTemplates.getCppType(classModel));
         classModel.setCppReturnType(typeTemplates.getCppReturnType(classModel));
         typeTemplates.executeDependencies(classModel);
+        classModel.getDependencies().addAll(classModel.getOutterDependencies());
         classModel.setFunctions(typeTemplates.getFunctions(classModel));
     }
 }
