@@ -171,7 +171,8 @@ public final class ClassModel {
 
     public void addNestedClass(ClassModel nestedClassModel) {
         nestedClass.add(nestedClassModel);
-        updateDependencies(nestedClassModel);
+        includes.addAll(nestedClassModel.getIncludes());
+        dependencies.addAll(nestedClassModel.getDependencies());
     }
 
     public List<ConstructorModel> getConstructors() {
