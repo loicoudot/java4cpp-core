@@ -76,15 +76,15 @@ final class TypeTemplates {
      * 
      * @param template
      *            a freemarker template for generating parts of C++ source code
-     * @param classModel
+     * @param model
      *            a semi-filled <code>ClassModel</code>
      * @return the freemarker template processing results
      */
-    private String processTemplate(Template template, Object classModel) {
+    private String processTemplate(Template template, Object model) {
         if (template != null) {
             StringWriter sw = new StringWriter();
             try {
-                template.process(classModel, sw);
+                template.process(model, sw);
             } catch (Exception e) {
                 throw new RuntimeException("Failed to process template " + e.getMessage());
             }
@@ -118,7 +118,7 @@ final class TypeTemplates {
      * @return the template processing results
      */
     public String getCppType(ClassModel classModel) {
-        return processTemplate(cppType, classModel);
+        return processTemplate(cppType, newHashMap("class", classModel));
     }
 
     /**
@@ -141,7 +141,7 @@ final class TypeTemplates {
      * @return the template processing results
      */
     public String getCppReturnType(ClassModel classModel) {
-        String type = processTemplate(cppReturnType, classModel);
+        String type = processTemplate(cppReturnType, newHashMap("class", classModel));
         if (!type.isEmpty()) {
             return type;
         }
@@ -168,7 +168,7 @@ final class TypeTemplates {
      */
     public void executeDependencies(ClassModel classModel) {
         if (dependencies != null) {
-            processTemplate(dependencies, classModel);
+            processTemplate(dependencies, newHashMap("class", classModel));
         }
     }
 

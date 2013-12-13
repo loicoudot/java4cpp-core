@@ -28,7 +28,7 @@ public class ContextTest {
         Datatypes datatypes = new Datatypes();
         TypeTemplate fallback = new TypeTemplate();
         fallback.setNeedAnalyzing(true);
-        fallback.setCppType("type${cppShortName}");
+        fallback.setCppType("type${class.cppShortName}");
         Function function = new Function("test", "${arg2} + ${arg1} + ${class.cppType}");
         fallback.getFunctions().add(function);
         datatypes.setFallback(fallback);

@@ -29,6 +29,17 @@ public final class Utils {
     }
 
     /**
+     * Creates a <i>mutable</i>, {@code HashMap} instance with one entry.
+     * 
+     * @return a new {@code HashMap}
+     */
+    public static <K, V> HashMap<K, V> newHashMap(K key, V value) {
+        HashMap<K, V> map = new HashMap<K, V>();
+        map.put(key, value);
+        return map;
+    }
+
+    /**
      * Creates a <i>mutable</i>, empty {@code HashSet} instance.
      * 
      * @return a new, empty {@code HashSet}
