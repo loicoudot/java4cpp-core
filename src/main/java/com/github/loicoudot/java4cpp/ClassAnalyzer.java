@@ -1,5 +1,6 @@
 package com.github.loicoudot.java4cpp;
 
+import java.util.Collection;
 import java.util.List;
 
 import com.github.loicoudot.java4cpp.model.ClassModel;
@@ -83,7 +84,7 @@ final class ClassAnalyzer extends Analyzer {
             }
 
             @Override
-            @SuppressWarnings("rawtypes")
+            @SuppressWarnings({ "rawtypes", "unchecked" })
             public Object exec(List arguments) throws TemplateModelException {
                 if (arguments.size() != 1) {
                     throw new TemplateModelException("addInclude need one string parameter.");
@@ -91,6 +92,8 @@ final class ClassAnalyzer extends Analyzer {
                 Object dependency = DeepUnwrap.unwrap((TemplateModel) arguments.get(0));
                 if (dependency instanceof String) {
                     model.getOutterIncludes().add((String) dependency);
+                } else if (dependency instanceof Collection) {
+                    model.getOutterIncludes().addAll((Collection) dependency);
                 } else {
                     throw new TemplateModelException("addInclude need one string parameter.");
                 }
