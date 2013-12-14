@@ -22,10 +22,11 @@ final class ClassAnalyzer extends Analyzer {
     }
 
     /**
-     * Fill {@code classModel} data-model bean, with the content of {@code clazz}.
+     * Fill {@code classModel} data-model bean, with the content of
+     * {@code clazz}.
      * 
      * @param classModel
-     *        the data-model to fill
+     *            the data-model to fill
      */
     @Override
     public void fill(ClassModel classModel) {
@@ -48,7 +49,7 @@ final class ClassAnalyzer extends Analyzer {
             @SuppressWarnings("rawtypes")
             public Object exec(List arguments) throws TemplateModelException {
                 if (arguments.size() != 1) {
-                    throw new TemplateModelException("AddOutterDependency need one parameter (a class name or a ClassModel instance).");
+                    throw new TemplateModelException("addDependency need one parameter (a class name or a ClassModel instance).");
                 }
                 Object dependency = DeepUnwrap.unwrap((TemplateModel) arguments.get(0));
                 if (dependency instanceof String) {
@@ -56,6 +57,8 @@ final class ClassAnalyzer extends Analyzer {
                 } else if (dependency instanceof ClassModel) {
                     ClassModel classModel = (ClassModel) dependency;
                     addOutterDependencies(classModel);
+                } else {
+                    throw new TemplateModelException("addDependency need one parameter (a class name or a ClassModel instance).");
                 }
                 return "";
             }
@@ -83,11 +86,13 @@ final class ClassAnalyzer extends Analyzer {
             @SuppressWarnings("rawtypes")
             public Object exec(List arguments) throws TemplateModelException {
                 if (arguments.size() != 1) {
-                    throw new TemplateModelException("AddOutterInclude need one parameter.");
+                    throw new TemplateModelException("addInclude need one string parameter.");
                 }
                 Object dependency = DeepUnwrap.unwrap((TemplateModel) arguments.get(0));
                 if (dependency instanceof String) {
                     model.getOutterIncludes().add((String) dependency);
+                } else {
+                    throw new TemplateModelException("addInclude need one string parameter.");
                 }
                 return "";
             }
@@ -118,7 +123,6 @@ final class ClassAnalyzer extends Analyzer {
         classModel.setCppType(typeTemplates.getCppType(classModel));
         classModel.setCppReturnType(typeTemplates.getCppReturnType(classModel));
         typeTemplates.executeDependencies(classModel);
-        classModel.getDependencies().addAll(classModel.getOutterDependencies());
         classModel.setFunctions(typeTemplates.getFunctions(classModel));
     }
 }

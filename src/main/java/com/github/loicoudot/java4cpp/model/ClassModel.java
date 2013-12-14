@@ -171,8 +171,7 @@ public final class ClassModel {
 
     public void addNestedClass(ClassModel nestedClassModel) {
         nestedClass.add(nestedClassModel);
-        includes.addAll(nestedClassModel.getIncludes());
-        dependencies.addAll(nestedClassModel.getDependencies());
+        updateDependencies(nestedClassModel);
     }
 
     public List<ConstructorModel> getConstructors() {
@@ -309,10 +308,16 @@ public final class ClassModel {
     }
 
     public Set<String> getIncludes() {
+        for (ClassModel nested : getNestedClass()) {
+            includes.addAll(nested.getIncludes());
+        }
         return includes;
     }
 
     public Set<ClassModel> getDependencies() {
+        for (ClassModel nested : getNestedClass()) {
+            dependencies.addAll(nested.getDependencies());
+        }
         return dependencies;
     }
 
