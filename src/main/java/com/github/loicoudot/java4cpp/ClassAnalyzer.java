@@ -58,7 +58,11 @@ final class ClassAnalyzer extends Analyzer {
                 } else if (dependency instanceof ClassModel) {
                     ClassModel classModel = (ClassModel) dependency;
                     addOutterDependencies(classModel);
-                } else {
+                } else if (dependency instanceof Collection) {
+                    for (Object depend : (Collection) dependency) {
+                        addOutterDependencies((ClassModel) depend);
+                    }
+                } else if (dependency != null) {
                     throw new TemplateModelException("addDependency need one parameter (a class name or a ClassModel instance).");
                 }
                 return "";
@@ -89,12 +93,12 @@ final class ClassAnalyzer extends Analyzer {
                 if (arguments.size() != 1) {
                     throw new TemplateModelException("addInclude need one string parameter.");
                 }
-                Object dependency = DeepUnwrap.unwrap((TemplateModel) arguments.get(0));
-                if (dependency instanceof String) {
-                    model.getOutterIncludes().add((String) dependency);
-                } else if (dependency instanceof Collection) {
-                    model.getOutterIncludes().addAll((Collection) dependency);
-                } else {
+                Object include = DeepUnwrap.unwrap((TemplateModel) arguments.get(0));
+                if (include instanceof String) {
+                    model.getOutterIncludes().add((String) include);
+                } else if (include instanceof Collection) {
+                    model.getOutterIncludes().addAll((Collection) include);
+                } else if (include != null) {
                     throw new TemplateModelException("addInclude need one string parameter.");
                 }
                 return "";
