@@ -16,8 +16,8 @@ public class InnerClassAnalyzer extends Analyzer {
 
     @Override
     public void fill(ClassModel classModel) {
-        for (Class<?> nestedClass : getNestedClasses(classModel.getClazz())) {
-            classModel.addNestedClass(context.getClassModel(nestedClass));
+        for (Class<?> nestedClass : getNestedClasses(classModel.getType().getClazz())) {
+            classModel.getContent().addNestedClass(context.getClassModel(nestedClass));
         }
     }
 

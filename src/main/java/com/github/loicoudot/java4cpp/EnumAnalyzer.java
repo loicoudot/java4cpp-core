@@ -14,8 +14,8 @@ public class EnumAnalyzer extends Analyzer {
 
     @Override
     public void fill(ClassModel classModel) {
-        for (String key : getEnumKeys(classModel.getClazz())) {
-            classModel.addEnumKey(key);
+        for (String key : getEnumKeys(classModel.getType().getClazz())) {
+            classModel.getContent().addEnumKey(key);
         }
     }
 

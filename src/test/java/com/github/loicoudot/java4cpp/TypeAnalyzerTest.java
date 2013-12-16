@@ -10,13 +10,14 @@ import org.testng.annotations.Test;
 import com.github.loicoudot.java4cpp.configuration.Templates;
 import com.github.loicoudot.java4cpp.configuration.TypeTemplate;
 import com.github.loicoudot.java4cpp.model.ClassModel;
+import com.github.loicoudot.java4cpp.model.ClassType;
 
 import freemarker.template.TemplateModelException;
 
-public class ClassAnalyzerTest {
+public class TypeAnalyzerTest {
 
     private Context context;
-    private ClassAnalyzer analyzer;
+    private TypeAnalyzer analyzer;
 
     @BeforeClass
     public void init() {
@@ -34,44 +35,44 @@ public class ClassAnalyzerTest {
         other.getDatatypes().setFallback(classTemplate);
         context.getTemplateManager().addTemplates(other);
         context.start();
-        analyzer = new ClassAnalyzer(context);
+        analyzer = new TypeAnalyzer(context);
     }
 
     @Test
     public void testFill() throws Exception {
         ClassModel model = new ClassModel(Boolean.TYPE);
         analyzer.fill(model);
-        assertThat(model.getJavaName()).isEqualTo("boolean");
-        assertThat(model.isIsEnum()).isFalse();
-        assertThat(model.isIsInterface()).isFalse();
-        assertThat(model.isIsInnerClass()).isFalse();
-        assertThat(model.isIsCheckedException()).isFalse();
-        assertThat(model.isIsCloneable()).isFalse();
-        assertThat(model.getOwner()).isEqualTo(model);
-        assertThat(model.getCppFullName()).isEqualTo("boolean");
-        assertThat(model.getCppShortName()).isEqualTo("boolean");
-        assertThat(model.getJavaSignature()).isEqualTo("Z");
-        assertThat(model.getJniSignature()).isEqualTo("jboolean");
-        assertThat(model.getJniMethodName()).isEqualTo("Boolean");
-        assertThat(model.getCppType()).isEqualTo("cppType");
-        assertThat(model.getCppReturnType()).isEqualTo("cppReturnType");
-        assertThat(model.getSuperclass()).isNull();
-        assertThat(model.getOutterIncludes()).isEmpty();
-        assertThat(model.getOutterDependencies()).isEmpty();
+        ClassType type = model.getType();
+        assertThat(type.getJavaName()).isEqualTo("boolean");
+        assertThat(type.isIsEnum()).isFalse();
+        assertThat(type.isIsInterface()).isFalse();
+        assertThat(type.isIsInnerClass()).isFalse();
+        assertThat(type.isIsCheckedException()).isFalse();
+        assertThat(type.isIsCloneable()).isFalse();
+        assertThat(type.getOwner()).isEqualTo(model);
+        assertThat(type.getCppFullName()).isEqualTo("boolean");
+        assertThat(type.getCppShortName()).isEqualTo("boolean");
+        assertThat(type.getJavaSignature()).isEqualTo("Z");
+        assertThat(type.getJniSignature()).isEqualTo("jboolean");
+        assertThat(type.getJniMethodName()).isEqualTo("Boolean");
+        assertThat(type.getCppType()).isEqualTo("cppType");
+        assertThat(type.getCppReturnType()).isEqualTo("cppReturnType");
+        assertThat(type.getIncludes()).isEmpty();
+        assertThat(type.getDependencies()).isEmpty();
     }
 
     @Test(expectedExceptions = { TemplateModelException.class })
     public void testDependencyException() throws Exception {
         ClassModel model = new ClassModel(Boolean.TYPE);
         analyzer.fill(model);
-        model.getAddDependency().exec(new ArrayList<String>());
+        model.getType().getAddDependencies().exec(new ArrayList<String>());
     }
 
     @Test(expectedExceptions = { TemplateModelException.class })
     public void testIncludeException() throws Exception {
         ClassModel model = new ClassModel(Boolean.TYPE);
         analyzer.fill(model);
-        model.getAddInclude().exec(new ArrayList<String>());
+        model.getType().getAddIncludes().exec(new ArrayList<String>());
     }
 
     @Test
@@ -79,7 +80,7 @@ public class ClassAnalyzerTest {
         boolean[][] array = new boolean[1][1];
         ClassModel model = new ClassModel(array.getClass());
         analyzer.fill(model);
-        assertThat(model.getInnerType().getJavaName()).isEqualTo("[Z");
-        assertThat(model.getInnerType().getInnerType().getJavaName()).isEqualTo("boolean");
+        assertThat(model.getType().getInnerType().getType().getJavaName()).isEqualTo("[Z");
+        assertThat(model.getType().getInnerType().getType().getInnerType().getType().getJavaName()).isEqualTo("boolean");
     }
 }

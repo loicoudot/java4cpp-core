@@ -11,8 +11,8 @@ public class SuperclassAnalyzer extends Analyzer {
 
     @Override
     public void fill(ClassModel classModel) {
-        if (exportSuperClass(classModel.getClazz())) {
-            classModel.setSuperclass(context.getClassModel(classModel.getClazz().getSuperclass()));
+        if (exportSuperClass(classModel.getType().getClazz())) {
+            classModel.getContent().setSuperclass(context.getClassModel(classModel.getType().getClazz().getSuperclass()));
         }
     }
 

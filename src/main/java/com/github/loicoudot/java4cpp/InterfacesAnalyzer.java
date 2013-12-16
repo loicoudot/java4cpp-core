@@ -16,8 +16,8 @@ public class InterfacesAnalyzer extends Analyzer {
 
     @Override
     public void fill(ClassModel classModel) {
-        for (Class<?> interfac : getInterfaces(classModel.getClazz())) {
-            classModel.addInterface(context.getClassModel(interfac));
+        for (Class<?> interfac : getInterfaces(classModel.getType().getClazz())) {
+            classModel.getContent().addInterface(context.getClassModel(interfac));
         }
     }
 

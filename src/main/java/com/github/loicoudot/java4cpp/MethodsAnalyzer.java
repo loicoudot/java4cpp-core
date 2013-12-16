@@ -25,8 +25,8 @@ final class MethodsAnalyzer extends Analyzer {
 
     @Override
     public void fill(ClassModel classModel) {
-        for (Method method : getMethods(classModel.getClazz())) {
-            classModel.addMethod(getModel(method));
+        for (Method method : getMethods(classModel.getType().getClazz())) {
+            classModel.getContent().addMethod(getModel(method));
         }
     }
 

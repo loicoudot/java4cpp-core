@@ -26,8 +26,8 @@ final class FieldsAnalyzer extends Analyzer {
 
     @Override
     public void fill(ClassModel classModel) {
-        for (Field field : getStaticFields(classModel.getClazz())) {
-            classModel.addField(getModel(field));
+        for (Field field : getStaticFields(classModel.getType().getClazz())) {
+            classModel.getContent().addField(getModel(field));
         }
     }
 

@@ -23,8 +23,8 @@ final class ConstructorsAnalyzer extends Analyzer {
 
     @Override
     public void fill(ClassModel classModel) {
-        for (Constructor<?> constructor : getConstructors(classModel.getClazz())) {
-            classModel.addConstructor(getModel(constructor));
+        for (Constructor<?> constructor : getConstructors(classModel.getType().getClazz())) {
+            classModel.getContent().addConstructor(getModel(constructor));
         }
     }
 

@@ -41,7 +41,7 @@ public final class Context {
         fileManager = new FileManager(this);
         mappingsManager = new MappingsManager(this);
         templateManager = new TemplateManager(this);
-        classAnalyzer = new ClassAnalyzer(this);
+        classAnalyzer = new TypeAnalyzer(this);
         analyzers = new Analyzer[] { classAnalyzer, new SuperclassAnalyzer(this), new InterfacesAnalyzer(this), new InnerClassAnalyzer(this),
                 new FieldsAnalyzer(this), new EnumAnalyzer(this), new ConstructorsAnalyzer(this), new MethodsAnalyzer(this) };
     }
@@ -150,9 +150,11 @@ public final class Context {
                         classAnalyzer.fill(classModel);
                     }
 
-                    for (ClassModel dependency : classModel.getDependencies()) {
-                        addClassToDo(dependency.getClazz());
-                    }
+                    /*
+                     * for (ClassModel dependency :
+                     * classModel.getDependencies()) {
+                     * addClassToDo(dependency.getClazz()); }
+                     */
                 } finally {
                     getFileManager().leave();
                 }
