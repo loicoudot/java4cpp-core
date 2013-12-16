@@ -28,8 +28,8 @@ public class ContextTest {
         Datatypes datatypes = new Datatypes();
         TypeTemplate fallback = new TypeTemplate();
         fallback.setNeedAnalyzing(true);
-        fallback.setCppType("type${class.cppShortName}");
-        Function function = new Function("test", "${arg2} + ${arg1} + ${class.cppType}");
+        fallback.setCppType("type${class.type.cppShortName}");
+        Function function = new Function("test", "${arg2} + ${arg1} + ${class.type.cppType}");
         fallback.getFunctions().add(function);
         datatypes.setFallback(fallback);
         other.setDatatypes(datatypes);
@@ -38,7 +38,7 @@ public class ContextTest {
         context.start();
         ClassModel model = context.getClassModel(ContextTest.class);
 
-        String templateTest = "${functions.test('a', 'b')}";
+        String templateTest = "${type.functions.test('a', 'b')}";
         Template template = context.getTemplateManager().createTemplate(templateTest);
         StringWriter sw = new StringWriter();
         template.process(model, sw);

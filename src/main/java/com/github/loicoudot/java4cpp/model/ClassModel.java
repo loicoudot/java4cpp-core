@@ -25,10 +25,11 @@ public final class ClassModel {
 
     private final ClassType type;
     private List<ClassModel> parameters;
-    private ClassContent content;
+    private final ClassContent content;
 
     public ClassModel(Type type) {
         this.type = new ClassType(type);
+        this.content = new ClassContent();
     }
 
     public ClassType getType() {
