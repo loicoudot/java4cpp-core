@@ -4,8 +4,6 @@ import static com.github.loicoudot.java4cpp.Utils.newArrayList;
 import static com.github.loicoudot.java4cpp.Utils.newHashMap;
 
 import java.io.File;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Enumeration;
@@ -161,22 +159,6 @@ public final class Context {
             }
             return classModelCache.get(clazz);
         }
-    }
-
-    public ClassModel getClassModel(ParameterizedType type) {
-        ClassModel model = new ClassModel((Class<?>) type.getRawType());
-        classAnalyzer.fill(model);
-        model.setParameterized(true);
-        for (Type parameterized : type.getActualTypeArguments()) {
-            if (parameterized instanceof ParameterizedType) {
-                model.addParameterized(getClassModel((ParameterizedType) parameterized));
-            } else if (parameterized instanceof Class) {
-                model.addParameterized(getClassModel((Class<?>) parameterized));
-            } else {
-                model.addParameterized(getClassModel(Object.class));
-            }
-        }
-        return model;
     }
 
     public ClassModel getClassModel(String name) {

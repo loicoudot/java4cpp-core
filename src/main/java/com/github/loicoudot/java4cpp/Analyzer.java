@@ -2,7 +2,6 @@ package com.github.loicoudot.java4cpp;
 
 import static com.github.loicoudot.java4cpp.Utils.newArrayList;
 
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
 
@@ -21,9 +20,7 @@ abstract class Analyzer {
     public abstract void fill(ClassModel classModel);
 
     protected ClassModel getParameterized(Type type) {
-        if (type instanceof ParameterizedType) {
-            return context.getClassModel((ParameterizedType) type);
-        } else if (type instanceof Class) {
+        if (type instanceof Class) {
             Class<?> clazz = (Class<?>) type;
             context.addClassToDo(clazz);
             return context.getClassModel(clazz);
