@@ -72,6 +72,18 @@ public class ContextTest {
     public Map<String, Double> mapType;
     public List<Set<Double>> listOfSetType;
 
+    public <E> void genericList(List<E> list) {
+    }
+
+    public <E extends ContextTest> void genericListExtends(List<E> list) {
+    }
+
+    public void genericListWildcard(List<?> list) {
+    }
+
+    public void genericListWildcardExtends(List<? extends ContextTest> list) {
+    }
+
     @Test
     public void testList() throws Exception {
         Type type = ContextTest.class.getField("listType").getGenericType();
@@ -97,5 +109,37 @@ public class ContextTest {
         assertThat(model.getParameters().get(0).getType().getJavaName()).isEqualTo("java.util.Set");
         assertThat(model.getParameters().get(0).getParameters()).hasSize(1);
         assertThat(model.getParameters().get(0).getParameters().get(0).getType().getJavaName()).isEqualTo("java.lang.Double");
+    }
+
+    @Test
+    public void testGenericList() throws Exception {
+        Type type = ContextTest.class.getMethod("genericList", List.class).getGenericParameterTypes()[0];
+        ClassModel model = context.getClassModel(type);
+        assertThat(model.getParameters()).hasSize(1);
+        assertThat(model.getParameters().get(0).getType().getJavaName()).isEqualTo("java.lang.Object");
+    }
+
+    @Test
+    public void testGenericListExtends() throws Exception {
+        Type type = ContextTest.class.getMethod("genericListExtends", List.class).getGenericParameterTypes()[0];
+        ClassModel model = context.getClassModel(type);
+        assertThat(model.getParameters()).hasSize(1);
+        assertThat(model.getParameters().get(0).getType().getJavaName()).isEqualTo("com.github.loicoudot.java4cpp.ContextTest");
+    }
+
+    @Test
+    public void testGenericListWildcard() throws Exception {
+        Type type = ContextTest.class.getMethod("genericListWildcard", List.class).getGenericParameterTypes()[0];
+        ClassModel model = context.getClassModel(type);
+        assertThat(model.getParameters()).hasSize(1);
+        assertThat(model.getParameters().get(0).getType().getJavaName()).isEqualTo("java.lang.Object");
+    }
+
+    @Test
+    public void testGenericListWildcardExtends() throws Exception {
+        Type type = ContextTest.class.getMethod("genericListWildcardExtends", List.class).getGenericParameterTypes()[0];
+        ClassModel model = context.getClassModel(type);
+        assertThat(model.getParameters()).hasSize(1);
+        assertThat(model.getParameters().get(0).getType().getJavaName()).isEqualTo("com.github.loicoudot.java4cpp.ContextTest");
     }
 }

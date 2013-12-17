@@ -139,12 +139,13 @@ public final class Context {
         return templateManager;
     }
 
+    @SuppressWarnings("rawtypes")
     public static Class<?> getRawClass(Type type) {
         if (type instanceof Class) {
             return (Class<?>) type;
         }
         if (type instanceof TypeVariable) {
-            return Object.class;
+            return getRawClass(((TypeVariable) type).getBounds()[0]);
         }
         if (type instanceof ParameterizedType) {
             return getRawClass(((ParameterizedType) type).getRawType());
