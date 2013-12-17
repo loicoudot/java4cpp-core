@@ -120,6 +120,11 @@ final class TypeAnalyzer extends Analyzer {
         typeModel.setCppFullName(fullName.toString());
         typeModel.setCppShortName(shortName);
 
+        typeModel.setOwner(typeModel.isIsInnerClass() ? context.getClassModel(clazz.getDeclaringClass()) : classModel);
+        if (clazz.isArray()) {
+            typeModel.setInnerType(context.getClassModel(clazz.getComponentType()));
+        }
+
         typeModel.setJavaSignature(Datatype.getJavaSignature(clazz));
         typeModel.setJniSignature(Datatype.getJNISignature(clazz));
         typeModel.setJniMethodName(Datatype.getJNIMethodName(clazz));
@@ -130,11 +135,5 @@ final class TypeAnalyzer extends Analyzer {
         typeModel.setCppReturnType(typeTemplates.getCppReturnType(classModel));
         typeTemplates.executeDependencies(classModel);
         typeModel.setFunctions(typeTemplates.getFunctions(classModel));
-
-        typeModel.setOwner(typeModel.isIsInnerClass() ? context.getClassModel(clazz.getDeclaringClass()) : classModel);
-        if (clazz.isArray()) {
-            typeModel.setInnerType(context.getClassModel(clazz.getComponentType()));
-        }
-
     }
 }
