@@ -4,8 +4,11 @@ import static com.github.loicoudot.java4cpp.Utils.newArrayList;
 import static com.github.loicoudot.java4cpp.Utils.newHashMap;
 
 import java.io.File;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Enumeration;
@@ -136,12 +139,21 @@ public final class Context {
         return templateManager;
     }
 
-    private Class<?> getRawClass(Type type) {
+    public static Class<?> getRawClass(Type type) {
         if (type instanceof Class) {
             return (Class<?>) type;
         }
+        if (type instanceof TypeVariable) {
+            return Object.class;
+        }
         if (type instanceof ParameterizedType) {
             return getRawClass(((ParameterizedType) type).getRawType());
+        }
+        if (type instanceof GenericArrayType) {
+            return getRawClass(((GenericArrayType) type).getGenericComponentType());
+        }
+        if (type instanceof WildcardType) {
+            return getRawClass(((WildcardType) type).getUpperBounds()[0]);
         }
         throw new RuntimeException("Can't get raw class from " + type);
     }
@@ -187,5 +199,13 @@ public final class Context {
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("Failed to load class " + e.getMessage());
         }
+    }
+
+    public List<ClassModel> getClassesModels(Type[] types) {
+        List<ClassModel> result = newArrayList();
+        for (Type type : types) {
+            result.add(getClassModel(type));
+        }
+        return result;
     }
 }

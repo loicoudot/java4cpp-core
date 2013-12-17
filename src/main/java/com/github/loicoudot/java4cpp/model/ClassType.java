@@ -3,11 +3,12 @@ package com.github.loicoudot.java4cpp.model;
 import static com.github.loicoudot.java4cpp.Utils.newHashSet;
 
 import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
+
+import com.github.loicoudot.java4cpp.Context;
 
 import freemarker.template.TemplateMethodModelEx;
 
@@ -58,14 +59,7 @@ public class ClassType {
     }
 
     public Class<?> getClazz() {
-        if (type instanceof Class<?>) {
-            return (Class<?>) type;
-        }
-        if (type instanceof ParameterizedType) {
-            ParameterizedType pType = (ParameterizedType) type;
-            return (Class<?>) pType.getRawType();
-        }
-        return null;
+        return Context.getRawClass(type);
     }
 
     public String getJavaName() {

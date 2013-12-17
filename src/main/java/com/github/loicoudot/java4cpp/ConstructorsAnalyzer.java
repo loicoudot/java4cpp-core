@@ -58,7 +58,7 @@ final class ConstructorsAnalyzer extends Analyzer {
     public ConstructorModel getModel(Constructor<?> constructor) {
         context.getFileManager().enter("constructor: " + constructor);
         ConstructorModel constructorModel = new ConstructorModel();
-        constructorModel.getParameters().addAll(getParameterized(constructor.getGenericParameterTypes()));
+        constructorModel.getParameters().addAll(context.getClassesModels(constructor.getGenericParameterTypes()));
         context.getFileManager().leave();
         return constructorModel;
     }

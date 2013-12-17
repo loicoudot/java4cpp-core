@@ -53,6 +53,7 @@ public class ContextTest {
         Function function = new Function("test", "${arg2} + ${arg1} + ${class.type.cppType}");
         fallback.getFunctions().add(function);
         datatypes.setFallback(fallback);
+        datatypes.setEnumeration(fallback);
         other.setDatatypes(datatypes);
         context.getTemplateManager().addTemplates(other);
 
