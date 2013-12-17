@@ -4,7 +4,12 @@ import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import com.github.loicoudot.java4cpp.configuration.Datatypes;
@@ -18,12 +23,28 @@ import freemarker.template.TemplateException;
 
 public class ContextTest {
 
-    @Test
-    public void functionsTest() throws TemplateException, IOException {
+    private Context context;
+
+    @BeforeClass
+    public void init() {
         Settings settings = new Settings();
         settings.setTargetPath("target");
-        Context context = new Context(settings);
+        context = new Context(settings);
+        Templates other = new Templates();
+        TypeTemplate classTemplate = new TypeTemplate();
+        classTemplate.setClazz(Boolean.TYPE);
+        classTemplate.setNeedAnalyzing(true);
+        classTemplate.setCppType("cppType");
+        classTemplate.setCppReturnType("cppReturnType");
+        other.getDatatypes().getTemplates().add(classTemplate);
+        other.getDatatypes().setArray(classTemplate);
+        other.getDatatypes().setFallback(classTemplate);
+        context.getTemplateManager().addTemplates(other);
+        context.start();
+    }
 
+    @Test
+    public void functionsTest() throws TemplateException, IOException {
         Templates other = new Templates();
         Datatypes datatypes = new Datatypes();
         TypeTemplate fallback = new TypeTemplate();
@@ -44,5 +65,36 @@ public class ContextTest {
         template.process(model, sw);
 
         assertThat(sw.toString()).isEqualTo("b + a + typeContextTest");
+    }
+
+    public List<Double> listType;
+    public Map<String, Double> mapType;
+    public List<Set<Double>> listOfSetType;
+
+    @Test
+    public void testList() throws Exception {
+        Type type = ContextTest.class.getField("listType").getGenericType();
+        ClassModel model = context.getClassModel(type);
+        assertThat(model.getParameters()).hasSize(1);
+        assertThat(model.getParameters().get(0).getType().getJavaName()).isEqualTo("java.lang.Double");
+    }
+
+    @Test
+    public void testMap() throws Exception {
+        Type type = ContextTest.class.getField("mapType").getGenericType();
+        ClassModel model = context.getClassModel(type);
+        assertThat(model.getParameters()).hasSize(2);
+        assertThat(model.getParameters().get(0).getType().getJavaName()).isEqualTo("java.lang.String");
+        assertThat(model.getParameters().get(1).getType().getJavaName()).isEqualTo("java.lang.Double");
+    }
+
+    @Test
+    public void testListOfSet() throws Exception {
+        Type type = ContextTest.class.getField("listOfSetType").getGenericType();
+        ClassModel model = context.getClassModel(type);
+        assertThat(model.getParameters()).hasSize(1);
+        assertThat(model.getParameters().get(0).getType().getJavaName()).isEqualTo("java.util.Set");
+        assertThat(model.getParameters().get(0).getParameters()).hasSize(1);
+        assertThat(model.getParameters().get(0).getParameters().get(0).getType().getJavaName()).isEqualTo("java.lang.Double");
     }
 }

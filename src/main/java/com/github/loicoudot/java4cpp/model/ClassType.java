@@ -3,6 +3,7 @@ package com.github.loicoudot.java4cpp.model;
 import static com.github.loicoudot.java4cpp.Utils.newHashSet;
 
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -59,6 +60,10 @@ public class ClassType {
     public Class<?> getClazz() {
         if (type instanceof Class<?>) {
             return (Class<?>) type;
+        }
+        if (type instanceof ParameterizedType) {
+            ParameterizedType pType = (ParameterizedType) type;
+            return (Class<?>) pType.getRawType();
         }
         return null;
     }
@@ -231,5 +236,10 @@ public class ClassType {
             current = current.getSuperclass();
         } while (current != null);
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("type(%s)", type);
     }
 }

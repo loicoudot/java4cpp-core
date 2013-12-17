@@ -4,6 +4,8 @@ import static com.github.loicoudot.java4cpp.Utils.newArrayList;
 import static com.github.loicoudot.java4cpp.Utils.newHashMap;
 
 import java.io.File;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Enumeration;
@@ -32,17 +34,17 @@ public final class Context {
     private ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
     private final BlockingQueue<Class<?>> classesToDo = new ArrayBlockingQueue<Class<?>>(1024);
     private final List<Class<?>> classesAlreadyDone = newArrayList();
-    private final Map<Class<?>, ClassModel> classModelCache = newHashMap();
+    private final Map<Type, ClassModel> classModelCache = newHashMap();
     private final Analyzer[] analyzers;
-    private final Analyzer classAnalyzer;
+    private final Analyzer typeAnalyzer;
 
     public Context(Settings settings) {
         this.settings = settings;
         fileManager = new FileManager(this);
         mappingsManager = new MappingsManager(this);
         templateManager = new TemplateManager(this);
-        classAnalyzer = new TypeAnalyzer(this);
-        analyzers = new Analyzer[] { classAnalyzer, new SuperclassAnalyzer(this), new InterfacesAnalyzer(this), new InnerClassAnalyzer(this),
+        typeAnalyzer = new TypeAnalyzer(this);
+        analyzers = new Analyzer[] { typeAnalyzer, new SuperclassAnalyzer(this), new InterfacesAnalyzer(this), new InnerClassAnalyzer(this),
                 new FieldsAnalyzer(this), new EnumAnalyzer(this), new ConstructorsAnalyzer(this), new MethodsAnalyzer(this) };
     }
 
@@ -134,22 +136,38 @@ public final class Context {
         return templateManager;
     }
 
-    public ClassModel getClassModel(Class<?> clazz) {
-        synchronized (classModelCache) {
-            if (!classModelCache.containsKey(clazz)) {
-                getFileManager().enter("analyzing " + clazz.getName());
-                try {
-                    classModelCache.put(clazz, new ClassModel(clazz));
+    private Class<?> getRawClass(Type type) {
+        if (type instanceof Class) {
+            return (Class<?>) type;
+        }
+        if (type instanceof ParameterizedType) {
+            return getRawClass(((ParameterizedType) type).getRawType());
+        }
+        throw new RuntimeException("Can't get raw class from " + type);
+    }
 
-                    ClassModel classModel = classModelCache.get(clazz);
-                    if (getTemplateManager().getTypeTemplates(clazz).isNeedAnalyzing()) {
+    public ClassModel getClassModel(Type type) {
+        synchronized (classModelCache) {
+            if (!classModelCache.containsKey(type)) {
+                getFileManager().enter("analyzing " + type);
+                try {
+                    classModelCache.put(type, new ClassModel(type));
+
+                    ClassModel classModel = classModelCache.get(type);
+                    if (getTemplateManager().getTypeTemplates(getRawClass(type)).isNeedAnalyzing()) {
                         for (Analyzer analyzer : analyzers) {
                             analyzer.fill(classModel);
                         }
                     } else {
-                        classAnalyzer.fill(classModel);
+                        typeAnalyzer.fill(classModel);
                     }
 
+                    if (type instanceof ParameterizedType) {
+                        ParameterizedType pType = (ParameterizedType) type;
+                        for (Type argumentType : pType.getActualTypeArguments()) {
+                            classModel.addParameter(getClassModel(argumentType));
+                        }
+                    }
                     /*
                      * for (ClassModel dependency :
                      * classModel.getDependencies()) {
@@ -159,7 +177,7 @@ public final class Context {
                     getFileManager().leave();
                 }
             }
-            return classModelCache.get(clazz);
+            return classModelCache.get(type);
         }
     }
 

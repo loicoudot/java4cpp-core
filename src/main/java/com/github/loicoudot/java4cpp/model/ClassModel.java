@@ -53,6 +53,6 @@ public final class ClassModel {
 
     @Override
     public String toString() {
-        return String.format("type(%s)", type.getType());
+        return String.format("class(%s)", type.getType());
     }
 }
