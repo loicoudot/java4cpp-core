@@ -123,6 +123,11 @@ final class TypeAnalyzer extends Analyzer {
         typeModel.setOwner(typeModel.isIsInnerClass() ? context.getClassModel(clazz.getDeclaringClass()) : classModel);
         if (clazz.isArray()) {
             typeModel.setInnerType(context.getClassModel(clazz.getComponentType()));
+            Class<?> finalClazz = clazz;
+            while (finalClazz.getComponentType() != null) {
+                finalClazz = finalClazz.getComponentType();
+            }
+            typeModel.setFinalInnerType(context.getClassModel(finalClazz));
         }
 
         typeModel.setJavaSignature(Datatype.getJavaSignature(clazz));

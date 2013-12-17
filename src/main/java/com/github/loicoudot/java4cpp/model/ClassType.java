@@ -33,6 +33,7 @@ public class ClassType {
     private String cppType;
     private String cppReturnType;
     private ClassModel innerType;
+    private ClassModel finalInnerType;
     private HashMap<String, Object> functions;
     private TemplateMethodModelEx addIncludes;
     private TemplateMethodModelEx addDependencies;
@@ -172,6 +173,14 @@ public class ClassType {
 
     public void setInnerType(ClassModel innerType) {
         this.innerType = innerType;
+    }
+
+    public ClassModel getFinalInnerType() {
+        return finalInnerType;
+    }
+
+    public void setFinalInnerType(ClassModel finalInnerType) {
+        this.finalInnerType = finalInnerType;
     }
 
     public HashMap<String, Object> getFunctions() {
