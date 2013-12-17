@@ -51,6 +51,20 @@ public final class ClassModel {
         return content;
     }
 
+    public List<String> getIncludes() {
+        List<String> result = newArrayList();
+        result.addAll(getType().getIncludes());
+        result.addAll(getContent().getIncludes());
+        return result;
+    }
+
+    public List<ClassModel> getDependencies() {
+        List<ClassModel> result = newArrayList();
+        result.addAll(getType().getDependencies());
+        result.addAll(getContent().getDependencies());
+        return result;
+    }
+
     @Override
     public String toString() {
         return String.format("class(%s)", type.getType());

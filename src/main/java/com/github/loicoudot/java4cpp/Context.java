@@ -178,14 +178,38 @@ public final class Context {
                     if (type instanceof ParameterizedType) {
                         ParameterizedType pType = (ParameterizedType) type;
                         for (Type argumentType : pType.getActualTypeArguments()) {
-                            classModel.addParameter(getClassModel(argumentType));
+                            classModel.addParameter(getTypeModel(argumentType));
                         }
                     }
-                    /*
-                     * for (ClassModel dependency :
-                     * classModel.getDependencies()) {
-                     * addClassToDo(dependency.getClazz()); }
-                     */
+
+                    for (ClassModel dependency : classModel.getContent().getDependencies()) {
+                        addClassToDo(dependency.getType().getClazz());
+                    }
+
+                } finally {
+                    getFileManager().leave();
+                }
+            }
+            return classModelCache.get(type);
+        }
+    }
+
+    public ClassModel getTypeModel(Type type) {
+        synchronized (classModelCache) {
+            if (!classModelCache.containsKey(type)) {
+                getFileManager().enter("analyzing parameterized " + type);
+                try {
+                    classModelCache.put(type, new ClassModel(type));
+
+                    ClassModel classModel = classModelCache.get(type);
+                    typeAnalyzer.fill(classModel);
+
+                    if (type instanceof ParameterizedType) {
+                        ParameterizedType pType = (ParameterizedType) type;
+                        for (Type argumentType : pType.getActualTypeArguments()) {
+                            classModel.addParameter(getTypeModel(argumentType));
+                        }
+                    }
                 } finally {
                     getFileManager().leave();
                 }
