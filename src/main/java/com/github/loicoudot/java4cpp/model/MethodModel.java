@@ -46,4 +46,9 @@ public final class MethodModel {
     public List<ClassModel> getParameters() {
         return parameters;
     }
+
+    @Override
+    public String toString() {
+        return "method(" + javaName + ")";
+    }
 }

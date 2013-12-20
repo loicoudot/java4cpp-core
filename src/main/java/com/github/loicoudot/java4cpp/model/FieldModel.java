@@ -1,7 +1,7 @@
 package com.github.loicoudot.java4cpp.model;
 
 public final class FieldModel {
-    private String javaName;
+    private final String javaName;
     private String cppName;
     private ClassModel type;
 
@@ -27,5 +27,10 @@ public final class FieldModel {
 
     public void setType(ClassModel type) {
         this.type = type;
+    }
+
+    @Override
+    public String toString() {
+        return "field(" + javaName + ")";
     }
 }
