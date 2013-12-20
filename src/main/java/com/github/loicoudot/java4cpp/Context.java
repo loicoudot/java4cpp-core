@@ -72,8 +72,8 @@ public final class Context {
 
     /**
      * Add annotated classes with {@code Java4Cpp} annotation to the current
-     * list of class to be processed by introspecting jar files. The context
-     * {@code ClassLoader} is augmented with each jar {@code ClassLoader}'s.
+     * list of class to be processed by introspecting jar files. The context {@code ClassLoader} is augmented with each jar
+     * {@code ClassLoader}'s.
      */
     private void addClassToDoFromJars() {
         if (!Utils.isNullOrEmpty(settings.getJarFiles())) {
@@ -102,8 +102,10 @@ public final class Context {
 
     public void addClassToDo(Class<?> clazz) {
         synchronized (classesToDo) {
-            if (clazz.getEnclosingClass() == null && !clazz.isPrimitive() && !clazz.isArray() && !classesAlreadyDone.contains(clazz)
-                    && !classesToDo.contains(clazz)) {
+            while (clazz.getEnclosingClass() != null) {
+                clazz = clazz.getEnclosingClass();
+            }
+            if (!clazz.isPrimitive() && !clazz.isArray() && !classesAlreadyDone.contains(clazz) && !classesToDo.contains(clazz)) {
                 classesToDo.add(clazz);
                 classesAlreadyDone.add(clazz);
                 getFileManager().logInfo("add dependency " + clazz.getName());
@@ -199,9 +201,7 @@ public final class Context {
             if (!classModelCache.containsKey(type)) {
                 getFileManager().enter("analyzing parameterized " + type);
                 try {
-                    classModelCache.put(type, new ClassModel(type));
-
-                    ClassModel classModel = classModelCache.get(type);
+                    ClassModel classModel = new ClassModel(type);
                     typeAnalyzer.fill(classModel);
 
                     if (type instanceof ParameterizedType) {
@@ -210,6 +210,7 @@ public final class Context {
                             classModel.addParameter(getTypeModel(argumentType));
                         }
                     }
+                    return classModel;
                 } finally {
                     getFileManager().leave();
                 }
