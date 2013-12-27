@@ -6,6 +6,8 @@ import static com.github.loicoudot.java4cpp.Utils.newHashMap;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -34,12 +36,20 @@ public class Core {
         context.getFileManager().logInfo(
                 String.format("java4cpp version %s, starting at %s", Context.class.getPackage().getImplementationVersion(), new Date()));
 
+        generateModels(context);
+        generateSources(context);
+        finalize(context);
+
+        context.stop();
+    }
+
+    private void generateModels(Context context) {
         try {
             do {
                 ExecutorService pool = Executors.newFixedThreadPool(context.getSettings().getNbThread());
 
                 while (context.workToDo()) {
-                    pool.execute(new Java4CppExecutor(context));
+                    pool.execute(new ModelExecutor(context));
                 }
 
                 pool.shutdown();
@@ -51,9 +61,24 @@ public class Core {
         } catch (InterruptedException e) {
             throw new RuntimeException("Interrupted " + e.getMessage());
         }
-        finalize(context);
+    }
 
-        context.stop();
+    private void generateSources(Context context) {
+        BlockingQueue<Class<?>> classes = new ArrayBlockingQueue<Class<?>>(context.getClassesAlreadyDone().size(), true, context.getClassesAlreadyDone());
+        try {
+            ExecutorService pool = Executors.newFixedThreadPool(context.getSettings().getNbThread());
+
+            while (!classes.isEmpty()) {
+                pool.execute(new SourceExecutor(context, classes.take()));
+            }
+
+            pool.shutdown();
+            while (!pool.isTerminated()) {
+                pool.awaitTermination(TIMEOUT, TimeUnit.MILLISECONDS);
+            }
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Interrupted " + e.getMessage());
+        }
     }
 
     private void finalize(Context context) {

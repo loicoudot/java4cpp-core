@@ -72,8 +72,8 @@ public final class Context {
 
     /**
      * Add annotated classes with {@code Java4Cpp} annotation to the current
-     * list of class to be processed by introspecting jar files. The context {@code ClassLoader} is augmented with each jar
-     * {@code ClassLoader}'s.
+     * list of class to be processed by introspecting jar files. The context
+     * {@code ClassLoader} is augmented with each jar {@code ClassLoader}'s.
      */
     private void addClassToDoFromJars() {
         if (!Utils.isNullOrEmpty(settings.getJarFiles())) {
