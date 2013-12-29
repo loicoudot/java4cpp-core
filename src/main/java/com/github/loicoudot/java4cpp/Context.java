@@ -102,10 +102,7 @@ public final class Context {
 
     public void addClassToDo(Class<?> clazz) {
         synchronized (classesToDo) {
-            while (clazz.getEnclosingClass() != null) {
-                clazz = clazz.getEnclosingClass();
-            }
-            if (!clazz.isPrimitive() && !clazz.isArray() && !classesAlreadyDone.contains(clazz) && !classesToDo.contains(clazz)) {
+            if (!classesAlreadyDone.contains(clazz) && !classesToDo.contains(clazz)) {
                 classesToDo.add(clazz);
                 classesAlreadyDone.add(clazz);
                 getFileManager().logInfo("add dependency " + clazz.getName());
@@ -141,6 +138,18 @@ public final class Context {
         return templateManager;
     }
 
+    /**
+     * Gets the raw class of a java <code>type</code>. Returns:
+     * <ul>
+     * <li>Inner class for arrays</li>
+     * <li>Non parameterized class for parameterized type</li>
+     * <li>Upper bounds class for type variable</li>
+     * <ul>
+     * 
+     * @param type
+     *            java type
+     * @return Corresponding java class
+     */
     @SuppressWarnings("rawtypes")
     public static Class<?> getRawClass(Type type) {
         if (type instanceof Class) {
@@ -161,62 +170,33 @@ public final class Context {
         throw new RuntimeException("Can't get raw class from " + type);
     }
 
-    public ClassModel getClassModel(Type type) {
-        synchronized (classModelCache) {
-            if (!classModelCache.containsKey(type)) {
-                getFileManager().enter("analyzing " + type);
-                try {
-                    classModelCache.put(type, new ClassModel(type));
-
-                    ClassModel classModel = classModelCache.get(type);
-                    if (getTemplateManager().getTypeTemplates(getRawClass(type)).isNeedAnalyzing()) {
-                        for (Analyzer analyzer : analyzers) {
-                            analyzer.fill(classModel);
-                        }
-                    } else {
-                        typeAnalyzer.fill(classModel);
-                    }
-
-                    if (type instanceof ParameterizedType) {
-                        ParameterizedType pType = (ParameterizedType) type;
-                        for (Type argumentType : pType.getActualTypeArguments()) {
-                            classModel.addParameter(getTypeModel(argumentType));
-                        }
-                    }
-
-                    for (ClassModel dependency : classModel.getContent().getDependencies()) {
-                        addClassToDo(dependency.getType().getClazz());
-                    }
-
-                } finally {
-                    getFileManager().leave();
+    public ClassModel analyzeClassModel(Type type) {
+        try {
+            getFileManager().enter("analyzing " + type);
+            ClassModel classModel = reserveClassModelEntry(type);
+            if (getTemplateManager().getTypeTemplates(getRawClass(type)).isNeedAnalyzing()) {
+                for (Analyzer analyzer : analyzers) {
+                    analyzer.fill(classModel);
                 }
+            } else {
+                typeAnalyzer.fill(classModel);
             }
-            return classModelCache.get(type);
+            return classModel;
+        } finally {
+            getFileManager().leave();
         }
     }
 
-    public ClassModel getTypeModel(Type type) {
-        synchronized (classModelCache) {
-            if (!classModelCache.containsKey(type)) {
-                getFileManager().enter("analyzing parameterized " + type);
-                try {
-                    ClassModel classModel = new ClassModel(type);
-                    typeAnalyzer.fill(classModel);
+    public ClassModel getClassModel(Type type) {
+        ClassModel classModel = reserveClassModelEntry(type);
 
-                    if (type instanceof ParameterizedType) {
-                        ParameterizedType pType = (ParameterizedType) type;
-                        for (Type argumentType : pType.getActualTypeArguments()) {
-                            classModel.addParameter(getTypeModel(argumentType));
-                        }
-                    }
-                    return classModel;
-                } finally {
-                    getFileManager().leave();
-                }
+        if (type instanceof ParameterizedType) {
+            ParameterizedType parameterizedType = (ParameterizedType) type;
+            for (Type argumentType : parameterizedType.getActualTypeArguments()) {
+                classModel.addParameter(getClassModel(argumentType));
             }
-            return classModelCache.get(type);
         }
+        return classModel;
     }
 
     public ClassModel getClassModel(String name) {
@@ -233,5 +213,38 @@ public final class Context {
             result.add(getClassModel(type));
         }
         return result;
+    }
+
+    private ClassModel getTypeModel(Type type) {
+        if (!classModelCache.containsKey(type)) {
+            getFileManager().enter("analyzing parameterized " + type);
+            try {
+                ClassModel classModel = new ClassModel(type);
+                typeAnalyzer.fill(classModel);
+
+                if (type instanceof ParameterizedType) {
+                    ParameterizedType parameterizedType = (ParameterizedType) type;
+                    for (Type argumentType : parameterizedType.getActualTypeArguments()) {
+                        classModel.addParameter(getTypeModel(argumentType));
+                    }
+                }
+                return classModel;
+            } finally {
+                getFileManager().leave();
+            }
+        }
+        return classModelCache.get(type);
+    }
+
+    private ClassModel reserveClassModelEntry(Type type) {
+        if (!classModelCache.containsKey(type)) {
+            synchronized (classModelCache) {
+                if (!classModelCache.containsKey(type)) {
+                    classModelCache.put(type, new ClassModel(type));
+                    addClassToDo(getRawClass(type));
+                }
+            }
+        }
+        return classModelCache.get(type);
     }
 }

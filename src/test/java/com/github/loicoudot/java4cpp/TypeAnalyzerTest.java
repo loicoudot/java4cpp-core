@@ -81,6 +81,6 @@ public class TypeAnalyzerTest {
         ClassModel model = new ClassModel(array.getClass());
         analyzer.fill(model);
         assertThat(model.getType().getInnerType().getType().getJavaName()).isEqualTo("[Z");
-        assertThat(model.getType().getInnerType().getType().getInnerType().getType().getJavaName()).isEqualTo("boolean");
+        assertThat(model.getType().getFinalInnerType().getType().getJavaName()).isEqualTo("boolean");
     }
 }

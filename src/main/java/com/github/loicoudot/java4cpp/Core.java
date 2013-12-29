@@ -33,13 +33,15 @@ public class Core {
     public void execute(Context context) {
 
         context.start();
-        context.getFileManager().logInfo(
-                String.format("java4cpp version %s, starting at %s", Context.class.getPackage().getImplementationVersion(), new Date()));
+        Date startTime = new Date();
+        context.getFileManager()
+                .logInfo(String.format("java4cpp version %s, starting at %s", Context.class.getPackage().getImplementationVersion(), startTime));
 
         generateModels(context);
         generateSources(context);
         finalize(context);
 
+        context.getFileManager().logInfo(String.format("elapsed time: %ds", (new Date().getTime() - startTime.getTime()) / 1));
         context.stop();
     }
 
@@ -69,7 +71,10 @@ public class Core {
             ExecutorService pool = Executors.newFixedThreadPool(context.getSettings().getNbThread());
 
             while (!classes.isEmpty()) {
-                pool.execute(new SourceExecutor(context, classes.take()));
+                Class<?> clazz = classes.take();
+                if (!clazz.isPrimitive() && !clazz.isArray() && clazz.getEnclosingClass() == null) {
+                    pool.execute(new SourceExecutor(context, clazz));
+                }
             }
 
             pool.shutdown();

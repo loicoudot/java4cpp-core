@@ -10,11 +10,14 @@ import java.util.Set;
 /**
  * Model that encapsulate a Java class. The model has two parts :
  * <ul>
- * <li>Type definition: contains the types mappings informations between Java and C++. If the class is a parametrized type,
- * <code>parameters</code> contains the list of parameterized type in a recursive manner. If the class is a generic type,
- * <code>parameters<code> contains only a <code>java.lang.Object</code> class model. for non generic class,
+ * <li>Type definition: contains the types mappings informations between Java
+ * and C++. If the class is a parametrized type, <code>parameters</code>
+ * contains the list of parameterized type in a recursive manner. If the class
+ * is a generic type, <code>parameters</code> contains only a
+ * <code>java.lang.Object</code> class model. for non generic class,
  * <code>parameters</code> is null.</li>
- * <li>Class content: The instrospection results for the inner classes, enums, static fields, constructors and methods.</li>
+ * <li>Class content: The instrospection results for the inner classes, enums,
+ * static fields, constructors and methods.</li>
  * </ul>
  * 
  * @author Loic Oudot

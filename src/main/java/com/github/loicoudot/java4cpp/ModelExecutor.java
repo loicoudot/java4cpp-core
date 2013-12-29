@@ -11,8 +11,6 @@ class ModelExecutor implements Runnable {
 
     @Override
     public void run() {
-        context.getFileManager().enter("create model for " + clazz.getName());
-        context.getClassModel(clazz);
-        context.getFileManager().leave();
+        context.analyzeClassModel(clazz);
     }
 }
