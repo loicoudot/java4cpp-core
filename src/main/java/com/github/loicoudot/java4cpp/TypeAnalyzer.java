@@ -135,10 +135,5 @@ final class TypeAnalyzer extends Analyzer {
         typeModel.setJniMethodName(Datatype.getJNIMethodName(clazz));
         typeModel.setAddIncludes(new AddIncludes(typeModel));
         typeModel.setAddDependencies(new AddDependencies(typeModel));
-        TypeTemplates typeTemplates = context.getTemplateManager().getTypeTemplates(clazz);
-        typeModel.setCppType(typeTemplates.getCppType(classModel));
-        typeModel.setCppReturnType(typeTemplates.getCppReturnType(classModel));
-        typeTemplates.executeDependencies(classModel);
-        typeModel.setFunctions(typeTemplates.getFunctions(classModel));
     }
 }

@@ -20,6 +20,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import com.github.loicoudot.java4cpp.model.ClassModel;
+import com.github.loicoudot.java4cpp.model.ClassType;
 
 /**
  * {@code Context} class contains all the environement of an execution of
@@ -187,6 +188,23 @@ public final class Context {
         }
     }
 
+    public ClassModel executeTypeTemplate(Class<?> clazz) {
+        try {
+            getFileManager().enter("templating " + clazz);
+            ClassModel classModel = reserveClassModelEntry(clazz);
+            ClassType typeModel = classModel.getType();
+
+            TypeTemplates typeTemplates = getTemplateManager().getTypeTemplates(clazz);
+            typeModel.setCppType(typeTemplates.getCppType(classModel));
+            typeModel.setCppReturnType(typeTemplates.getCppReturnType(classModel));
+            typeTemplates.executeDependencies(classModel);
+            typeModel.setFunctions(typeTemplates.getFunctions(classModel));
+            return classModel;
+        } finally {
+            getFileManager().leave();
+        }
+    }
+
     public ClassModel getClassModel(Type type) {
         ClassModel classModel = reserveClassModelEntry(type);
 
@@ -213,27 +231,6 @@ public final class Context {
             result.add(getClassModel(type));
         }
         return result;
-    }
-
-    private ClassModel getTypeModel(Type type) {
-        if (!classModelCache.containsKey(type)) {
-            getFileManager().enter("analyzing parameterized " + type);
-            try {
-                ClassModel classModel = new ClassModel(type);
-                typeAnalyzer.fill(classModel);
-
-                if (type instanceof ParameterizedType) {
-                    ParameterizedType parameterizedType = (ParameterizedType) type;
-                    for (Type argumentType : parameterizedType.getActualTypeArguments()) {
-                        classModel.addParameter(getTypeModel(argumentType));
-                    }
-                }
-                return classModel;
-            } finally {
-                getFileManager().leave();
-            }
-        }
-        return classModelCache.get(type);
     }
 
     private ClassModel reserveClassModelEntry(Type type) {
