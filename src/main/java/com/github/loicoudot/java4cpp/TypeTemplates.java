@@ -71,8 +71,8 @@ final class TypeTemplates {
      * and these informations can be used inside the freemarker
      * <code>template</code> to deduce the C++ source code. <br>
      * Templates exemple :<br>
-     * <code>"std::vector<${innerType.cppReturnType} >"</code><br>
-     * <code>"${addInclude("&lt;vector>")}"</code>
+     * <code>"std::vector<${innerType.type.cppReturnType} >"</code><br>
+     * <code>"${type.addInclude("&lt;vector>")}"</code>
      * 
      * @param template
      *            a freemarker template for generating parts of C++ source code

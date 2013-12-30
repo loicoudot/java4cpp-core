@@ -86,6 +86,8 @@ final class SourceFormatter implements TemplateDirectiveModel {
                 }
                 out.write(c);
                 break;
+            default:
+                break;
             }
         }
 
