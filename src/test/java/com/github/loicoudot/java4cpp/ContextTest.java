@@ -59,13 +59,14 @@ public class ContextTest {
 
         context.start();
         ClassModel model = context.analyzeClassModel(ContextTest.class);
+        model = context.executeTypeTemplate(ContextTest.class);
 
         String templateTest = "${type.functions.test('a', 'b')}";
         Template template = context.getTemplateManager().createTemplate(templateTest);
         StringWriter sw = new StringWriter();
-        // template.process(model, sw);
+        template.process(model, sw);
 
-        // assertThat(sw.toString()).isEqualTo("b + a + typeContextTest");
+        assertThat(sw.toString()).isEqualTo("b + a + typeContextTest");
     }
 
     public List<Double> listType;

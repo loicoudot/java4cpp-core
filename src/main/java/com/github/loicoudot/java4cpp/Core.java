@@ -25,13 +25,12 @@ public class Core {
     /**
      * Execute all java4cpp job defined by the {@code context}
      */
-    public void execute(Context context) {
-        this.context = context;
+    public void execute(Context aContext) {
+        this.context = aContext;
 
         context.start();
         Date startTime = new Date();
-        context.getFileManager()
-                .logInfo(String.format("java4cpp version %s, starting at %s", Context.class.getPackage().getImplementationVersion(), startTime));
+        context.getFileManager().logInfo(String.format("java4cpp version %s, starting at %s", Context.class.getPackage().getImplementationVersion(), startTime));
 
         analyzeModels();
         resolveTypeTemplates();
@@ -123,7 +122,9 @@ public class Core {
         dataModel.put("cppFormatter", new SourceFormatter());
         List<ClassModel> dependencies = newArrayList();
         for (Class<?> clazz : context.getClassesAlreadyDone()) {
-            dependencies.add(context.getClassModel(clazz));
+            if (!clazz.isPrimitive() && !clazz.isArray() && clazz.getEnclosingClass() == null) {
+                dependencies.add(context.getClassModel(clazz));
+            }
         }
         dataModel.put("classes", dependencies);
 

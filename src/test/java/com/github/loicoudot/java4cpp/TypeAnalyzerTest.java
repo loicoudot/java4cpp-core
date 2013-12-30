@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import com.github.loicoudot.java4cpp.configuration.Templates;
-import com.github.loicoudot.java4cpp.configuration.TypeTemplate;
 import com.github.loicoudot.java4cpp.model.ClassModel;
 import com.github.loicoudot.java4cpp.model.ClassType;
 
@@ -24,16 +22,6 @@ public class TypeAnalyzerTest {
         Settings settings = new Settings();
         settings.setTargetPath("target");
         context = new Context(settings);
-        Templates other = new Templates();
-        TypeTemplate classTemplate = new TypeTemplate();
-        classTemplate.setClazz(Boolean.TYPE);
-        classTemplate.setNeedAnalyzing(true);
-        classTemplate.setCppType("cppType");
-        classTemplate.setCppReturnType("cppReturnType");
-        other.getDatatypes().getTemplates().add(classTemplate);
-        other.getDatatypes().setArray(classTemplate);
-        other.getDatatypes().setFallback(classTemplate);
-        context.getTemplateManager().addTemplates(other);
         context.start();
         analyzer = new TypeAnalyzer(context);
     }
@@ -55,8 +43,6 @@ public class TypeAnalyzerTest {
         assertThat(type.getJavaSignature()).isEqualTo("Z");
         assertThat(type.getJniSignature()).isEqualTo("jboolean");
         assertThat(type.getJniMethodName()).isEqualTo("Boolean");
-        assertThat(type.getCppType()).isEqualTo("cppType");
-        assertThat(type.getCppReturnType()).isEqualTo("cppReturnType");
         assertThat(type.getIncludes()).isEmpty();
         assertThat(type.getDependencies()).isEmpty();
     }

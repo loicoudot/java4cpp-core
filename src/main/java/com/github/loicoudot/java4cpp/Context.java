@@ -48,8 +48,8 @@ public final class Context {
         mappingsManager = new MappingsManager(this);
         templateManager = new TemplateManager(this);
         typeAnalyzer = new TypeAnalyzer(this);
-        analyzers = new Analyzer[] { typeAnalyzer, new SuperclassAnalyzer(this), new InterfacesAnalyzer(this), new InnerClassAnalyzer(this),
-                new FieldsAnalyzer(this), new EnumAnalyzer(this), new ConstructorsAnalyzer(this), new MethodsAnalyzer(this) };
+        analyzers = new Analyzer[] { typeAnalyzer, new SuperclassAnalyzer(this), new InterfacesAnalyzer(this), new InnerClassAnalyzer(this), new FieldsAnalyzer(this), new EnumAnalyzer(this),
+                new ConstructorsAnalyzer(this), new MethodsAnalyzer(this) };
     }
 
     /**
@@ -174,7 +174,7 @@ public final class Context {
     public ClassModel analyzeClassModel(Type type) {
         try {
             getFileManager().enter("analyzing " + type);
-            ClassModel classModel = reserveClassModelEntry(type);
+            ClassModel classModel = getClassModel(type);
             if (getTemplateManager().getTypeTemplates(getRawClass(type)).isNeedAnalyzing()) {
                 for (Analyzer analyzer : analyzers) {
                     analyzer.fill(classModel);
@@ -191,7 +191,7 @@ public final class Context {
     public ClassModel executeTypeTemplate(Class<?> clazz) {
         try {
             getFileManager().enter("templating " + clazz);
-            ClassModel classModel = reserveClassModelEntry(clazz);
+            ClassModel classModel = getClassModel(clazz);
             ClassType typeModel = classModel.getType();
 
             TypeTemplates typeTemplates = getTemplateManager().getTypeTemplates(clazz);
@@ -206,15 +206,27 @@ public final class Context {
     }
 
     public ClassModel getClassModel(Type type) {
-        ClassModel classModel = reserveClassModelEntry(type);
+        if (type instanceof TypeVariable || type instanceof WildcardType) {
+            type = getRawClass(type);
+        }
 
-        if (type instanceof ParameterizedType) {
-            ParameterizedType parameterizedType = (ParameterizedType) type;
-            for (Type argumentType : parameterizedType.getActualTypeArguments()) {
-                classModel.addParameter(getClassModel(argumentType));
+        if (!classModelCache.containsKey(type)) {
+            synchronized (classModelCache) {
+                if (!classModelCache.containsKey(type)) {
+                    classModelCache.put(type, new ClassModel(type));
+                    addClassToDo(getRawClass(type));
+
+                    if (type instanceof ParameterizedType) {
+                        ClassModel classModel = classModelCache.get(type);
+                        ParameterizedType parameterizedType = (ParameterizedType) type;
+                        for (Type argumentType : parameterizedType.getActualTypeArguments()) {
+                            classModel.addParameter(getClassModel(argumentType));
+                        }
+                    }
+                }
             }
         }
-        return classModel;
+        return classModelCache.get(type);
     }
 
     public ClassModel getClassModel(String name) {
@@ -231,17 +243,5 @@ public final class Context {
             result.add(getClassModel(type));
         }
         return result;
-    }
-
-    private ClassModel reserveClassModelEntry(Type type) {
-        if (!classModelCache.containsKey(type)) {
-            synchronized (classModelCache) {
-                if (!classModelCache.containsKey(type)) {
-                    classModelCache.put(type, new ClassModel(type));
-                    addClassToDo(getRawClass(type));
-                }
-            }
-        }
-        return classModelCache.get(type);
     }
 }
