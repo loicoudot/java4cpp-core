@@ -206,18 +206,18 @@ public final class Context {
     }
 
     public ClassModel getClassModel(Type type) {
-        if (type instanceof TypeVariable || type instanceof WildcardType) {
-            type = getRawClass(type);
-        }
-
         if (!classModelCache.containsKey(type)) {
             synchronized (classModelCache) {
                 if (!classModelCache.containsKey(type)) {
-                    classModelCache.put(type, new ClassModel(type));
-                    addClassToDo(getRawClass(type));
+                    ClassModel classModel = new ClassModel(type);
+                    classModelCache.put(type, classModel);
+                    Class<?> rawClass = getRawClass(type);
+                    if (rawClass != type) {
+                        classModel.setRawClassModel(getClassModel(rawClass));
+                    }
+                    addClassToDo(rawClass);
 
                     if (type instanceof ParameterizedType) {
-                        ClassModel classModel = classModelCache.get(type);
                         ParameterizedType parameterizedType = (ParameterizedType) type;
                         for (Type argumentType : parameterizedType.getActualTypeArguments()) {
                             classModel.addParameter(getClassModel(argumentType));

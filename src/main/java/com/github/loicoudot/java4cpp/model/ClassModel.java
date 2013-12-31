@@ -25,13 +25,18 @@ import java.util.Set;
  */
 public final class ClassModel {
 
-    private final ClassType type;
+    private ClassType type;
     private List<ClassModel> parameters;
-    private final ClassContent content;
+    private ClassContent content;
 
     public ClassModel(Type type) {
         this.type = new ClassType(type);
         this.content = new ClassContent();
+    }
+
+    public void setRawClassModel(ClassModel classModel) {
+        type = classModel.getType();
+        content = classModel.getContent();
     }
 
     public ClassType getType() {
