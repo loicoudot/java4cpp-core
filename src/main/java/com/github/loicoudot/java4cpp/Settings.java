@@ -45,6 +45,16 @@ public final class Settings {
      * Size of the thread pool for generating the proxies files.
      */
     private static final String NB_THREAD = "java4cpp.nbThread";
+    /**
+     * Name of the file that contains the lists of exported proxies
+     */
+    private static final String EXPORT_FILE = "java4cpp.exportFile";
+    /**
+     * A comma separated list of files containing a lists of proxies to use
+     * instead of generating new one.
+     */
+    private static final String IMPORTS_FILE = "java4cpp.importsFile";
+
     private String targetPath;
     private String jarFiles;
     private String mappingsFile;
@@ -52,6 +62,8 @@ public final class Settings {
     private boolean clean;
     private boolean useHash;
     private int nbThread;
+    private String exportFile;
+    private String importsFile;
 
     /**
      * Initialize the settings with the internal default values then with the
@@ -98,6 +110,8 @@ public final class Settings {
         setClean(Boolean.valueOf(properties.getProperty(CLEAN, "false")));
         setUseHash(Boolean.valueOf(properties.getProperty(USE_HASH, "true")));
         setNbThread(Integer.valueOf(properties.getProperty(NB_THREAD, "1")));
+        setExportFile(properties.getProperty(EXPORT_FILE, ""));
+        setImportsFile(properties.getProperty(IMPORTS_FILE, ""));
     }
 
     private void initFromPropertiesFile(String propertiesFile) {
@@ -216,5 +230,21 @@ public final class Settings {
      */
     public void setNbThread(int nbThread) {
         this.nbThread = nbThread;
+    }
+
+    public String getExportFile() {
+        return exportFile;
+    }
+
+    public void setExportFile(String exportFile) {
+        this.exportFile = exportFile;
+    }
+
+    public String getImportsFile() {
+        return importsFile;
+    }
+
+    public void setImportsFile(String importsFile) {
+        this.importsFile = importsFile;
     }
 }

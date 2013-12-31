@@ -19,6 +19,10 @@ import java.util.Formatter;
 import java.util.List;
 import java.util.Properties;
 
+import javax.xml.bind.JAXB;
+
+import com.github.loicoudot.java4cpp.configuration.Symbols;
+
 /**
  * Manager for all interractions between java4cpp and the file system.
  * <p>
@@ -47,12 +51,15 @@ final class FileManager {
     };
     private FileWriter java4cppLog;
     private File java4cppHash;
+    private final Symbols imports = new Symbols();
+    private final Symbols export = new Symbols();
     private List<File> oldFiles = new ArrayList<File>();
     private final Properties oldHashes = new Properties();
     private final Properties newHashes = new Properties();
     private int generated;
     private int skipped;
     private int deleted;
+    private int imported;
 
     /**
      * A {@code FilenameFilter} to filter files other than {@code java4cpp.log}
@@ -78,6 +85,7 @@ final class FileManager {
      * {@code useHash} settings.
      */
     public void start() {
+        addSymbolsFromSettings();
         File rep = new File(context.getSettings().getTargetPath());
         rep.mkdirs();
         try {
@@ -101,10 +109,31 @@ final class FileManager {
     }
 
     /**
+     * Reads the imports files to construct the list of import symbols to use.
+     */
+    private void addSymbolsFromSettings() {
+        if (!Utils.isNullOrEmpty(context.getSettings().getImportsFile())) {
+            for (String name : context.getSettings().getImportsFile().split(";")) {
+                try {
+                    InputStream is = Utils.getFileOrResource(name);
+                    Symbols symbol = JAXB.unmarshal(is, Symbols.class);
+                    is.close();
+                    imports.getSymbols().addAll(symbol.getSymbols());
+                } catch (IOException e) {
+                    throw new RuntimeException("Failed to read imports: " + e.getMessage());
+                }
+            }
+        }
+    }
+
+    /**
      * Called after all the proxies are generated. Delete all the remaining
      * files in the target directory.
      */
     public void stop() {
+        if (!Utils.isNullOrEmpty(context.getSettings().getExportFile())) {
+            JAXB.marshal(export, new File(context.getSettings().getExportFile()));
+        }
         if (context.getSettings().isClean()) {
             for (File file : oldFiles) {
                 logInfo("deleting " + file.getName());
@@ -121,7 +150,7 @@ final class FileManager {
         } catch (IOException e) {
             throw new RuntimeException("Failed to generate java4cpp.hash " + e.getMessage());
         }
-        logInfo(String.format("generated: %d, skipped: %d, deleted: %d", generated, skipped, deleted));
+        logInfo(String.format("generated: %d, imported: %d, skipped: %d, deleted: %d", generated, imported, skipped, deleted));
     }
 
     public void enter(String message) {
@@ -170,33 +199,36 @@ final class FileManager {
      * Write the file {@code fileName} in the target directory with
      * {@code fileContent}. If {@code useHash} is true, then the file is save if
      * it's doesn't exist or if the content has changed.
-     * 
-     * @param fileName
-     * @param sw
      */
     private synchronized void saveFile(String fileContent, File fileName) {
         try {
-            MessageDigest algo = MessageDigest.getInstance("MD5");
-            algo.update(fileContent.getBytes());
-            String md5 = bytesToHexString(algo.digest());
-            newHashes.put(fileName.getName(), md5);
-
-            if (!oldFiles.contains(fileName) || !md5.equals(oldHashes.getProperty(fileName.getName()))) {
-                fileName.setWritable(true);
-                BufferedOutputStream writer = new BufferedOutputStream(new FileOutputStream(fileName));
-                writer.write(fileContent.getBytes());
-                fileName.setWritable(false);
-                writer.close();
-                ++generated;
-                logInfo("   generated " + fileName);
+            if (imports.getSymbols().contains(fileName.getName())) {
+                logInfo("   imported " + fileName);
+                ++imported;
             } else {
-                ++skipped;
-                logInfo("   skipped " + fileName);
+                export.getSymbols().add(fileName.getName());
+                MessageDigest algo = MessageDigest.getInstance("MD5");
+                algo.update(fileContent.getBytes());
+                String md5 = bytesToHexString(algo.digest());
+                newHashes.put(fileName.getName(), md5);
+
+                if (!oldFiles.contains(fileName) || !md5.equals(oldHashes.getProperty(fileName.getName()))) {
+                    fileName.setWritable(true);
+                    BufferedOutputStream writer = new BufferedOutputStream(new FileOutputStream(fileName));
+                    writer.write(fileContent.getBytes());
+                    fileName.setWritable(false);
+                    writer.close();
+                    ++generated;
+                    logInfo("   generated " + fileName);
+                } else {
+                    ++skipped;
+                    logInfo("   skipped " + fileName);
+                }
+                oldFiles.remove(fileName);
             }
         } catch (Exception e) {
             throw new RuntimeException("Failed to save file " + e.getMessage());
         }
-        oldFiles.remove(fileName);
     }
 
     private String getPath(String fileName) {
