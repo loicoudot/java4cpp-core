@@ -63,8 +63,8 @@ final class MethodsAnalyzer extends Analyzer {
         methodModel.setCppName(getCppName(method));
         methodModel.setStatic(Modifier.isStatic(method.getModifiers()));
 
-        methodModel.setReturnType(context.getClassModel(method.getGenericReturnType()));
-        methodModel.getParameters().addAll(context.getClassesModels(method.getGenericParameterTypes()));
+        methodModel.setReturnType(context.getClassModel(method.getReturnType()));
+        methodModel.getParameters().addAll(context.getClassesModels(method.getParameterTypes()));
         context.getFileManager().leave();
         return methodModel;
     }
