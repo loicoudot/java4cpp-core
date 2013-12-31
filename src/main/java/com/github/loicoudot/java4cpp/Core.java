@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 import com.github.loicoudot.java4cpp.model.ClassModel;
 
 public class Core {
+    private static final int MILLISEC = 1000;
     private static final int TIMEOUT = 20;
     private Context context;
 
@@ -37,7 +38,7 @@ public class Core {
         generateSources();
         finalization();
 
-        context.getFileManager().logInfo(String.format("elapsed time: %ds", (new Date().getTime() - startTime.getTime()) / 1));
+        context.getFileManager().logInfo(String.format("elapsed time: %ds", (new Date().getTime() - startTime.getTime()) / MILLISEC));
         context.stop();
     }
 
