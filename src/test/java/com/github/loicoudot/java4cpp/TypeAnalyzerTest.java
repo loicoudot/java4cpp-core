@@ -28,7 +28,7 @@ public class TypeAnalyzerTest {
 
     @Test
     public void testFill() throws Exception {
-        ClassModel model = new ClassModel(Boolean.TYPE);
+        ClassModel model = new ClassModel(Java4CppType.fromType(Boolean.TYPE));
         analyzer.fill(model);
         ClassType type = model.getType();
         assertThat(type.getJavaName()).isEqualTo("boolean");
@@ -49,14 +49,14 @@ public class TypeAnalyzerTest {
 
     @Test(expectedExceptions = { TemplateModelException.class })
     public void testDependencyException() throws Exception {
-        ClassModel model = new ClassModel(Boolean.TYPE);
+        ClassModel model = new ClassModel(Java4CppType.fromType(Boolean.TYPE));
         analyzer.fill(model);
         model.getType().getAddDependencies().exec(new ArrayList<String>());
     }
 
     @Test(expectedExceptions = { TemplateModelException.class })
     public void testIncludeException() throws Exception {
-        ClassModel model = new ClassModel(Boolean.TYPE);
+        ClassModel model = new ClassModel(Java4CppType.fromType(Boolean.TYPE));
         analyzer.fill(model);
         model.getType().getAddIncludes().exec(new ArrayList<String>());
     }
@@ -64,7 +64,7 @@ public class TypeAnalyzerTest {
     @Test
     public void testInnerClass() {
         boolean[][] array = new boolean[1][1];
-        ClassModel model = new ClassModel(array.getClass());
+        ClassModel model = new ClassModel(Java4CppType.fromType(array.getClass()));
         analyzer.fill(model);
         assertThat(model.getType().getInnerType().getType().getJavaName()).isEqualTo("[Z");
         assertThat(model.getType().getFinalInnerType().getType().getJavaName()).isEqualTo("boolean");

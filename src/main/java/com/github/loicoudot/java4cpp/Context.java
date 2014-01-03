@@ -4,11 +4,7 @@ import static com.github.loicoudot.java4cpp.Utils.newArrayList;
 import static com.github.loicoudot.java4cpp.Utils.newHashMap;
 
 import java.io.File;
-import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.lang.reflect.WildcardType;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Enumeration;
@@ -36,9 +32,9 @@ public final class Context {
     private final MappingsManager mappingsManager;
     private final TemplateManager templateManager;
     private ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-    private final BlockingQueue<Class<?>> classesToDo = new ArrayBlockingQueue<Class<?>>(1024);
-    private final List<Class<?>> classesAlreadyDone = newArrayList();
-    private final Map<Type, ClassModel> classModelCache = newHashMap();
+    private final BlockingQueue<Java4CppType> classesToDo = new ArrayBlockingQueue<Java4CppType>(1024);
+    private final List<Java4CppType> classesAlreadyDone = newArrayList();
+    private final Map<Java4CppType, ClassModel> classModelCache = newHashMap();
     private final Analyzer[] analyzers;
     private final Analyzer typeAnalyzer;
 
@@ -101,17 +97,21 @@ public final class Context {
         }
     }
 
-    public void addClassToDo(Class<?> clazz) {
+    public void addClassToDo(Type type) {
+        addClassToDo(Java4CppType.fromType(type));
+    }
+
+    public void addClassToDo(Java4CppType type) {
         synchronized (classesToDo) {
-            if (!classesAlreadyDone.contains(clazz) && !classesToDo.contains(clazz)) {
-                classesToDo.add(clazz);
-                classesAlreadyDone.add(clazz);
-                getFileManager().logInfo("add dependency " + clazz.getName());
+            if (!classesAlreadyDone.contains(type) && !classesToDo.contains(type)) {
+                classesToDo.add(type);
+                classesAlreadyDone.add(type);
+                getFileManager().logInfo("add dependency " + type);
             }
         }
     }
 
-    public BlockingQueue<Class<?>> getClassesToDo() {
+    public BlockingQueue<Java4CppType> getClassesToDo() {
         return classesToDo;
     }
 
@@ -119,7 +119,7 @@ public final class Context {
         return !classesToDo.isEmpty();
     }
 
-    public List<Class<?>> getClassesAlreadyDone() {
+    public List<Java4CppType> getClassesAlreadyDone() {
         return classesAlreadyDone;
     }
 
@@ -139,43 +139,11 @@ public final class Context {
         return templateManager;
     }
 
-    /**
-     * Gets the raw class of a java <code>type</code>. Returns:
-     * <ul>
-     * <li>Inner class for arrays</li>
-     * <li>Non parameterized class for parameterized type</li>
-     * <li>Upper bounds class for type variable</li>
-     * <ul>
-     * 
-     * @param type
-     *            java type
-     * @return Corresponding java class
-     */
-    @SuppressWarnings("rawtypes")
-    public static Class<?> getRawClass(Type type) {
-        if (type instanceof Class) {
-            return (Class<?>) type;
-        }
-        if (type instanceof TypeVariable) {
-            return getRawClass(((TypeVariable) type).getBounds()[0]);
-        }
-        if (type instanceof ParameterizedType) {
-            return getRawClass(((ParameterizedType) type).getRawType());
-        }
-        if (type instanceof GenericArrayType) {
-            return getRawClass(((GenericArrayType) type).getGenericComponentType());
-        }
-        if (type instanceof WildcardType) {
-            return getRawClass(((WildcardType) type).getUpperBounds()[0]);
-        }
-        throw new RuntimeException("Can't get raw class from " + type);
-    }
-
-    public ClassModel analyzeClassModel(Type type) {
+    public ClassModel analyzeClassModel(Java4CppType type) {
         try {
             getFileManager().enter("analyzing " + type);
             ClassModel classModel = getClassModel(type);
-            if (getTemplateManager().getTypeTemplates(getRawClass(type)).isNeedAnalyzing()) {
+            if (getTemplateManager().getTypeTemplates(type.getRawClass()).isNeedAnalyzing()) {
                 for (Analyzer analyzer : analyzers) {
                     analyzer.fill(classModel);
                 }
@@ -188,13 +156,13 @@ public final class Context {
         }
     }
 
-    public ClassModel executeTypeTemplate(Class<?> clazz) {
+    public ClassModel executeTypeTemplate(Java4CppType type) {
         try {
-            getFileManager().enter("templating " + clazz);
-            ClassModel classModel = getClassModel(clazz);
+            getFileManager().enter("templating " + type);
+            ClassModel classModel = getClassModel(type);
             ClassType typeModel = classModel.getType();
 
-            TypeTemplates typeTemplates = getTemplateManager().getTypeTemplates(clazz);
+            TypeTemplates typeTemplates = getTemplateManager().getTypeTemplates(type.getRawClass());
             typeModel.setCppType(typeTemplates.getCppType(classModel));
             typeModel.setCppReturnType(typeTemplates.getCppReturnType(classModel));
             typeTemplates.executeDependencies(classModel);
@@ -206,22 +174,20 @@ public final class Context {
     }
 
     public ClassModel getClassModel(Type type) {
+        return getClassModel(Java4CppType.fromType(type));
+    }
+
+    public ClassModel getClassModel(Java4CppType type) {
         if (!classModelCache.containsKey(type)) {
             synchronized (classModelCache) {
                 if (!classModelCache.containsKey(type)) {
                     ClassModel classModel = new ClassModel(type);
                     classModelCache.put(type, classModel);
-                    Class<?> rawClass = getRawClass(type);
-                    if (rawClass != type) {
-                        classModel.setRawClassModel(getClassModel(rawClass));
-                    }
-                    addClassToDo(rawClass);
+                    addClassToDo(type.getRawClass());
+                    addClassToDo(type);
 
-                    if (type instanceof ParameterizedType) {
-                        ParameterizedType parameterizedType = (ParameterizedType) type;
-                        for (Type argumentType : parameterizedType.getActualTypeArguments()) {
-                            classModel.addParameter(getClassModel(argumentType));
-                        }
+                    for (Java4CppType argumentType : type.getParameterizedTypes()) {
+                        classModel.addParameter(getClassModel(argumentType));
                     }
                 }
             }

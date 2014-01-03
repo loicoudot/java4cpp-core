@@ -3,9 +3,10 @@ package com.github.loicoudot.java4cpp.model;
 import static com.github.loicoudot.java4cpp.Utils.newArrayList;
 import static com.github.loicoudot.java4cpp.Utils.newHashSet;
 
-import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Set;
+
+import com.github.loicoudot.java4cpp.Java4CppType;
 
 /**
  * Model that encapsulate a Java class. The model has two parts :
@@ -29,7 +30,7 @@ public final class ClassModel {
     private List<ClassModel> parameters;
     private ClassContent content;
 
-    public ClassModel(Type type) {
+    public ClassModel(Java4CppType type) {
         this.type = new ClassType(type);
         this.content = new ClassContent();
     }

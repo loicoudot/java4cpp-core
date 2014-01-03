@@ -69,10 +69,12 @@ public class Core {
      * Execute type freemarker templates of ClassModel
      */
     private void resolveTypeTemplates() {
-        Collections.sort(context.getClassesAlreadyDone(), new Comparator<Class<?>>() {
+        Collections.sort(context.getClassesAlreadyDone(), new Comparator<Java4CppType>() {
 
             @Override
-            public int compare(Class<?> o1, Class<?> o2) {
+            public int compare(Java4CppType t1, Java4CppType t2) {
+                Class<?> o1 = t1.getRawClass();
+                Class<?> o2 = t2.getRawClass();
                 if (o1.isArray() && o2.isArray()) {
                     int idx1 = o1.getName().lastIndexOf('[');
                     int idx2 = o2.getName().lastIndexOf('[');
@@ -88,8 +90,8 @@ public class Core {
                 return o1.getName().compareTo(o2.getName());
             }
         });
-        for (Class<?> clazz : context.getClassesAlreadyDone()) {
-            context.executeTypeTemplate(clazz);
+        for (Java4CppType type : context.getClassesAlreadyDone()) {
+            context.executeTypeTemplate(type);
         }
     }
 
@@ -100,9 +102,10 @@ public class Core {
         try {
             ExecutorService pool = Executors.newFixedThreadPool(context.getSettings().getNbThread());
 
-            for (Class<?> clazz : context.getClassesAlreadyDone()) {
+            for (Java4CppType type : context.getClassesAlreadyDone()) {
+                Class<?> clazz = type.getRawClass();
                 if (!clazz.isPrimitive() && !clazz.isArray() && clazz.getEnclosingClass() == null) {
-                    pool.execute(new SourceExecutor(context, clazz));
+                    pool.execute(new SourceExecutor(context, type));
                 }
             }
 
@@ -122,7 +125,8 @@ public class Core {
         Map<String, Object> dataModel = newHashMap();
         dataModel.put("cppFormatter", new SourceFormatter());
         List<ClassModel> dependencies = newArrayList();
-        for (Class<?> clazz : context.getClassesAlreadyDone()) {
+        for (Java4CppType type : context.getClassesAlreadyDone()) {
+            Class<?> clazz = type.getRawClass();
             if (!clazz.isPrimitive() && !clazz.isArray() && clazz.getEnclosingClass() == null) {
                 dependencies.add(context.getClassModel(clazz));
             }

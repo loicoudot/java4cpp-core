@@ -3,17 +3,16 @@ package com.github.loicoudot.java4cpp.model;
 import static com.github.loicoudot.java4cpp.Utils.newHashSet;
 
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
 
-import com.github.loicoudot.java4cpp.Context;
+import com.github.loicoudot.java4cpp.Java4CppType;
 
 import freemarker.template.TemplateMethodModelEx;
 
 public class ClassType {
-    private final Type type;
+    private final Java4CppType type;
     private final String javaName;
     private final boolean isPrimitive;
     private final boolean isEnum;
@@ -40,7 +39,7 @@ public class ClassType {
     private final Set<String> includes = newHashSet();
     private final Set<ClassModel> dependencies = newHashSet();
 
-    public ClassType(Type type) {
+    public ClassType(Java4CppType type) {
         this.type = type;
         Class<?> clazz = getClazz();
         this.javaName = clazz.getName();
@@ -55,12 +54,12 @@ public class ClassType {
         this.isCloneable = Arrays.asList(clazz.getInterfaces()).contains(java.lang.Cloneable.class);
     }
 
-    public Type getType() {
+    public Java4CppType getType() {
         return type;
     }
 
     public Class<?> getClazz() {
-        return Context.getRawClass(type);
+        return type.getRawClass();
     }
 
     public String getJavaName() {
