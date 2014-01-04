@@ -10,9 +10,10 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-@XmlType(propOrder = { "needAnalyzing", "cppType", "cppReturnType", "dependencies", "functions" })
+@XmlType(propOrder = { "sourceTemplates", "needAnalyzing", "cppType", "cppReturnType", "dependencies", "functions" })
 public final class TypeTemplate {
     private Class<?> clazz;
+    private final List<String> sourceTemplates = newArrayList();
     private Boolean needAnalyzing = true;
     private String cppType;
     private String cppReturnType;
@@ -27,6 +28,12 @@ public final class TypeTemplate {
 
     public void setClazz(Class<?> clazz) {
         this.clazz = clazz;
+    }
+
+    @XmlElementWrapper
+    @XmlElement(name = "sourceTemplate")
+    public List<String> getSourceTemplates() {
+        return sourceTemplates;
     }
 
     public Boolean getNeedAnalyzing() {

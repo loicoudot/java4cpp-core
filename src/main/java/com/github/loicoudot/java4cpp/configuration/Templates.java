@@ -10,18 +10,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlRootElement
-@XmlType(propOrder = { "sourceTemplates", "globalTemplates", "datatypes", "copyFiles" })
+@XmlType(propOrder = { "globalTemplates", "datatypes", "copyFiles" })
 public final class Templates {
-    private final List<String> sourceTemplates = newArrayList();
     private final List<String> globalTemplates = newArrayList();
     private final List<String> copyFiles = newArrayList();
     private Datatypes datatypes = new Datatypes();
-
-    @XmlElementWrapper
-    @XmlElement(name = "sourceTemplate")
-    public List<String> getSourceTemplates() {
-        return sourceTemplates;
-    }
 
     @XmlElementWrapper
     @XmlElement(name = "globalTemplate")

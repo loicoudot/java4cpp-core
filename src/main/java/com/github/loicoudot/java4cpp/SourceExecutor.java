@@ -21,7 +21,7 @@ public class SourceExecutor implements Runnable {
         final Map<String, Object> dataModel = newHashMap();
         dataModel.put("cppFormatter", new SourceFormatter());
         dataModel.put("class", context.getClassModel(clazz));
-        context.getTemplateManager().processSourceTemplates(dataModel);
+        context.getTemplateManager().processSourceTemplates(clazz, dataModel);
 
         context.getFileManager().leave();
     }

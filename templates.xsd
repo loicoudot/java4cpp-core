@@ -5,13 +5,6 @@
 
   <xs:complexType name="templates" final="extension restriction">
     <xs:sequence>
-      <xs:element name="sourceTemplates" minOccurs="0">
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name="sourceTemplate" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:element>
       <xs:element name="globalTemplates" minOccurs="0">
         <xs:complexType>
           <xs:sequence>
@@ -47,6 +40,13 @@
 
   <xs:complexType name="typeTemplate" final="extension restriction">
     <xs:sequence>
+      <xs:element name="sourceTemplates" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="sourceTemplate" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
       <xs:element name="needAnalyzing" type="xs:boolean" minOccurs="0"/>
       <xs:element name="cppType" type="xs:string" minOccurs="0"/>
       <xs:element name="cppReturnType" type="xs:string" minOccurs="0"/>
