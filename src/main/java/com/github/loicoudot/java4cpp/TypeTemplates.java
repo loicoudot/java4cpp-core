@@ -1,5 +1,6 @@
 package com.github.loicoudot.java4cpp;
 
+import static com.github.loicoudot.java4cpp.Utils.newArrayList;
 import static com.github.loicoudot.java4cpp.Utils.newHashMap;
 
 import java.io.StringWriter;
@@ -14,7 +15,7 @@ import freemarker.template.TemplateMethodModelEx;
 import freemarker.template.TemplateModelException;
 
 /**
- * Ths class use freemarker templates and <code>ClassModel</code> models to
+ * This class use freemarker templates and <code>ClassModel</code> models to
  * generate the C++ source code for type mapings. <br>
  * Gives the C++ type of a corresponding java class, the dependencies with other
  * classes and C++ source code to convert back and forth between java classes
@@ -23,6 +24,7 @@ import freemarker.template.TemplateModelException;
  * @author Loic Oudot
  */
 final class TypeTemplates {
+    private final List<Template> sourceTemplates = newArrayList();
     private boolean needAnalyzing;
     private Template cppType;
     private Template cppReturnType;
@@ -91,6 +93,16 @@ final class TypeTemplates {
             return sw.toString();
         }
         return "";
+    }
+
+    /**
+     * Returns the list of freemarker templates to execute when generating
+     * source code for this type.
+     * 
+     * @return list of freemarker templates
+     */
+    public List<Template> getSourceTemplates() {
+        return sourceTemplates;
     }
 
     /**

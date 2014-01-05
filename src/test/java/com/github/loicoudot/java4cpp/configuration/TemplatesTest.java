@@ -37,13 +37,13 @@ public class TemplatesTest {
     @Test
     public void deserialize() {
         Templates templates = JAXB.unmarshal(new File("target/test-classes/templates.xml"), Templates.class);
-        assertThat(templates.getSourceTemplates()).containsOnly("tpl1", "tpl2");
         assertThat(templates.getGlobalTemplates()).containsOnly("gbl1", "gbl2");
         assertThat(templates.getCopyFiles()).containsOnly("file1", "file2");
         final Datatypes datatypes = templates.getDatatypes();
         assertThat(datatypes.getFallback().getCppType()).isEqualTo("fallback");
         final TypeTemplate template = datatypes.getTemplates().get(0);
         assertThat(template.getClazz()).hasSameClassAs(Boolean.TYPE);
+        assertThat(template.getSourceTemplates()).containsOnly("tpl1", "tpl2");
         assertThat(template.getCppType()).isEqualTo("cppType");
         assertThat(template.getCppReturnType()).isEqualTo("cppReturnType");
         assertThat(template.getFunctions()).hasSize(2);

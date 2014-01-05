@@ -1,21 +1,26 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <templates xmlns="http://java4cpp.loicoudot.github.com"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://java4cpp.loicoudot.github.com file:///Users/maison/Documents/workspace/java4cpp-core/templates.xsd">
-	<sourceTemplates>
-		<sourceTemplate>tpl1</sourceTemplate>
-		<sourceTemplate>tpl2</sourceTemplate>
-	</sourceTemplates>
+	xsi:schemaLocation="http://java4cpp.loicoudot.github.com file:///Users/maison/Documents/Dev/workspace/java4cpp-core/templates.xsd">
 	<globalTemplates>
 		<globalTemplate>gbl1</globalTemplate>
 		<globalTemplate>gbl2</globalTemplate>
 	</globalTemplates>
 	<datatypes>
 		<fallback>
+			<sourceTemplates>
+				<sourceTemplate>tpl1</sourceTemplate>
+				<sourceTemplate>tpl2</sourceTemplate>
+			</sourceTemplates>
 			<cppType>fallback</cppType>
 		</fallback>
 		<templates>
 			<template class="boolean">
+				<sourceTemplates>
+					<sourceTemplate>tpl1</sourceTemplate>
+					<sourceTemplate>tpl2</sourceTemplate>
+				</sourceTemplates>
+				<needAnalyzing>false</needAnalyzing>
 				<cppType>cppType</cppType>
 				<cppReturnType>cppReturnType</cppReturnType>
 				<functions>

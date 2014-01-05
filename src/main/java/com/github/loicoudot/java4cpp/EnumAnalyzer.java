@@ -23,7 +23,7 @@ public class EnumAnalyzer extends Analyzer {
         List<String> enumKeys = new ArrayList<String>();
         for (Field field : clazz.getFields()) {
             if (field.isEnumConstant()) {
-                enumKeys.add(context.getMappingsManager().escapeName(field.getName()));
+                enumKeys.add(mappings.escapeName(field.getName()));
             }
         }
         return enumKeys;

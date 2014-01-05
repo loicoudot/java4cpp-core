@@ -30,7 +30,6 @@ final class TemplateManager {
     private final Context context;
     private final Templates templates = new Templates();
     private final Configuration configuration = new Configuration();
-    private final List<Template> sourceTemplates = newArrayList();
     private final List<Template> globalTemplates = newArrayList();
     private final Map<Class<?>, TypeTemplates> typeCache = newHashMap();
 
@@ -50,7 +49,6 @@ final class TemplateManager {
     }
 
     public void addTemplates(Templates other) {
-        templates.getSourceTemplates().addAll(other.getSourceTemplates());
         templates.getGlobalTemplates().addAll(other.getGlobalTemplates());
         templates.getCopyFiles().addAll(other.getCopyFiles());
         if (other.getDatatypes().getFallback() != null) {
@@ -68,9 +66,6 @@ final class TemplateManager {
     public void start() {
         try {
             addTemplatesFromSettings();
-            for (String templateName : templates.getSourceTemplates()) {
-                sourceTemplates.add(configuration.getTemplate(templateName));
-            }
             for (String templateName : templates.getGlobalTemplates()) {
                 globalTemplates.add(configuration.getTemplate(templateName));
             }
@@ -104,8 +99,8 @@ final class TemplateManager {
         }
     }
 
-    public void processSourceTemplates(Map<String, Object> dataModel) {
-        processTemplates(dataModel, sourceTemplates);
+    public void processSourceTemplates(Class<?> clazz, Map<String, Object> dataModel) {
+        processTemplates(dataModel, getTypeTemplates(clazz).getSourceTemplates());
     }
 
     public void processGlobalTemplates(Map<String, Object> dataModel) {
@@ -163,6 +158,13 @@ final class TemplateManager {
         TypeTemplate type = getTypeTemplate(clazz);
         if (type == null) {
             throw new RuntimeException("No defined template for type " + clazz.getName());
+        }
+        try {
+            for (String templateName : type.getSourceTemplates()) {
+                result.getSourceTemplates().add(configuration.getTemplate(templateName));
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to read templates: " + e.getMessage());
         }
         result.setNeedAnalyzing(type.getNeedAnalyzing());
         result.setCppType(createTemplate(type.getCppType()));

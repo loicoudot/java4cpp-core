@@ -112,7 +112,7 @@ final class TypeAnalyzer extends Analyzer {
         StringBuilder fullName = new StringBuilder();
         String shortName = "";
         String sep = "";
-        for (String namespace : context.getMappingsManager().getNamespace(clazz)) {
+        for (String namespace : mappings.getNamespace(clazz)) {
             fullName.append(sep).append(namespace);
             sep = "::";
             shortName = namespace;
