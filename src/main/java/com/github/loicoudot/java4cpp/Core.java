@@ -127,12 +127,12 @@ public class Core {
         Set<ClassModel> dependencies = newHashSet();
         for (Java4CppType type : context.getClassesAlreadyDone()) {
             Class<?> clazz = type.getRawClass();
-            if (isValid(clazz) && context.getTemplateManager().getTypeTemplates(clazz).isNeedAnalyzing()) {
+            if (isValid(clazz)) {
                 dependencies.add(context.getClassModel(clazz));
             }
         }
         dataModel.put("classes", dependencies);
-        dataModel.put("symbols", context.getFileManager().getSymbols());
+        dataModel.put("symbols", context.getFileManager().getSymbols().getSymbols());
 
         context.getTemplateManager().processGlobalTemplates(dataModel);
 
