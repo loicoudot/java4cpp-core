@@ -195,6 +195,10 @@ final class FileManager {
         saveFile(content, new File(getPath(fileName)));
     }
 
+    public Symbols getSymbols() {
+        return export;
+    }
+
     /**
      * Write the file {@code fileName} in the target directory with
      * {@code fileContent}. If {@code useHash} is true, then the file is save if

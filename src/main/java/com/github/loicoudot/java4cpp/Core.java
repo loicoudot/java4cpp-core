@@ -132,6 +132,7 @@ public class Core {
             }
         }
         dataModel.put("classes", dependencies);
+        dataModel.put("symbols", context.getFileManager().getSymbols());
 
         context.getTemplateManager().processGlobalTemplates(dataModel);
 
