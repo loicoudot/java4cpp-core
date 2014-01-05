@@ -1,13 +1,13 @@
 package com.github.loicoudot.java4cpp;
 
-import static com.github.loicoudot.java4cpp.Utils.newArrayList;
 import static com.github.loicoudot.java4cpp.Utils.newHashMap;
+import static com.github.loicoudot.java4cpp.Utils.newHashSet;
 
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -124,10 +124,10 @@ public class Core {
     private void finalization() {
         Map<String, Object> dataModel = newHashMap();
         dataModel.put("cppFormatter", new SourceFormatter());
-        List<ClassModel> dependencies = newArrayList();
+        Set<ClassModel> dependencies = newHashSet();
         for (Java4CppType type : context.getClassesAlreadyDone()) {
             Class<?> clazz = type.getRawClass();
-            if (isValid(clazz)) {
+            if (isValid(clazz) && context.getTemplateManager().getTypeTemplates(clazz).isNeedAnalyzing()) {
                 dependencies.add(context.getClassModel(clazz));
             }
         }
@@ -139,7 +139,7 @@ public class Core {
     }
 
     private boolean isValid(Class<?> clazz) {
-        return !clazz.isPrimitive() && !clazz.isArray() && clazz.getEnclosingClass() == null && context.getTemplateManager().getTypeTemplates(clazz).isNeedAnalyzing();
+        return !clazz.isPrimitive() && !clazz.isArray() && clazz.getEnclosingClass() == null;
     }
 
 }

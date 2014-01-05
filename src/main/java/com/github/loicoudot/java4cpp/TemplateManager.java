@@ -99,8 +99,8 @@ final class TemplateManager {
         }
     }
 
-    public void processSourceTemplates(Class<?> clazz, Map<String, Object> dataModel) {
-        processTemplates(dataModel, getTypeTemplates(clazz).getSourceTemplates());
+    public void processSourceTemplates(Java4CppType type, Map<String, Object> dataModel) {
+        processTemplates(dataModel, getTypeTemplates(type.getRawClass()).getSourceTemplates());
     }
 
     public void processGlobalTemplates(Map<String, Object> dataModel) {
