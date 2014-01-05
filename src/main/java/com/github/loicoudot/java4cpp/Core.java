@@ -104,7 +104,7 @@ public class Core {
 
             for (Java4CppType type : context.getClassesAlreadyDone()) {
                 Class<?> clazz = type.getRawClass();
-                if (!clazz.isPrimitive() && !clazz.isArray() && clazz.getEnclosingClass() == null) {
+                if (isValid(clazz)) {
                     pool.execute(new SourceExecutor(context, type));
                 }
             }
@@ -127,7 +127,7 @@ public class Core {
         List<ClassModel> dependencies = newArrayList();
         for (Java4CppType type : context.getClassesAlreadyDone()) {
             Class<?> clazz = type.getRawClass();
-            if (!clazz.isPrimitive() && !clazz.isArray() && clazz.getEnclosingClass() == null) {
+            if (isValid(clazz)) {
                 dependencies.add(context.getClassModel(clazz));
             }
         }
@@ -137,4 +137,9 @@ public class Core {
 
         context.getTemplateManager().copyFiles();
     }
+
+    private boolean isValid(Class<?> clazz) {
+        return !clazz.isPrimitive() && !clazz.isArray() && clazz.getEnclosingClass() == null && context.getTemplateManager().getTypeTemplates(clazz).isNeedAnalyzing();
+    }
+
 }
