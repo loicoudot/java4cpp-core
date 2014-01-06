@@ -60,6 +60,7 @@ final class TemplateManager {
         if (other.getDatatypes().getEnumeration() != null) {
             templates.getDatatypes().setEnumeration(other.getDatatypes().getEnumeration());
         }
+        templates.getDatatypes().getTemplates().removeAll(other.getDatatypes().getTemplates());
         templates.getDatatypes().getTemplates().addAll(other.getDatatypes().getTemplates());
     }
 

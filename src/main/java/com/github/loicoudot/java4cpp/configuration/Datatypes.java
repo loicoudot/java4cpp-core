@@ -1,8 +1,8 @@
 package com.github.loicoudot.java4cpp.configuration;
 
-import static com.github.loicoudot.java4cpp.Utils.newArrayList;
+import static com.github.loicoudot.java4cpp.Utils.newHashSet;
 
-import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -13,7 +13,7 @@ public final class Datatypes {
     private TypeTemplate fallback;
     private TypeTemplate array;
     private TypeTemplate enumeration;
-    private final List<TypeTemplate> templates = newArrayList();
+    private final Set<TypeTemplate> templates = newHashSet();
 
     public TypeTemplate getFallback() {
         return fallback;
@@ -42,7 +42,7 @@ public final class Datatypes {
 
     @XmlElementWrapper
     @XmlElement(name = "template")
-    public List<TypeTemplate> getTemplates() {
+    public Set<TypeTemplate> getTemplates() {
         return templates;
     }
 }

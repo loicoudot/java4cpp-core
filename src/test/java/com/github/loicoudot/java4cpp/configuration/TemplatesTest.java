@@ -41,7 +41,7 @@ public class TemplatesTest {
         assertThat(templates.getCopyFiles()).containsOnly("file1", "file2");
         final Datatypes datatypes = templates.getDatatypes();
         assertThat(datatypes.getFallback().getCppType()).isEqualTo("fallback");
-        final TypeTemplate template = datatypes.getTemplates().get(0);
+        final TypeTemplate template = datatypes.getTemplates().iterator().next();
         assertThat(template.getClazz()).hasSameClassAs(Boolean.TYPE);
         assertThat(template.getSourceTemplates()).containsOnly("tpl1", "tpl2");
         assertThat(template.getCppType()).isEqualTo("cppType");
