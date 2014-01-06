@@ -46,14 +46,22 @@ public final class Settings {
      */
     private static final String NB_THREAD = "java4cpp.nbThread";
     /**
-     * Name of the file that contains the lists of exported proxies
+     * Name of the file that contains the lists of exported symbols
      */
     private static final String EXPORT_FILE = "java4cpp.exportFile";
+    /**
+     * A regex string to filter exported symbols
+     */
+    private static final String EXPORT_FILTER = "java4cpp.exportFilter";
     /**
      * A comma separated list of files containing a lists of proxies to use
      * instead of generating new one.
      */
     private static final String IMPORTS_FILE = "java4cpp.importsFile";
+    /**
+     * A regex string to filter imported symbols
+     */
+    private static final String IMPORT_FILTER = "java4cpp.importFilter";
 
     private String targetPath;
     private String jarFiles;
@@ -63,7 +71,9 @@ public final class Settings {
     private boolean useHash;
     private int nbThread;
     private String exportFile;
+    private String exportFilter;
     private String importsFile;
+    private String importFilter;
 
     /**
      * Initialize the settings with the internal default values then with the
@@ -111,7 +121,9 @@ public final class Settings {
         setUseHash(Boolean.valueOf(properties.getProperty(USE_HASH, "true")));
         setNbThread(Integer.valueOf(properties.getProperty(NB_THREAD, "1")));
         setExportFile(properties.getProperty(EXPORT_FILE, ""));
+        setExportFilter(properties.getProperty(EXPORT_FILTER, ""));
         setImportsFile(properties.getProperty(IMPORTS_FILE, ""));
+        setImportFilter(properties.getProperty(IMPORT_FILTER, ""));
     }
 
     private void initFromPropertiesFile(String propertiesFile) {
@@ -240,11 +252,27 @@ public final class Settings {
         this.exportFile = exportFile;
     }
 
+    public String getExportFilter() {
+        return exportFilter;
+    }
+
+    public void setExportFilter(String exportFilter) {
+        this.exportFilter = exportFilter;
+    }
+
     public String getImportsFile() {
         return importsFile;
     }
 
     public void setImportsFile(String importsFile) {
         this.importsFile = importsFile;
+    }
+
+    public String getImportFilter() {
+        return importFilter;
+    }
+
+    public void setImportFilter(String importFilter) {
+        this.importFilter = importFilter;
     }
 }

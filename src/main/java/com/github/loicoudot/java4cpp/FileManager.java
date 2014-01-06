@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Properties;
+import java.util.regex.Pattern;
 
 import javax.xml.bind.JAXB;
 
@@ -113,14 +114,25 @@ final class FileManager {
      */
     private void addSymbolsFromSettings() {
         if (!Utils.isNullOrEmpty(context.getSettings().getImportsFile())) {
+            Symbols imported = new Symbols();
             for (String name : context.getSettings().getImportsFile().split(";")) {
                 try {
                     InputStream is = Utils.getFileOrResource(name);
                     Symbols symbol = JAXB.unmarshal(is, Symbols.class);
                     is.close();
-                    imports.getSymbols().addAll(symbol.getSymbols());
+                    imported.getSymbols().addAll(symbol.getSymbols());
                 } catch (IOException e) {
                     throw new RuntimeException("Failed to read imports: " + e.getMessage());
+                }
+            }
+            if (Utils.isNullOrEmpty(context.getSettings().getImportFilter())) {
+                imports.getSymbols().addAll(imported.getSymbols());
+            } else {
+                Pattern regex = Pattern.compile(context.getSettings().getImportFilter());
+                for (String symbol : imported.getSymbols()) {
+                    if (regex.matcher(symbol).matches()) {
+                        imports.getSymbols().add(symbol);
+                    }
                 }
             }
         }
@@ -132,7 +144,18 @@ final class FileManager {
      */
     public void stop() {
         if (!Utils.isNullOrEmpty(context.getSettings().getExportFile())) {
-            JAXB.marshal(export, new File(context.getSettings().getExportFile()));
+            if (Utils.isNullOrEmpty(context.getSettings().getExportFilter())) {
+                JAXB.marshal(export, new File(context.getSettings().getExportFile()));
+            } else {
+                Symbols exportFiltered = new Symbols();
+                Pattern regexp = Pattern.compile(context.getSettings().getExportFilter());
+                for (String symbol : export.getSymbols()) {
+                    if (regexp.matcher(symbol).matches()) {
+                        exportFiltered.getSymbols().add(symbol);
+                    }
+                }
+                JAXB.marshal(exportFiltered, new File(context.getSettings().getExportFile()));
+            }
         }
         if (context.getSettings().isClean()) {
             for (File file : oldFiles) {
@@ -216,7 +239,7 @@ final class FileManager {
                 String md5 = bytesToHexString(algo.digest());
                 newHashes.put(fileName.getName(), md5);
 
-                if (!oldFiles.contains(fileName) || !md5.equals(oldHashes.getProperty(fileName.getName()))) {
+                if (!context.getSettings().isUseHash() || !oldFiles.contains(fileName) || !md5.equals(oldHashes.getProperty(fileName.getName()))) {
                     fileName.setWritable(true);
                     BufferedOutputStream writer = new BufferedOutputStream(new FileOutputStream(fileName));
                     writer.write(fileContent.getBytes());
