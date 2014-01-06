@@ -31,15 +31,14 @@ public class Core {
 
         context.start();
         Date startTime = new Date();
-        context.getFileManager()
-                .logInfo(String.format("java4cpp version %s, starting at %s", Context.class.getPackage().getImplementationVersion(), startTime));
+        context.getFileManager().logInfo(String.format("java4cpp version %s, starting at %s", Context.class.getPackage().getImplementationVersion(), startTime));
 
         analyzeModels();
         resolveTypeTemplates();
         generateSources();
         finalization();
 
-        context.getFileManager().logInfo(String.format("elapsed time: %.1fs", (new Date().getTime() - startTime.getTime()) / MILLISEC));
+        context.getFileManager().logInfo(String.format("elapsed time: %.3fs", (new Date().getTime() - startTime.getTime()) / MILLISEC));
         context.stop();
     }
 
