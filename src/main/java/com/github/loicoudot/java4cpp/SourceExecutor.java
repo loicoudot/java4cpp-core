@@ -8,7 +8,7 @@ public class SourceExecutor implements Runnable {
     private final Context context;
     private final Java4CppType type;
 
-    public SourceExecutor(Context context, Java4CppType type) throws InterruptedException {
+    public SourceExecutor(Context context, Java4CppType type) {
         this.context = context;
         this.type = type;
     }
