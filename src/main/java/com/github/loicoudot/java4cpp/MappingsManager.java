@@ -30,9 +30,6 @@ public class MappingsManager {
     public void start() {
         addMappingsFromSettings();
         addClassToDoFromMappings();
-        for (ClassMapping mapping : mappings.getClasses()) {
-            mappingCache.put(mapping.getClazz(), mapping);
-        }
     }
 
     private void addMappingsFromSettings() {
@@ -53,7 +50,9 @@ public class MappingsManager {
     private void addClassToDoFromMappings() {
         context.getFileManager().logInfo("adding classes to wrappe from mappings files");
         for (ClassMapping mapping : mappings.getClasses()) {
-            context.addClassToDo(mapping.getClazz());
+            Class<?> clazz = context.loadClass(mapping.getClazz());
+            context.addClassToDo(clazz);
+            mappingCache.put(clazz, mapping);
         }
     }
 

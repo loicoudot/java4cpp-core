@@ -42,7 +42,7 @@ public class TemplatesTest {
         final Datatypes datatypes = templates.getDatatypes();
         assertThat(datatypes.getFallback().getCppType()).isEqualTo("fallback");
         final TypeTemplate template = datatypes.getTemplates().iterator().next();
-        assertThat(template.getClazz()).hasSameClassAs(Boolean.TYPE);
+        assertThat(template.getClazz()).isEqualTo(Boolean.TYPE.getName());
         assertThat(template.getSourceTemplates()).containsOnly("tpl1", "tpl2");
         assertThat(template.getCppType()).isEqualTo("cppType");
         assertThat(template.getCppReturnType()).isEqualTo("cppReturnType");

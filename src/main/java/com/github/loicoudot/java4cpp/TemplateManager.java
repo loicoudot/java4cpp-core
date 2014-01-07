@@ -133,7 +133,7 @@ final class TemplateManager {
             return templates.getDatatypes().getEnumeration();
         }
         for (TypeTemplate template : templates.getDatatypes().getTemplates()) {
-            if (template.getClazz().equals(clazz)) {
+            if (template.getClazz().equals(clazz.getName())) {
                 return template;
             }
         }

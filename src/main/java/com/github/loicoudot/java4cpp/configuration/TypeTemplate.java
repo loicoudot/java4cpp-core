@@ -8,11 +8,10 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 @XmlType(propOrder = { "sourceTemplates", "needAnalyzing", "cppType", "cppReturnType", "dependencies", "functions" })
 public final class TypeTemplate {
-    private Class<?> clazz;
+    private String clazz;
     private final List<String> sourceTemplates = newArrayList();
     private Boolean needAnalyzing = true;
     private String cppType;
@@ -21,12 +20,11 @@ public final class TypeTemplate {
     private final List<Function> functions = newArrayList();
 
     @XmlAttribute(name = "class")
-    @XmlJavaTypeAdapter(ClassAdapter.class)
-    public Class<?> getClazz() {
+    public String getClazz() {
         return clazz;
     }
 
-    public void setClazz(Class<?> clazz) {
+    public void setClazz(String clazz) {
         this.clazz = clazz;
     }
 
@@ -76,7 +74,7 @@ public final class TypeTemplate {
 
     @Override
     public String toString() {
-        return String.format("TypeTemplate(%s)", clazz.getName());
+        return String.format("TypeTemplate(%s)", clazz);
     }
 
     @Override
@@ -103,7 +101,7 @@ public final class TypeTemplate {
             if (other.clazz != null) {
                 return false;
             }
-        } else if (!clazz.getName().equals(other.clazz.getName())) {
+        } else if (!clazz.equals(other.clazz)) {
             return false;
         }
         return true;

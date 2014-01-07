@@ -28,7 +28,7 @@ public class ContextTest {
         context = new Context(settings);
         Templates other = new Templates();
         TypeTemplate classTemplate = new TypeTemplate();
-        classTemplate.setClazz(Boolean.TYPE);
+        classTemplate.setClazz(Boolean.TYPE.getName());
         classTemplate.setNeedAnalyzing(true);
         classTemplate.setCppType("cppType");
         classTemplate.setCppReturnType("cppReturnType");

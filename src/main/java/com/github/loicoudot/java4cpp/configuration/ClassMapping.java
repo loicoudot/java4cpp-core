@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(propOrder = { "cppName", "interfaces", "innerClasses", "staticFields", "constructors", "methods" })
 public final class ClassMapping {
 
-    private Class<?> clazz;
+    private String clazz;
     private Boolean superclass = false;
     private Boolean interfaceAll = false;
     private Boolean exportFields = false;
@@ -24,15 +24,15 @@ public final class ClassMapping {
     }
 
     public ClassMapping(Class<?> clazz) {
-        this.clazz = clazz;
+        this.clazz = clazz.getName();
     }
 
     @XmlAttribute(name = "class")
-    public Class<?> getClazz() {
+    public String getClazz() {
         return clazz;
     }
 
-    public void setClazz(Class<?> clazz) {
+    public void setClazz(String clazz) {
         this.clazz = clazz;
     }
 
@@ -128,6 +128,6 @@ public final class ClassMapping {
 
     @Override
     public String toString() {
-        return String.format("Clazz(%s)", clazz.getName());
+        return String.format("Clazz(%s)", clazz);
     }
 }

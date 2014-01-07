@@ -44,8 +44,8 @@ public final class Context {
         mappingsManager = new MappingsManager(this);
         templateManager = new TemplateManager(this);
         typeAnalyzer = new TypeAnalyzer(this);
-        analyzers = new Analyzer[] { typeAnalyzer, new SuperclassAnalyzer(this), new InterfacesAnalyzer(this), new InnerClassAnalyzer(this), new FieldsAnalyzer(this), new EnumAnalyzer(this),
-                new ConstructorsAnalyzer(this), new MethodsAnalyzer(this) };
+        analyzers = new Analyzer[] { typeAnalyzer, new SuperclassAnalyzer(this), new InterfacesAnalyzer(this), new InnerClassAnalyzer(this),
+                new FieldsAnalyzer(this), new EnumAnalyzer(this), new ConstructorsAnalyzer(this), new MethodsAnalyzer(this) };
     }
 
     /**
@@ -53,6 +53,7 @@ public final class Context {
      * parts with all the configurations.
      */
     public void start() {
+        createClassLoader();
         getFileManager().start();
         getMappingsManager().start();
         addClassToDoFromJars();
@@ -68,9 +69,24 @@ public final class Context {
     }
 
     /**
+     * Construct the context class loader by adding all jars.
+     */
+    private void createClassLoader() {
+        if (!Utils.isNullOrEmpty(settings.getJarFiles())) {
+            try {
+                String[] files = settings.getJarFiles().split(";");
+                for (String file : files) {
+                    classLoader = new URLClassLoader(new URL[] { new File(file).toURI().toURL() }, classLoader);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to load jar " + e.getMessage());
+            }
+        }
+    }
+
+    /**
      * Add annotated classes with {@code Java4Cpp} annotation to the current
-     * list of class to be processed by introspecting jar files. The context
-     * {@code ClassLoader} is augmented with each jar {@code ClassLoader}'s.
+     * list of class to be processed by introspecting jar files.
      */
     private void addClassToDoFromJars() {
         if (!Utils.isNullOrEmpty(settings.getJarFiles())) {
@@ -78,7 +94,6 @@ public final class Context {
                 String[] files = settings.getJarFiles().split(";");
                 for (String file : files) {
                     getFileManager().logInfo("searching classes to wrappe in " + file);
-                    classLoader = new URLClassLoader(new URL[] { new File(file).toURI().toURL() }, classLoader);
                     JarFile jf = new JarFile(file);
                     Enumeration<JarEntry> entries = jf.entries();
                     while (entries.hasMoreElements()) {
@@ -137,6 +152,14 @@ public final class Context {
 
     public TemplateManager getTemplateManager() {
         return templateManager;
+    }
+
+    public Class<?> loadClass(String clazz) {
+        try {
+            return classLoader.loadClass(clazz);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public ClassModel analyzeClassModel(Java4CppType type) {
