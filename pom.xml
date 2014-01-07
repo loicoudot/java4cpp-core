@@ -8,7 +8,7 @@
 	<groupId>com.github.loicoudot.java4cpp</groupId>
 	<artifactId>java4cpp-core</artifactId>
 	<name>java4cpp-core</name>
-	<version>1.0.3-SNAPSHOT</version>
+	<version>1.0.3</version>
 	<description>The core of java4cpp project</description>
 	<url>https://github.com/loicoudot/java4cpp-core</url>
 	<licenses>
