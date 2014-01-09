@@ -75,9 +75,11 @@ public final class Context {
         if (!Utils.isNullOrEmpty(settings.getJarFiles())) {
             try {
                 String[] files = settings.getJarFiles().split(";");
+                List<URL> urls = newArrayList();
                 for (String file : files) {
-                    classLoader = new URLClassLoader(new URL[] { new File(file).toURI().toURL() }, classLoader);
+                    urls.add(new File(file).toURI().toURL());
                 }
+                classLoader = new URLClassLoader((URL[]) urls.toArray(), classLoader);
             } catch (Exception e) {
                 throw new RuntimeException("Failed to load jar " + e.getMessage());
             }
