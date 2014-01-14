@@ -31,7 +31,7 @@ public class InnerClassAnalyzer extends Analyzer {
         return list;
     }
 
-    public boolean isInnerClassWrapped(Class<?> clazz, Class<?> innerClass) {
+    boolean isInnerClassWrapped(Class<?> clazz, Class<?> innerClass) {
         ClassMapping mapping = mappings.get(clazz);
         Java4Cpp annotation = clazz.getAnnotation(Java4Cpp.class);
 

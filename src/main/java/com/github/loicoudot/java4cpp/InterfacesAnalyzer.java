@@ -31,7 +31,7 @@ public class InterfacesAnalyzer extends Analyzer {
         return interfaces;
     }
 
-    public boolean isInterfaceWrapped(Class<?> clazz, Class<?> interfac) {
+    boolean isInterfaceWrapped(Class<?> clazz, Class<?> interfac) {
         ClassMapping mapping = mappings.get(clazz);
         Java4Cpp annotation = clazz.getAnnotation(Java4Cpp.class);
 

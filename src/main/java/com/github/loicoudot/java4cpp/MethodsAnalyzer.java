@@ -40,7 +40,7 @@ final class MethodsAnalyzer extends Analyzer {
         return list;
     }
 
-    public boolean isMethodWrapped(Method method) {
+    boolean isMethodWrapped(Method method) {
         ClassMapping mapping = mappings.get(method.getDeclaringClass());
         Java4Cpp annotation = method.getDeclaringClass().getAnnotation(Java4Cpp.class);
 
@@ -57,7 +57,7 @@ final class MethodsAnalyzer extends Analyzer {
         return method.isAnnotationPresent(Java4CppWrappe.class);
     }
 
-    public MethodModel getModel(Method method) {
+    private MethodModel getModel(Method method) {
         context.getFileManager().enter("method: " + method);
         MethodModel methodModel = new MethodModel(method.getName());
         methodModel.setCppName(getCppName(method));
@@ -76,7 +76,7 @@ final class MethodsAnalyzer extends Analyzer {
      * 
      * @return a valid C++ method name.
      */
-    public String getCppName(Method method) {
+    String getCppName(Method method) {
         ClassMapping mapping = mappings.get(method.getDeclaringClass());
 
         if (mapping != null) {

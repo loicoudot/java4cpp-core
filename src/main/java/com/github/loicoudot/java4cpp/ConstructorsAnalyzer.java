@@ -38,7 +38,7 @@ final class ConstructorsAnalyzer extends Analyzer {
         return list;
     }
 
-    public boolean isConstructorWrapped(Constructor<?> constructor) {
+    boolean isConstructorWrapped(Constructor<?> constructor) {
         ClassMapping mapping = mappings.get(constructor.getDeclaringClass());
         Java4Cpp annotation = constructor.getDeclaringClass().getAnnotation(Java4Cpp.class);
 
@@ -55,7 +55,7 @@ final class ConstructorsAnalyzer extends Analyzer {
         return constructor.isAnnotationPresent(Java4CppWrappe.class);
     }
 
-    public ConstructorModel getModel(Constructor<?> constructor) {
+    private ConstructorModel getModel(Constructor<?> constructor) {
         context.getFileManager().enter("constructor: " + constructor);
         ConstructorModel constructorModel = new ConstructorModel();
         constructorModel.getParameters().addAll(context.getClassesModels(constructor.getParameterTypes()));

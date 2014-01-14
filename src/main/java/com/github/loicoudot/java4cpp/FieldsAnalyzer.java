@@ -31,7 +31,7 @@ final class FieldsAnalyzer extends Analyzer {
         }
     }
 
-    List<Field> getStaticFields(Class<?> clazz) {
+    private List<Field> getStaticFields(Class<?> clazz) {
         ArrayList<Field> list = newArrayList();
         for (Field field : clazz.getDeclaredFields()) {
             int mod = field.getModifiers();
@@ -58,7 +58,7 @@ final class FieldsAnalyzer extends Analyzer {
         return field.isAnnotationPresent(Java4CppWrappe.class);
     }
 
-    FieldModel getModel(Field field) {
+    private FieldModel getModel(Field field) {
         context.getFileManager().enter("field: " + field);
         FieldModel fieldModel = new FieldModel(field.getName());
         fieldModel.setCppName(getCppName(field));
