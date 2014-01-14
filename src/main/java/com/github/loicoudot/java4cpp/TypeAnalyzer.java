@@ -63,7 +63,7 @@ final class TypeAnalyzer extends Analyzer {
                         }
                     } else if (dependency != null) {
                         throw new TemplateModelException(
-                                "AddDependencies arguments must be a a class name, a ClassModel instance or a Collection of ClassModels.");
+                                "addDependencies arguments must be a class name, a ClassModel instance or a Collection of ClassModels.");
                     }
                 }
                 return "";
