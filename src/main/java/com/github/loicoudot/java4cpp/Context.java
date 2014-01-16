@@ -79,7 +79,7 @@ public final class Context {
                 for (String file : files) {
                     urls.add(new File(file).toURI().toURL());
                 }
-                classLoader = new URLClassLoader((URL[]) urls.toArray(), classLoader);
+                classLoader = new URLClassLoader(urls.toArray(new URL[files.length]), classLoader);
             } catch (Exception e) {
                 throw new RuntimeException("Failed to load jar " + e.getMessage());
             }
