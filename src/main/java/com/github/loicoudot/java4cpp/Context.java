@@ -5,8 +5,8 @@ import static com.github.loicoudot.java4cpp.Utils.newHashMap;
 
 import java.io.File;
 import java.lang.reflect.Type;
+import java.net.URI;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +31,7 @@ public final class Context {
     private final FileManager fileManager;
     private final MappingsManager mappingsManager;
     private final TemplateManager templateManager;
-    private ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+    private Java4CppClassLoader classLoader = new Java4CppClassLoader();
     private final BlockingQueue<Java4CppType> classesToDo = new ArrayBlockingQueue<Java4CppType>(1024);
     private final List<Java4CppType> classesAlreadyDone = newArrayList();
     private final Map<Java4CppType, ClassModel> classModelCache = newHashMap();
@@ -76,10 +76,13 @@ public final class Context {
             try {
                 String[] files = settings.getJarFiles().split(";");
                 List<URL> urls = newArrayList();
-                for (String file : files) {
-                    urls.add(new File(file).toURI().toURL());
+                for (String path : files) {
+                    File file = new File(path);
+                    if (file.isFile()) {
+                        urls.add(file.toURI().toURL());
+                    }
                 }
-                classLoader = new URLClassLoader(urls.toArray(new URL[files.length]), classLoader);
+                classLoader = new Java4CppClassLoader(urls.toArray(new URL[files.length]), classLoader);
             } catch (Exception e) {
                 throw new RuntimeException("Failed to load jar " + e.getMessage());
             }
@@ -94,8 +97,16 @@ public final class Context {
         if (!Utils.isNullOrEmpty(settings.getJarFiles())) {
             try {
                 String[] files = settings.getJarFiles().split(";");
-                for (String file : files) {
-                    getFileManager().logInfo("searching classes to wrappe in " + file);
+                for (String path : files) {
+                    File file = new File(path);
+                    if (!file.isFile()) {
+                        String jarPath = classLoader.getJar(path);
+                        if (jarPath == null) {
+                            getFileManager().logInfo("can't find " + path);
+                        }
+                        file = new File(new URI(jarPath));
+                    }
+                    getFileManager().logInfo("searching classes to wrappe in " + file.getAbsolutePath());
                     JarFile jf = new JarFile(file);
                     Enumeration<JarEntry> entries = jf.entries();
                     while (entries.hasMoreElements()) {
